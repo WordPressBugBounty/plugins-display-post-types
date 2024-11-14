@@ -362,7 +362,7 @@ class ChangeDetect {
 
 	createNewShortcode() {
 		const { instance, values } = this.getShortcodeFormValues();
-		const title = values.title || 'New Shortcode' + ' ' + instance;
+		const title = values.title || 'DPT Shortcode' + ' ' + (instance + 1);
 		// Let's get next set of episodes.
 		jQuery.ajax( {
 			url: vars.ajaxUrl,
@@ -510,7 +510,7 @@ class ChangeDetect {
 						} else {
 							dropdown.trigger('change');
 						}
-						this.newResponse('Shortcode deleted successfully', 'dpt-success');
+						this.newResponse('Shortcode deleted successfully', 'dpt-success', true);
 					}
 				}
 			},
@@ -522,6 +522,10 @@ class ChangeDetect {
 
 	updateShortcode(button) {
 		const { instance, values } = this.getShortcodeFormValues();
+		if ( values.title ) {
+			const selectedShortcode = jQuery('.dpt-shortcode-dropdown option:selected');
+			selectedShortcode.text( values.title );
+		}
 		// Let's get next set of episodes.
 		jQuery.ajax( {
 			url: vars.ajaxUrl,
@@ -554,10 +558,11 @@ class ChangeDetect {
 	 * 
 	 * @since 2.6.0
 	 * 
-	 * @param string message
-	 * @param string type
+	 * @param string  message
+	 * @param string  type
+	 * @param boolean reload
 	 */
-	newResponse(message = '', type = false) {
+	newResponse(message = '', type = false, reload = false) {
 		this.newFeedback.removeClass('dpt-error dpt-success dpt-running');
 		if (false !== type) {
 			this.newFeedback.addClass(type);
@@ -567,7 +572,10 @@ class ChangeDetect {
 		// Remove classes after 2 seconds
 		setTimeout(function() {
 			this.newFeedback.removeClass('dpt-success dpt-running');
-		}.bind(this), 1500);
+			if (reload) {
+				window.location.reload();
+			}
+		}.bind(this), 1000);
 	}
 
 	/**

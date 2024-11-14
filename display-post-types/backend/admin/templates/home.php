@@ -11,7 +11,7 @@
 <div class="dpt-welcome-wrapper">
     <h3>Welcome to Display Post Types</h3>
     <p>Display Post Types provides a user-friendly and versatile solution for retrieving, organizing, and showcasing lists of posts, pages, or custom post types. Effortlessly create visually appealing and responsive grids, lists, or sliders with your curated content.</p>
-    <p>This plugin is primarily designed for seamless integration into the WordPress editor block, enhancing the real-time editing experience. However, it is also compatible with legacy WordPress widgets and can be utilized alongside the Elementor plugin.</p>
+    <p>This plugin includes a user-friendly shortcode generator, allowing you to visually design post layouts and easily display them anywhere by inserting a simple shortcode. While the plugin also supports native display methods such as the block editor and WordPress widgets, we recommend using the shortcode generator for its simplicity and broader compatibility.</p>
     <p><?php $this->mlink( 'https://www.youtube.com/watch?v=tTVGMylfBhU', 'Check Getting Started Video', 'button dpt-pro-docs' ); ?></p>
     <h4>Key Features</h4>
     <ul class="dpt-list">

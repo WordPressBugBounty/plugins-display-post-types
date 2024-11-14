@@ -2,9 +2,9 @@
 Contributors: vedathemes
 Tags: post masonry, post grid, post slider, show posts, display posts
 Requires at least: 5.4
-Tested up to: 6.5
+Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 2.8.1
+Stable tag: 2.8.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -76,6 +76,9 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+
+= 2.8.2 =
+* Error Fix: Styling and other issues. 
 
 = 2.8.1 =
 * Error Fix: DPT widget error fix.

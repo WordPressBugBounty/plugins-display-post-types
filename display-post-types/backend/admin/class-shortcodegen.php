@@ -1173,7 +1173,9 @@ class ShortCodeGen {
 
 		$markup   = '';
 		$selected = '';
+		$counter  = 0;
 		foreach ( $select as $value => $label ) {
+			$label = $label ? $label : esc_html__( 'DPT Shortcode', 'display-post-types' ) . ' ' . ++$counter;
 			$markup .= sprintf( '<option value="%1$s" %2$s>%3$s</option>', esc_attr( $value ), selected( $value, $selected, false ), esc_html( $label ) );
 		}
 

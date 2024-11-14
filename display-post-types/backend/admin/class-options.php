@@ -50,7 +50,7 @@ class Options {
 				'label' => esc_html__( 'Home', 'podcast-player' ),
 			),
 			'shortcode' => array(
-				'label' => esc_html__( 'Shortcode', 'podcast-player' ),
+				'label' => esc_html__( 'Generate Shortcode', 'podcast-player' ),
 			),
 		);
 	}
