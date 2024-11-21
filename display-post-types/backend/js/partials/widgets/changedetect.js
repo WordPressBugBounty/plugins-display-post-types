@@ -105,6 +105,8 @@ class ChangeDetect {
 		const style = styleSelect.val();
 		const wrapper = styleSelect.closest('.widget-content');
 
+		this.saneDefaults( style, wrapper );
+
 		if (vars.isStyleSupport(style, 'multicol')) {
 			wrapper.find('.col_narr').show();
 		} else {
@@ -157,6 +159,45 @@ class ChangeDetect {
 				jQuery(this).closest('.dpt-toggle-container').hide();
 			};
 		});
+	}
+
+	saneDefaults( style, wrapper ) {
+		const styleSupDefaults = {
+			'dpt-list1': ['thumbnail', 'title', 'meta', 'excerpt'],
+			'dpt-list2': ['thumbnail', 'title', 'meta'],
+			'dpt-pro-slider2': ['thumbnail', 'title', 'meta', 'excerpt'],
+			'dpt-mag1': ['thumbnail', 'title', 'meta'],
+		};
+		const defaultThumbCropStyles = ['dpt-list1', 'dpt-list2', 'dpt-slider1', 'dpt-mag1'];
+		const supported = wrapper.find('.spcheckbox');
+		if ('undefined' !== typeof styleSupDefaults[style]) {
+			supported.each(function( ) {
+				const value = jQuery(this).val();
+				if (styleSupDefaults[style].includes(value)) {
+					jQuery(this).prop('checked', true).trigger('change');
+				} else {
+					jQuery(this).prop('checked', false).trigger('change');
+				}
+			});
+		} else {
+			supported.each(function( ) {
+				const value = jQuery(this).val();
+				if (['thumbnail', 'title'].includes(value)) {
+					jQuery(this).prop('checked', true).trigger('change');
+				} else {
+					jQuery(this).prop('checked', false).trigger('change');
+				}
+			});
+		}
+		if (defaultThumbCropStyles.includes(style)) {
+			wrapper.find('select.dpt-img-aspect').val('land1').trigger('change');
+		} else if (['dpt-pro-slider1', 'dpt-pro-slider3'].includes(style)) {
+			wrapper.find('select.dpt-img-aspect').val('wdscrn').trigger('change');
+		} else if (['dpt-pro-slider2'].includes(style)) {
+			wrapper.find('select.dpt-img-aspect').val('squr').trigger('change');
+		} else {
+			wrapper.find('select.dpt-img-aspect').val('').trigger('change');
+		}
 	}
 
 	showCroppos( crop ) {

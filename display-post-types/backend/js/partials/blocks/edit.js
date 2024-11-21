@@ -344,6 +344,30 @@ class DisplayPostTypes extends Component {
 				setAttributes({ terms: terms.filter(term => term !== value) });
 			}
 		};
+		const onStyleChange = (value) => {
+			const styleSupDefaults = {
+				'dpt-list1': ['thumbnail', 'title', 'meta', 'excerpt'],
+				'dpt-list2': ['thumbnail', 'title', 'meta'],
+				'dpt-pro-slider2': ['thumbnail', 'title', 'meta', 'excerpt'],
+				'dpt-mag1': ['thumbnail', 'title', 'meta'],
+			};
+			const defaultThumbCropStyles = ['dpt-list1', 'dpt-list2', 'dpt-slider1', 'dpt-mag1'];
+			setAttributes({ styles: value });
+			if ('undefined' !== typeof styleSupDefaults[value]) {
+				setAttributes({ styleSup: styleSupDefaults[value] });
+			} else {
+				setAttributes({ styleSup: ['thumbnail', 'title'] });
+			}
+			if (defaultThumbCropStyles.includes(value)) {
+				setAttributes({ imgAspect: 'land1' });
+			} else if (['dpt-pro-slider1', 'dpt-pro-slider3'].includes(value)) {
+				setAttributes({ imgAspect: 'wdscrn' });
+			} else if (['dpt-slider2'].includes(value)) {
+				setAttributes({ imgAspect: 'squr' });
+			} else {
+				setAttributes({ imgAspect: '' });
+			}
+		};
 		const pageCheckChange = (value) => {
 			const index = pages.indexOf(value);
 			if (-1 === index) {
@@ -824,7 +848,7 @@ class DisplayPostTypes extends Component {
 							<SelectControl
 								label={ __( 'Display Style', 'display-post-types' ) }
 								value={ styles }
-								onChange={ ( styles ) => setAttributes( { styles } ) }
+								onChange={ onStyleChange }
 								options={ styleList }
 							/>
 						}

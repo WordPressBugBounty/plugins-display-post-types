@@ -14,7 +14,7 @@
  * @wordpress-plugin
  * Plugin Name: Display Post Types
  * Description: Filter, sort and display post, page or any post type.
- * Version: 2.8.2
+ * Version: 2.8.3
  * Author: vedathemes
  * Author URI: https://vedathemes.com/display-post-types/
  * License: GPL-3.0+
@@ -29,7 +29,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Currently plugin version.
-define( 'DISPLAY_POST_TYPES_VERSION', '2.8.2' );
+define( 'DISPLAY_POST_TYPES_VERSION', '2.8.3' );
 
 // Define plugin constants.
 define( 'DISPLAY_POST_TYPES_DIR', plugin_dir_path( __FILE__ ) );
@@ -100,5 +100,5 @@ add_action(
 
 // Load premium features (if exist).
 if ( file_exists( DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php' ) ) {
-	// require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
+	require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
 }

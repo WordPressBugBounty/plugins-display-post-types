@@ -626,7 +626,7 @@ class Register {
 		$text = wp_strip_all_tags( strip_shortcodes( $text ) );
 		$text = str_replace( ']]>', ']]&gt;', $text );
 
-		$excerpt_length = isset( $args['e_length'] ) ? absint( $args['e_length'] ) : 20;
+		$excerpt_length = isset( $args['e_length'] ) ? absint( $args['e_length'] ) : 35;
 		$teaser_button = isset( $args['excerpt_teaser_btn'] ) && $args['excerpt_teaser_btn'] ? true : false;
 
 		// Generate excerpt teaser text and link.
@@ -658,6 +658,15 @@ class Register {
 	 */
 	public function category() {
 		Markup::markup( 'dpt-categories', array( array( 'the_category', ', ' ) ) );
+	}
+
+	/**
+	 * Display post categories.
+	 *
+	 * @since 1.0.0
+	 */
+	public function tags() {
+		Markup::markup( 'dpt-tags', array( array( 'the_tags', '', ', ' ) ) );
 	}
 
 	/**
@@ -741,6 +750,13 @@ class Register {
 			$this->category();
 			$content = ob_get_clean();
 			$text    = str_replace( '[category]', $content, $text );
+		}
+
+		if ( false !== strpos( $text, '[tags]' ) ) {
+			ob_start();
+			$this->tags();
+			$content = ob_get_clean();
+			$text    = str_replace( '[tags]', $content, $text );
 		}
 
 		return apply_filters( 'dpt_get_converted_meta', $text );

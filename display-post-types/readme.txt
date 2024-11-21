@@ -4,7 +4,7 @@ Tags: post masonry, post grid, post slider, show posts, display posts
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -76,6 +76,14 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+
+= 2.8.3 =
+* Error Fix: Shortcode Generator default margin error fix.
+* Modify: Slightly larger fonts for better clarity
+* Modify: Fixed minor styling issues
+* Modify: Sane Defaults for different display styles.
+* Add: Option to add Tags in the meta info section.
+* Add: New Magazine style layout.
 
 = 2.8.2 =
 * Error Fix: Styling and other issues. 

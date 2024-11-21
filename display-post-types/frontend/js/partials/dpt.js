@@ -107,6 +107,22 @@ class DPT {
 	 * @since 1.0.0
 	 */
 	applyLayout() {
+		if ( this.elem.classList.contains('dpt-mag1') ) {
+			const featuredWrap = document.createElement('div');
+			const normalWrap = document.createElement('div');
+			featuredWrap.classList.add('dpt-featured-wrap');
+			normalWrap.classList.add('dpt-normal-wrap');
+			const entries = Array.prototype.slice.call(this.elem.querySelectorAll('.dpt-entry'));
+			entries.forEach((entry, index) => {
+				if (index === 0) {
+					featuredWrap.appendChild(entry);
+				} else {
+					normalWrap.appendChild(entry);
+				}
+			});
+			this.elem.appendChild(featuredWrap);
+			this.elem.appendChild(normalWrap);
+		}
 		this.addImageAttrs(this.elem);
 		if ( this.elem.classList.contains('dpt-mason-wrap') ) {
             this.masonGrid = new brickLayer({
@@ -135,6 +151,17 @@ class DPT {
 			}
             this.flicKity = new Flickity(this.elem, param);
         }
+
+		if ( this.elem.classList.contains('dpt-mag1') && ! this.elem.classList.contains('mob-wrap') ) {
+			const featuredWrap = this.elem.querySelector('.dpt-featured-wrap');
+			const normalWrap = this.elem.querySelector('.dpt-normal-wrap');
+			const featuredWrapHeight = featuredWrap.offsetHeight;
+			const normalWrapHeight = normalWrap.offsetHeight;
+			if (normalWrapHeight > featuredWrapHeight) {
+				normalWrap.style.maxHeight = featuredWrapHeight + 'px';
+				normalWrap.style.overflowY = 'scroll';
+			}
+		}
 	}
 
 	addImageAttrs(elem) {

@@ -188,7 +188,7 @@ class Getters {
 			'text_align'    => '',
 			'v_gutter'      => 20,
 			'h_gutter'      => 20,
-			'e_length'      => 20,
+			'e_length'      => 35,
 			'e_teaser'      => __( 'Continue reading', 'display-post-types' ),
 			'classes'       => '',
 			'offset'        => 0,
@@ -276,6 +276,11 @@ class Getters {
 					'label'   => esc_html__( 'Slider - Normal', 'display-post-types' ),
 					'support' => array( 'thumbnail', 'meta', 'title', 'category', 'multicol', 'slider', 'overlay' ),
 				),
+				'dpt-mag1'    => array(
+					'style'   => 'dpt-mag1',
+					'label'   => esc_html__( 'Magazine Layout 1', 'display-post-types' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'pagination' ),
+				)
 			)
 		);
 	}
