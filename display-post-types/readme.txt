@@ -1,10 +1,10 @@
 === Display Post Types - Post Grid, post list and post sliders ===
 Contributors: vedathemes
-Tags: post masonry, post grid, post slider, show posts, display posts
+Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 2.8.3
+Stable tag: 2.9.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -13,15 +13,37 @@ Display list of posts, pages or any custom post types anywhere using block and w
 == Description ==
 Easily display post grid, list or post sliders. Display post types provides easiest way to fetch, sort and display list of posts, pages or any custom post types using block or widget.
 
-Display Post Types is the ultimate solution for crafting visually stunning grids, lists or sliders on your website! Whether you want to showcase blogs, portfolio, or any other content, Display Post Types is here to make it happen effortlessly.
+**Display Post Types** is the ultimate plugin to showcase your WordPress posts, pages, or custom post types in visually stunning grids, lists, and sliders. Whether you’re displaying blog posts, portfolios, or any custom content, this plugin makes it incredibly easy and flexible, with no coding skills required.  
 
-This user-friendly plugin empowers you to create captivating grids with just a few clicks, thanks to its intuitive Shortcode, Editor Block and WordPress Widget. It is also fully responsive and mobile-friendly, ensuring your grids look amazing on all devices.
+## Key Features  
+- **Versatile Display Options:**  
+  Present your content as a **post grid**, **post list**, or dynamic **post slider**. Choose from multiple layouts like grid, masonry, list, mini list, and overlay styles.  
 
-With Display Post Types, you can effortlessly present your posts in grid, list, and masonry views, all without any coding knowledge required. Choose from a variety of pre-made layouts to kickstart your design process, or customize to your heart's content. 
+- **Customizable Layouts:**  
+  Adjust columns, crop images, and control slider settings, including auto-slide functionality, for a fully tailored design.  
 
-We have created a quick walk through video to easily get started with Display Post Types.
+- **Content Control:**  
+  Select specific post types (Posts, Pages, or Custom Post Types) and refine with filters using categories, tags, and custom taxonomies. Advanced options include sorting by date, title, author, comments, or even random order.  
 
-[youtube https://youtu.be/tTVGMylfBhU?si=qr1YtkqaXJck9xc-]
+- **Pagination & Offset:**  
+  Easily manage pagination and exclude initial posts using the offset feature to curate the perfect display.  
+
+- **User-Friendly Interface:**  
+  Utilize intuitive blocks, widgets, or shortcodes to add post displays anywhere on your site with just a few clicks.  
+
+- **Responsive Design:**  
+  All layouts are fully responsive and mobile-friendly, ensuring your content looks great on any device.  
+
+- **Customization Made Easy:**  
+  Fine-tune each layout using built-in tools for a seamless user experience.
+
+## Why Choose Display Post Types?  
+Whether you're a blogger, business owner, or designer, **Display Post Types** gives you the flexibility to present your content exactly how you envision it. The possibilities are endless, allowing you to create anything from clean and simple post grids to advanced, auto-sliding sliders.  
+
+## Quick Start Video  
+Need help getting started? Watch our step-by-step tutorial to learn how to use Display Post Types and unlock its full potential.  
+
+[Watch the Tutorial](https://youtu.be/tTVGMylfBhU?si=qr1YtkqaXJck9xc-)
 
 = What this plugin offers =
 
@@ -76,6 +98,10 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+
+= 2.9.0 =
+* Error Fix: Hook translation functionality to init instead of plugins loaded hook.
+* Add: DPT Instance header design and functionality
 
 = 2.8.3 =
 * Error Fix: Shortcode Generator default margin error fix.

@@ -44,4 +44,13 @@ class Validation {
 
 		return false;
 	}
+
+	/**
+	 * Check if pro version is active.
+	 *
+	 * @since 2.9.0
+	 */
+	public static function is_pro() {
+		return defined( 'DPT_PRO_VERSION' );
+	}
 }

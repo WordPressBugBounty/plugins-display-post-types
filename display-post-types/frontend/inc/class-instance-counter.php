@@ -72,6 +72,15 @@ class Instance_Counter {
 	private $dpt_count = 0;
 
 	/**
+	 * DPT frontend script data.
+	 *
+	 * @since  2.8.4
+	 * @access private
+	 * @var    array
+	 */
+	private $script_data = array();
+
+	/**
 	 * Constructor method.
 	 *
 	 * @since  1.0.0
@@ -166,6 +175,35 @@ class Instance_Counter {
 	 */
 	public function unset_mason() {
 		$this->has_mason = false;
+	}
+
+	/**
+	 * Add script data for a specific DPT instance.
+	 *
+	 * @since 2.8.4
+	 *
+	 * @param int   $instance DPT instance.
+	 * @param array $data     Script data.
+	 */
+	public function add_script_data( $instance, $data ) {
+		$this->script_data[ $instance ] = $data;
+	}
+
+	/**
+	 * Get script data for a specific DPT instance.
+	 *
+	 * @since 2.8.4
+	 *
+	 * @param int $instance DPT instance.
+	 */
+	public function get_script_data( $instance = false ) {
+		if ( ! $instance ) {
+			return $this->script_data;
+		} else if ( ! isset( $this->script_data[ $instance ] ) ) {
+			return array();
+		} else {
+			return $this->script_data[ $instance ];
+		}
 	}
 
 	/**

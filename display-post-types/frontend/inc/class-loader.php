@@ -113,6 +113,7 @@ class Loader {
 	 */
 	public function enqueue_front_scripts() {
 		$deps = array();
+		$dpt = Instance_Counter::get_instance();
 
 		// Load slider script only if there is at least one instance of DPT slider.
 		if ( $this->has_slider() ) {
@@ -145,6 +146,11 @@ class Loader {
 			DISPLAY_POST_TYPES_VERSION,
 			true
 		);
+		wp_localize_script( 'dpt-scripts', 'dptScriptData', array(
+			'security'  => wp_create_nonce( 'dpt-frontend-ajax-nonce' ),
+			'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+			'instances' => $dpt->get_script_data(),
+		) );
 
 		wp_enqueue_style(
 			'dpt-style',

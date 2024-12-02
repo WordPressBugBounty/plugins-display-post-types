@@ -13,6 +13,7 @@ use Display_Post_Types\Helper\Validation as Validation_Fn;
 use Display_Post_Types\Frontend\Inc\Loader;
 use Display_Post_Types\Helper\Markup;
 use Display_Post_Types\Frontend\Inc\Misc as Misc_Fn;
+use Display_Post_Types\Helper\Icon_Loader as Icons;
 
 /**
  * The front-end specific functionality of the plugin.
@@ -31,6 +32,15 @@ class Register {
 	protected static $instance = null;
 
 	/**
+	 * Holds Pro Status.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 * @var    bool
+	 */
+	protected $is_pro = false;
+
+	/**
 	 * Constructor method.
 	 *
 	 * @since  1.0.0
@@ -44,6 +54,8 @@ class Register {
 	 */
 	public static function init() {
 		$inst = self::get_instance();
+		$inst->is_pro = Validation_Fn::is_pro();
+
 		add_filter( 'dpt_wrapper_classes', array( $inst, 'wrapper_classes' ), 10, 2 );
 		add_filter( 'dpt_html_attributes', array( $inst, 'html_attr' ), 10, 2 );
 		add_filter( 'dpt_entry_classes', array( $inst, 'entry_classes' ), 10, 2 );
@@ -69,6 +81,10 @@ class Register {
 
 		// Elementor Support.
 		self::elementor_support( $loader );
+
+		// Load icon definitions.
+		$icons = Icons::get_instance();
+		self::add_icons_definitions( $icons );
 	}
 
 	/**
@@ -111,37 +127,102 @@ class Register {
 	 * @param int   $id Instance ID.
 	 */
 	public function dpt_header( $instance, $id ) {
-		$args     = $instance['args'];
-		$title    = isset( $args[ 'title' ] ) ? $args[ 'title' ] : false;
-		$taxonomy = $title && isset( $args[ 'taxonomy' ] ) ? $args[ 'taxonomy' ] : false;
-		$terms    = $taxonomy && isset( $args[ 'terms' ] ) && ! empty( $args[ 'terms' ] ) ? $args[ 'terms' ] : false;
+		$args  = $instance['args'];
+		$query = $instance['query'];
+		$title = isset( $args[ 'title' ] ) ? $args[ 'title' ] : false;
 
 		if ( ! $title ) {
 			return;
 		}
 
+		$is_slider    = $this->is_style_support( $args['styles'], 'slider' );
+		$header_style = $this->is_pro && isset( $args[ 'hstyle' ] ) ? $args[ 'hstyle' ] : '';
+		$current_page = $this->is_pro && $query->get('paged') ? $query->get('paged') : 1;
+		$is_search    = $this->is_pro && ! $is_slider && isset( $args[ 'hsearch' ] ) && ! empty( $args[ 'hsearch' ] ) ? $args[ 'hsearch' ] : false;
+		$is_filter    = $this->is_pro && ! $is_slider && isset( $args[ 'hfilter' ] ) && ! empty( $args[ 'hfilter' ] ) ? $args[ 'hfilter' ] : false;
+		$is_hnext     = $this->is_pro && ! $is_slider && isset( $args[ 'hnext' ] ) && ! empty( $args[ 'hnext' ] ) ? $args[ 'hnext' ] : false;
+
 		Markup::markup(
-			'dpt-main-header',
+			array( 'dpt-main-header', $header_style ),
 			array(
 				array(
-					function( $title, $taxonomy, $terms ) {
-						$markup = sprintf( '<span class="dpt-main-title-text">%s</span>', esc_html( $title ) );
-						if ( $terms ) {
-							$term = is_array( $terms ) ? $terms[0] : false;
-							$term_archive_link = get_term_link( $term, $taxonomy );
-							if ( ! is_wp_error( $term_archive_link ) ) {
-								$markup = sprintf( '<a class="dpt-main-title-link" href="%s">%s</a>', $term_archive_link, $markup );
-							}
+					function( $title, $header_style, $is_search, $is_filter, $is_hnext, $current_page ) {
+						$search_markup = '';
+						$filter_markup = '';
+						$hnext_markup  = '';
+						if ( $is_search ) {
+							$search_markup = '
+							<div class="dpt-header-search-btn">
+								<button type="submit" class="dpt-hsearch-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-search' ) ) . '</button>
+							</div>
+							';
 						}
-						$markup = sprintf( '<div class="dpt-main-title">%s</div>', $markup );
+						if ( $is_hnext ) {
+							$disabled = 1 === $current_page ? 'disabled' : '';
+							$class    = 1 === $current_page ? 'is-disabled' : '';
+							$hnext_markup = '
+							<div class="dpt-header-posts-btn">
+								<button type="submit"'  . $disabled . ' class="dpt-hprev-btn dpt-header-btn ' . $class . '">' . Markup::get_icon( array( 'icon' => 'dpt-previous' ) ) . '</button><button type="submit" class="dpt-hnext-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-next' ) ) . '</button>
+							</div>
+							';
+						}
+						if ( $is_filter ) {
+							$filter_markup = '
+							<div class="dpt-header-filter-btn">
+								<button type="submit" class="dpt-hfilter-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-filter' ) ) . '</button>
+							</div>
+							';
+						}
+						$markup_string = '
+						<div class="dpt-main-title">
+							<span class="dpt-main-title-text">%1$s</span>
+						</div>
+						%2$s
+						%3$s
+						%4$s
+						';
+						$markup = sprintf( $markup_string, $title, $search_markup, $filter_markup, $hnext_markup );
 						echo $markup;
 					},
-					$title,
-					$taxonomy,
-					$terms
+					$title, $header_style, $is_search, $is_filter, $is_hnext, $current_page
 				),
 			)
 		);
+
+		if ( $is_search ) {
+			Markup::markup(
+				array( 'dpt-header-search' ),
+				array(
+					function() {
+						$markup_string = '%1$s<input type="text" class="dpt-hsearch-input" placeholder="%2$s"><button class="dpt-hsearch-close dpt-header-btn">%3$s</button>';
+						$markup = sprintf(
+							$markup_string,
+							Markup::get_icon( array( 'icon' => 'dpt-search' ) ),
+							esc_html__( 'Search', 'display-post-types' ),
+							Markup::get_icon( array( 'icon' => 'dpt-close' ) )
+						);
+						echo $markup;
+					}
+				)
+			);
+		}
+
+		if ( $is_filter ) {
+			Markup::markup(
+				array( 'dpt-header-filter' ),
+				array(
+					function() {
+						$markup_string = '<div class="dpt-filter-title">%1$s</div><div class="dpt-filter-menu"></div><button class="dpt-hfilter-close dpt-header-btn">%2$s</button>';
+						$markup = sprintf(
+							$markup_string,
+							esc_html__( 'Filter By', 'display-post-types' ),
+							Markup::get_icon( array( 'icon' => 'dpt-close' ) )
+						);
+						echo $markup;
+					}
+				)
+			);
+		}
 	}
 
 	/**
@@ -823,6 +904,17 @@ class Register {
 		}
 
 		return $attr;
+	}
+
+	/**
+	 * Add icons definitions.
+	 *
+	 * @since 2.8.4
+	 *
+	 * @param object $icons Icon loader instance.
+	 */
+	public static function add_icons_definitions( $icons ) {
+		add_filter( 'wp_footer', array( $icons, 'add_icons' ), 9999 );
 	}
 
 	/**

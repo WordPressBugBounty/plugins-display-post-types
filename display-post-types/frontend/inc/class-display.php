@@ -129,13 +129,20 @@ class Display {
 		}
 
 		$query_args = apply_filters( 'dpt_display_posts_args', $query_args, $args );
-		$post_query = new \WP_Query( $query_args );
 
+		$all_post_ids           = self::get_all_post_ids( $query_args );
+		$query_args['post__in'] = $all_post_ids;
+		unset( $query_args['tax_query'] );
+		$post_query     = new \WP_Query( $query_args );
 		if ( $post_query->have_posts() ) :
 			$action_args = array(
 				'args'  => $args,
 				'query' => $post_query,
 			);
+
+			$all_taxonomies = get_object_taxonomies( $args['post_type'] );
+			$taxonomies     = array();
+			$post_ids       = array();
 			?>
 
 			<div class="display-post-types">
@@ -167,8 +174,18 @@ class Display {
 						$post_query->the_post();
 						$entry_class = apply_filters( 'dpt_entry_classes', array(), $action_args );
 						$entry_class = array_map( 'esc_attr', $entry_class );
+						$post_ids[]  = get_the_ID();
+						$attributes  = '';
+						foreach ( $all_taxonomies as $tax ) {
+							$terms = wp_get_object_terms( get_the_ID(), $tax );
+							if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+								$post_tax = wp_list_pluck( $terms, 'term_id', 'name' );
+								$taxonomies[ $tax ] = isset( $taxonomies[ $tax ] ) ? array_merge( $taxonomies[ $tax ], $post_tax ) : $post_tax;
+								$attributes .= ' data-' . $tax . '="' . strtolower( esc_attr( join( ' ', array_keys( $post_tax ) ) ) ) . '"';
+							}
+						}
 						?>
-						<div class="dpt-entry <?php echo join( ' ', $entry_class ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
+						<div class="dpt-entry <?php echo join( ' ', $entry_class );?>" data-title="<?php echo esc_attr( strtolower( get_the_title() ) );?>" data-id="<?php echo absint( get_the_ID() );?>" <?php echo $attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 							<div class="dpt-entry-wrapper"><?php do_action( 'dpt_entry', $action_args ); ?></div>
 						</div><!-- .dpt-entry -->
 						<?php
@@ -207,6 +224,20 @@ class Display {
 			?>
 			</div>
 			<?php
+			$current_page = $post_query->get('paged') ? $post_query->get('paged') : 1;
+			$posts_per_page = $post_query->get('posts_per_page');
+			$total = count( $all_post_ids );
+			$offset = min( $total, $posts_per_page * ( $current_page - 1 ) );
+			
+			// Send query args and instance settings to the frontend as script data.
+			$inst_class->add_script_data( $instance, array(
+				'query_args' => $query_args,
+				'args'       => $args,
+				'offset'     => $offset,
+				'lot_size'   => $posts_per_page,
+				'total'      => $total,
+				'taxonomies' => $taxonomies,
+			));
 
 			// Reset the global $the_post as this query will have stomped on it.
 			wp_reset_postdata();
@@ -268,6 +299,27 @@ class Display {
 		$sup_arr = $all[ $style ]['support'];
 
 		return in_array( $item, $sup_arr, true );
+	}
+
+	/**
+	 * Get all post ids for the current query.
+	 *
+	 * @since  2.8.4
+	 *
+	 * @param array $query_args Query arguments.
+	 */
+	public static function get_all_post_ids( $query_args ) {
+		if ( ! $query_args || ! is_array( $query_args ) ) {
+			return array();
+		}
+
+		if ( isset( $query_args['post_ids'] ) && ! empty( $query_args['post_ids'] ) ) {
+			return $query_args['post_ids'];
+		}
+
+		$query_args['posts_per_page'] = -1;
+		$query_args['fields']         = 'ids';
+		return get_posts( $query_args );
 	}
 
 	/**

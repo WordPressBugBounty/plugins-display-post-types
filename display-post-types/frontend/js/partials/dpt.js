@@ -46,6 +46,8 @@ class DPT {
 	 * @since 1.0.0
 	 */
 	events() {
+		const _this = this;
+		const dpt = this.elem.parentElement;
 		window.addEventListener('resize', this.onResize.bind(this));
 
 		// Resolve masonry element height issue due to late text wrapping.
@@ -129,6 +131,7 @@ class DPT {
                 container: this.elem,
                 gutter: 0,
                 waitForImages: false,
+				dynamicContent: true,
                 useTransform: false,
                 callAfter: this.addLoadedClass.bind(this, this.elem),
             });

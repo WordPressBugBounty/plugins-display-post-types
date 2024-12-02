@@ -254,22 +254,22 @@ class Getters {
 				'dpt-list1'   => array(
 					'style'   => 'dpt-list1',
 					'label'   => esc_html__( 'List - Full', 'display-post-types' ),
-					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'category', 'ialign', 'pagination' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'category', 'ialign', 'pagination', 'hactions' ),
 				),
 				'dpt-list2'   => array(
 					'style'   => 'dpt-list2',
 					'label'   => esc_html__( 'List - Mini', 'display-post-types' ),
-					'support' => array( 'thumbnail', 'meta', 'title', 'category', 'ialign', 'pagination' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'category', 'ialign', 'pagination', 'hactions' ),
 				),
 				'dpt-grid1'   => array(
 					'style'   => 'dpt-grid1',
 					'label'   => esc_html__( 'Grid - Normal', 'display-post-types' ),
-					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'category', 'multicol', 'pagination' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'category', 'multicol', 'pagination', 'hactions' ),
 				),
 				'dpt-grid2'   => array(
 					'style'   => 'dpt-grid2',
 					'label'   => esc_html__( 'Grid - Overlay', 'display-post-types' ),
-					'support' => array( 'thumbnail', 'meta', 'title', 'category', 'multicol', 'pagination', 'overlay' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'category', 'multicol', 'pagination', 'overlay', 'hactions' ),
 				),
 				'dpt-slider1' => array(
 					'style'   => 'dpt-slider1',
@@ -279,7 +279,7 @@ class Getters {
 				'dpt-mag1'    => array(
 					'style'   => 'dpt-mag1',
 					'label'   => esc_html__( 'Magazine Layout 1', 'display-post-types' ),
-					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'pagination' ),
+					'support' => array( 'thumbnail', 'meta', 'title', 'excerpt', 'pagination', 'hactions' ),
 				)
 			)
 		);

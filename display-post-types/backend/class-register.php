@@ -16,6 +16,7 @@ use Display_Post_Types\Backend\Inc\Misc;
 use Display_Post_Types\Backend\Admin\Options;
 use Display_Post_Types\Frontend\Inc\Display;
 use Display_Post_Types\Backend\Admin\ShortCodeGen;
+use Display_Post_Types\Helper\Icon_Loader as Icons;
 
 /**
  * The back-end specific functionality of the plugin.
@@ -51,6 +52,7 @@ class Register {
 		$shortcode = Shortcode::init();
 		$options   = Options::init();
 		$misc      = Misc::get_instance();
+		$icons     = Icons::get_instance();
 		add_action( 'widgets_init', array( $inst, 'register_custom_widget' ) );
 		add_action( 'admin_enqueue_scripts', array( $inst, 'enqueue_admin_widgets' ) );
 		add_action( 'admin_head', array( $inst, 'dismiss_notices' ) );
@@ -83,6 +85,9 @@ class Register {
 		add_filter( 'dpt_widget_update', array( $misc, 'extend_widget_update' ), 10, 3 );
 		add_filter( 'dpt_setting_type', array( $misc, 'extend_setting_type' ) );
 		add_action( 'dpt_before_wrapper', array( $misc, 'extend_inline_styles' ), 0, 2 );
+
+		// Load icon definitions.
+		add_filter( 'admin_footer', array( $icons, 'add_admin_icons' ), 9999 );
 	}
 
 	/**

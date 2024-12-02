@@ -169,18 +169,7 @@ class Widget extends \WP_Widget {
 		// Merge with defaults.
 		$instance = wp_parse_args( (array) $instance, $this->defaults );
 
-		$title = ! empty( $instance['title'] ) ? $instance['title'] : '';
-
-		/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
-		$title             = apply_filters( 'widget_title', $title, $instance, $this->id_base );
-		$title             = $this->get_title_markup( $instance, $title );
-		$instance['title'] = '';
-
 		echo $args['before_widget']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-		if ( $title ) {
-			echo $args['before_title'] . $title . $args['after_title']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
 
 		Display::init( $instance );
 
@@ -653,6 +642,16 @@ class Widget extends \WP_Widget {
 		$widget = $this;
 		return apply_filters( 'dpt_widget_wrappers',
 			array(
+				'header'    => array(
+					'id'       => 'header',
+					'type'     => 'toggle',
+					'label'    => esc_html__( 'Header', 'display-post-types' ),
+					'class'    => 'dpt-header-section',
+					'children' => false,
+					'hide_callback' => function() use ( $widget, $instance ) {
+						return ! $instance['title'];
+					},
+				),
 				'container' => array(
 					'id'       => 'container',
 					'type'     => 'toggle',
@@ -783,7 +782,7 @@ class Widget extends \WP_Widget {
 						break;
 					case 'text':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= sprintf( '<input class="widefat" name="%1$s" id="%2$s" type="text" value="%3$s" />', $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ) );
+						$optmar .= sprintf( '<input class="widefat dpt-%1$s" name="%2$s" id="%3$s" type="text" value="%4$s" />', str_replace( '_', '-', $set ), $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ) );
 						$optmar .= sprintf( '<div class="dpt-desc">%s</div>', $desc );
 						break;
 					case 'url':

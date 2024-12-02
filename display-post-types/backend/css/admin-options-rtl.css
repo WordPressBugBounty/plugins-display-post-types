@@ -647,25 +647,6 @@ a.dpt-settings-toggle.toggle-active:after
     background-color: #fad366;
 }
 
-#dpt-options-page .icon
-{
-    position: relative;
-    top: -.0625em;
-
-    display: inline-block;
-
-    width: 32px !important;
-    height: 32px !important;
-
-    vertical-align: middle;
-
-    background-color: transparent !important;
-
-    stroke-width: 0;
-    stroke: currentColor;
-    fill: currentColor;
-}
-
 #dpt-options-page .dpt-notice-info
 {
     font-size: 14px !important;

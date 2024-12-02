@@ -631,6 +631,16 @@ class ShortCodeGen {
 		$widget = $this;
 		return apply_filters( 'dpt_widget_wrappers',
 			array(
+				'header'    => array(
+					'id'       => 'header',
+					'type'     => 'toggle',
+					'label'    => esc_html__( 'Header', 'display-post-types' ),
+					'class'    => 'dpt-header-section',
+					'children' => false,
+					'hide_callback' => function() use ( $widget, $instance ) {
+						return ! $instance['title'];
+					},
+				),
 				'container' => array(
 					'id'       => 'container',
 					'type'     => 'toggle',
@@ -763,7 +773,7 @@ class ShortCodeGen {
 						break;
 					case 'text':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= sprintf( '<input class="widefat dpt-getval" name="%1$s" id="%2$s" type="text" value="%3$s" />', $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ) );
+						$optmar .= sprintf( '<input class="widefat dpt-getval dpt-%1$s" name="%2$s" id="%3$s" type="text" value="%4$s" />', str_replace( '_', '-', $set ), $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ) );
 						$optmar .= sprintf( '<div class="dpt-desc">%s</div>', $desc );
 						break;
 					case 'url':

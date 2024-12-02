@@ -8,6 +8,8 @@
 
 namespace Display_Post_Types\Helper;
 
+use Display_Post_Types\Helper\Icon_Loader as Icons;
+
 /**
  * The front-end specific functionality of the plugin.
  *
@@ -190,6 +192,10 @@ class Markup {
 		if ( false === array_key_exists( 'icon', $args ) ) {
 			return esc_html__( 'Please define an SVG icon filename.', 'display-post-types' );
 		}
+
+		// Add icon to icon loader array.
+		$loader = Icons::get_instance();
+		$loader->add( $args['icon'] );
 
 		// Set defaults.
 		$defaults = array(

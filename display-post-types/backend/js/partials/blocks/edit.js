@@ -25,6 +25,7 @@ class DisplayPostTypes extends Component {
 		this.fetching = false;
 		this.styleSupport = {};
 		this.elemRef = createRef();
+		this.isPro = this.props.isPro || false;
 		this.displayElems = this.props.displayElems || this.displayElems.bind(this);
 	}
 
@@ -881,6 +882,12 @@ class DisplayPostTypes extends Component {
 						}
 					</DptAccordion>
 					<DptAccordion initialOpen={ false } title={ __( 'Manage Item Components', 'display-post-types' ) }>
+						{
+							!! this.isPro && !! title &&
+							<DptAccordion initialOpen={ false } title={ __( 'Header', 'display-post-types' ) }>
+								{this.displayElems('itemHeaderOptions', {ifStyleSupport})}
+							</DptAccordion>
+						}
 						<DptAccordion initialOpen={ false } title={ __( 'Item Wrapper', 'display-post-types' ) }>
 							<SelectControl
 								label={ __( 'Text Align', 'display-post-types' ) }
