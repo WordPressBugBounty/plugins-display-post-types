@@ -17,6 +17,7 @@ use Display_Post_Types\Backend\Admin\Options;
 use Display_Post_Types\Frontend\Inc\Display;
 use Display_Post_Types\Backend\Admin\ShortCodeGen;
 use Display_Post_Types\Helper\Icon_Loader as Icons;
+use Display_Post_Types\Frontend\Inc\Instance_Counter;
 
 /**
  * The back-end specific functionality of the plugin.
@@ -193,10 +194,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.3.0', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.0', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.3.0. If you have not received an automated update notice, please login to our website and download latest version.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.0. If you have not received an automated update notice, please login to our website and download latest version.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}
@@ -220,19 +221,20 @@ class Register {
 	 */
 	public function get_dpt_preview() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
-		$args = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : false;
+		$args = isset( $_POST['data'] ) ? Security::escape_all( wp_unslash( $_POST['data'] ) ) : false;
 		if ( false === $args || ! is_array( $args ) ) {
 			echo wp_json_encode( array(
 				'error' => __( 'Invalid data provided', 'display-post-types' ),
 			) );
 			wp_die();
 		}
-		$args = Security::escape_all( $args );
 		ob_start();
 		Display::init( $args );
 		$content = ob_get_clean();
+		$dpt = Instance_Counter::get_instance();
 		echo wp_json_encode( array(
 			'markup' => $content,
+			'instances' => $dpt->get_script_data(),
 		) );
 		wp_die();
 	}
@@ -264,8 +266,7 @@ class Register {
 	 */
 	public function create_new_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
-		$args = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : false;
-		$args = Security::sanitize_all( $args );
+		$args = isset( $_POST['data'] ) ? Security::sanitize_all( wp_unslash( $_POST['data'] ) ) : false;
 		$inst = isset( $_POST['instance'] ) ? absint(wp_unslash( $_POST['instance'] )) : false;
 		if ( false === $args || false === $inst ) {
 			echo wp_json_encode( array(
@@ -307,10 +308,12 @@ class Register {
 		ob_start();
 		$shcode_gen->form( $instance );
 		$form = ob_get_clean();
+		$dpt = Instance_Counter::get_instance();
 		echo wp_json_encode( array(
-			'form'     => $form,
-			'preview'  => $preview,
-			'instance' => $instance,
+			'form'      => $form,
+			'preview'   => $preview,
+			'instance'  => $instance,
+			'instances' => $dpt->get_script_data(),
 		) );
 		wp_die();
 	}
@@ -349,8 +352,7 @@ class Register {
 	 */
 	public function update_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
-		$args = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : false;
-		$args = Security::sanitize_all( $args );
+		$args = isset( $_POST['data'] ) ? Security::sanitize_all( wp_unslash( $_POST['data'] ) ) : false;
 		$inst = isset( $_POST['instance'] ) ? absint(wp_unslash( $_POST['instance'] )) : false;
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;

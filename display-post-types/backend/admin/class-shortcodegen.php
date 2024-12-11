@@ -182,7 +182,7 @@ class ShortCodeGen {
 		Display::init( $instance );
 		$content = ob_get_clean();
         if ( $echo ) {
-            echo $content;
+            echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         } else {
             return $content;
         }
@@ -1176,7 +1176,7 @@ class ShortCodeGen {
 		if ( empty( $this->shortcode_settings ) ) {
 			return '';
 		}
-		$select = array( '' => __( 'Select a Shortcode to Edit', 'display-post-types' ) );
+		$select = array( '' => esc_html__( 'Select a Shortcode to Edit', 'display-post-types' ) );
 		foreach( $this->shortcode_settings as $id => $args ) {
 			$select[ $id ] = isset($args['title']) ? $args['title'] : 'Shortcode-' . $id;
 		}

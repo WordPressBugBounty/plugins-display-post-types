@@ -1,10 +1,10 @@
 === Display Post Types - Post Grid, post list and post sliders ===
-Contributors: vedathemes
+Contributors: easyprolabs
 Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 2.9.0
+Stable tag: 3.0.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,10 +53,10 @@ Need help getting started? Watch our step-by-step tutorial to learn how to use D
 * Live preview of your changes in the display post types block.
 
 = Need more layouts and customization options? =
-* Get more features, layouts and customization options with [Display Post Types Pro](https://vedathemes.com/display-post-types/)
-* Check [sample layouts](https://vedathemes.com/display-post-types-demo/) made possible by Display Post Types Pro.
+* Get more features, layouts and customization options with [Display Post Types Pro](https://easyprolabs.com/display-post-types/)
+* Check [sample layouts](https://easyprolabs.com/display-post-types-demo/) made possible by Display Post Types Pro.
 * Option to display custom fields and shortcodes in the display post types.
-* [Get Display Post Types Pro](https://vedathemes.com/display-post-types)
+* [Get Display Post Types Pro](https://easyprolabs.com/display-post-types)
 
 = Setup DPT Widget =
 
@@ -98,6 +98,9 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+
+= 3.0.0 =
+* Modify: Fixed minor issues and add support for new pro features
 
 = 2.9.0 =
 * Error Fix: Hook translation functionality to init instead of plugins loaded hook.

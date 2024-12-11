@@ -16,44 +16,80 @@
     flex-basis: 100%;
 }
 
-.dpt-header-btn
+input.dpt-hsearch-input
 {
-    font-size: 15px;
-    line-height: 1.2;
+    width: 100%;
+    margin: 5px 0 !important;
+    padding: 10px 15px !important;
 
-    display: inline-block;
-
-    margin: 0 !important;
-    padding: .15rem .5rem;
-
-    cursor: pointer;
-
-    color: currentColor !important;
-    border: none !important;
-    border-radius: 0 !important;
-    background-color: transparent !important;
+    border: 1px solid #ccc !important;
+    border-radius: 5px !important;
     box-shadow: none !important;
 }
 
-.dpt-header-btn:focus
+select.dpt-taxonomy-hfilter
 {
-    outline: none !important;
+    width: 100%;
+    margin: 0 10px 0 0 !important;
+    padding: 8px 5px !important;
+
+    border: 1px solid #e6e6e6 !important;
+    border-radius: 4px !important;
+    background: #fff !important;
+    background-position: initial !important;
+    box-shadow: none !important;
+
+    -webkit-appearance: auto;
+            appearance: auto;
 }
 
 .dpt-main-header
 {
     display: flex;
 
-    margin-bottom: .5rem;
+    margin-bottom: .75rem;
 
     align-items: center;
 }
 
-.dpt-main-header.tline
+.dpt-main-header.line
 {
     padding-bottom: .5rem;
 
     border-bottom: 1px solid #999;
+}
+
+.dpt-main-header.box
+{
+    padding: .5rem .75rem;
+
+    border: 1px solid #999;
+}
+
+.dpt-main-header.tline
+{
+    padding-bottom: .25rem;
+
+    border-bottom: 1px solid #999;
+}
+
+.dpt-main-header.tline .dpt-main-title-text
+{
+    display: inline-block;
+}
+
+.dpt-main-header.tline .dpt-main-title-text:after
+{
+    position: relative;
+    top: calc(.25rem + 1px);
+
+    display: block;
+
+    height: 4px;
+
+    content: '';
+
+    background-color: currentColor;
 }
 
 .dpt-main-title
@@ -72,6 +108,50 @@ a.dpt-main-title-link
     color: currentColor;
 }
 
+.dpt-header-btn
+{
+    font-size: 15px;
+    line-height: 1;
+
+    position: relative;
+
+    display: inline-block;
+
+    width: 32px;
+    height: 32px;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    cursor: pointer;
+
+    color: currentColor !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.dpt-header-btn:disabled
+{
+    cursor: not-allowed !important;
+
+    color: #999 !important;
+}
+
+.dpt-header-btn:focus
+{
+    outline: none !important;
+}
+
+.dpt-header-btn .icon
+{
+    position: absolute;
+    top: 50%;
+    right: 50%;
+
+    transform: translate(50%, -50%);
+}
+
 .dpt-header-posts-btn
 {
     display: flex;
@@ -87,9 +167,115 @@ a.dpt-main-title-link
     border-left: 1px solid #e6e6e6 !important;
 }
 
-.dpt-hprev-btn:disabled
+.dpt-header-search-btn,
+.dpt-header-filter-btn
 {
-    color: #666 !important;
+    display: flex;
+
+    margin-left: 5px;
+
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+
+    align-items: center;
+}
+
+.dpt-header-search
+{
+    position: relative;
+
+    display: none;
+}
+
+.dpt-hsearch-open .dpt-header-search
+{
+    display: block;
+}
+
+.dpt-header-search .icon-dpt-search,
+.dpt-header-search .dpt-hsearch-close
+{
+    font-size: 15px;
+
+    position: absolute;
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    color: #999;
+}
+
+.dpt-header-search .dpt-hsearch-close
+{
+    left: 12px;
+    right: auto;
+}
+
+.dpt-header-search .dpt-hsearch-close .icon
+{
+    color: #222;
+}
+
+.dpt-header-search input
+{
+    padding-right: 40px !important;
+}
+
+.dpt-header-filter
+{
+    display: none;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #e6e6e6;
+
+    align-items: center;
+}
+
+.dpt-hfilter-open .dpt-header-filter
+{
+    display: flex;
+}
+
+.dpt-header-filter .dpt-hfilter-close
+{
+    margin-right: 10px !important;
+}
+
+.dpt-header-filter .dpt-filter-menu
+{
+    flex: 1;
+}
+
+.dpt-hfilter
+{
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.dpt-separator
+{
+    display: block;
+
+    margin: 10px 0;
+}
+
+.dpt-filter-title
+{
+    font-size: 15px;
+    font-weight: bold;
+
+    display: block;
+
+    margin-bottom: 0;
+}
+
+.dpt-hfilter-text
+{
+    margin-right: 3px;
 }
 
 .display-post-types .dpt-wrapper
@@ -634,12 +820,24 @@ a.dpt-main-title-link
     flex-basis: 50%;
 }
 
+.tab-wrap.dpt-mag1 .dpt-featured-wrap .dpt-entry
+{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
 .wide-wrap.dpt-mag1 .dpt-featured-wrap
 {
     width: auto;
     margin-left: 20px;
 
     flex-basis: 50%;
+}
+
+.wide-wrap.dpt-mag1 .dpt-featured-wrap .dpt-entry
+{
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .dpt-mag1 .dpt-featured-wrap .dpt-entry-wrapper
@@ -689,6 +887,7 @@ a.dpt-main-title-link
 .dpt-mag1 .dpt-normal-wrap .dpt-featured-content
 {
     flex-basis: 25%;
+    align-self: stretch;
 }
 
 .tab-wrap.dpt-mag1 .dpt-normal-wrap
@@ -696,6 +895,16 @@ a.dpt-main-title-link
     width: auto;
 
     flex: 1;
+}
+
+.tab-wrap.dpt-mag1 .dpt-normal-wrap .dpt-entry:first-of-type
+{
+    padding-top: 0;
+}
+
+.tab-wrap.dpt-mag1 .dpt-normal-wrap .dpt-entry:last-of-type
+{
+    padding-bottom: 0;
 }
 
 .wide-wrap.dpt-mag1 .dpt-normal-wrap
@@ -710,6 +919,16 @@ a.dpt-main-title-link
     padding-top: 5px;
 
     justify-content: flex-start;
+}
+
+.wide-wrap.dpt-mag1 .dpt-normal-wrap .dpt-entry:first-of-type
+{
+    padding-top: 0;
+}
+
+.wide-wrap.dpt-mag1 .dpt-normal-wrap .dpt-entry:last-of-type
+{
+    padding-bottom: 0;
 }
 
 .display-post-types ::-webkit-scrollbar
@@ -744,6 +963,11 @@ a.dpt-main-title-link
 {
     animation-name: dptAdded;
     animation-duration: .001s;
+}
+
+.dpt-hidden
+{
+    display: none !important;
 }
 
 .icon
@@ -1086,7 +1310,9 @@ https://flickity.metafizzy.co
 
 @media only screen and (min-width: 450px)
 {
-    .multi-col .dpt-entry
+    .multi-col.mob-wrap .dpt-entry,
+    .multi-col.tab-wrap .dpt-entry,
+    .multi-col.wide-wrap .dpt-entry
     {
         width: 50%;
         max-width: 50%;
@@ -1139,7 +1365,8 @@ https://flickity.metafizzy.co
 
 @media only screen and (min-width: 768px)
 {
-    .multi-col .dpt-entry
+    .multi-col.tab-wrap .dpt-entry,
+    .multi-col.wide-wrap .dpt-entry
     {
         width: var(--dpt-small-grid-column, 33.33%);
         max-width: var(--dpt-small-grid-column, 33.33%);

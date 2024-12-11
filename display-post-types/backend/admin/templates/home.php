@@ -20,5 +20,5 @@
         <li>Choose a style to display your content. You can choose from list, grid or slider views.</li>
         <li>Experience a live preview of your changes within the Display Post Types block.</li>
     </ul>
-    <p>If you need any more help with our plugin, please feel free to <a href="https://wordpress.org/support/plugin/display-post-types/" target="_blank">open a support ticket</a> or <a href="https://vedathemes.com/contact-us-2/" target="_blank">contact us</a>.</p>
+    <p>If you need any more help with our plugin, please feel free to <a href="https://wordpress.org/support/plugin/display-post-types/" target="_blank">open a support ticket</a> or <a href="https://easyprolabs.com/contact-us-2/" target="_blank">contact us</a>.</p>
 </div>

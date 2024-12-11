@@ -13,7 +13,7 @@ namespace Display_Post_Types\Frontend\Inc;
  * Instance counter.
  *
  * @package    Display_Post_Types
- * @author     vedathemes <contact@vedathemes.com>
+ * @author     easyprolabs <contact@easyprolabs.com>
  */
 class Instance_Counter {
 

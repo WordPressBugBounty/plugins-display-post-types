@@ -68,7 +68,7 @@ class Display {
 		if ( self::is_style_support( $args['styles'], 'pagination' ) && isset( $args['show_pgnation'] ) && $args['show_pgnation'] ) {
 			$inst_id    = $inst_class->count();
 			$pagination = 'paged' . $inst_id;
-			$paged      = isset( $_GET[ $pagination ] ) ? (int) $_GET[ $pagination ] : 1;
+			$paged      = isset( $_GET[ $pagination ] ) ? absint( wp_unslash( $_GET[ $pagination ] ) ) : 1;
 		}
 
 		// Prepare the query.
@@ -141,8 +141,13 @@ class Display {
 			);
 
 			$all_taxonomies = get_object_taxonomies( $args['post_type'] );
+			$terms          = wp_get_object_terms( $all_post_ids, $all_taxonomies );
 			$taxonomies     = array();
-			$post_ids       = array();
+			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+				foreach ( $terms as $term ) {
+					$taxonomies[ $term->taxonomy ][$term->name] = $term->term_id;
+				}
+			}
 			?>
 
 			<div class="display-post-types">
@@ -174,13 +179,11 @@ class Display {
 						$post_query->the_post();
 						$entry_class = apply_filters( 'dpt_entry_classes', array(), $action_args );
 						$entry_class = array_map( 'esc_attr', $entry_class );
-						$post_ids[]  = get_the_ID();
 						$attributes  = '';
 						foreach ( $all_taxonomies as $tax ) {
 							$terms = wp_get_object_terms( get_the_ID(), $tax );
 							if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 								$post_tax = wp_list_pluck( $terms, 'term_id', 'name' );
-								$taxonomies[ $tax ] = isset( $taxonomies[ $tax ] ) ? array_merge( $taxonomies[ $tax ], $post_tax ) : $post_tax;
 								$attributes .= ' data-' . $tax . '="' . strtolower( esc_attr( join( ' ', array_keys( $post_tax ) ) ) ) . '"';
 							}
 						}

@@ -1,278 +1,991 @@
-# Display Post Types.
-# Copyright (C) 2019 vedathemes
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <contact@vedathemes.com>, 2019.
-#
-#, fuzzy
+# Copyright (C) 2024 easyprolabs
+# This file is distributed under the GPL-3.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: display-post-types 1.0.0\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-08-22 22:24+0530\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Project-Id-Version: Display Post Types 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/display-post-types\n"
+"Last-Translator: easyprolabs <contact@easyprolabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-12-09T05:20:37+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: display-post-types\n"
 
-#: backend/inc/class-block.php:229
-msgid "Post Type"
-msgstr ""
-
-#: backend/inc/class-block.php:247
-msgid "Taxonomy"
-msgstr ""
-
-#: backend/inc/class-widget.php:121
-msgid "Publish Date"
-msgstr ""
-
-#: backend/inc/class-widget.php:122
-msgid "Modified Date"
-msgstr ""
-
-#: backend/inc/class-widget.php:123 backend/inc/class-widget.php:150
-#: backend/inc/class-widget.php:209
-msgid "Title"
-msgstr ""
-
-#: backend/inc/class-widget.php:124
-msgid "Author"
-msgstr ""
-
-#: backend/inc/class-widget.php:125
-msgid "Comment Count"
-msgstr ""
-
-#: backend/inc/class-widget.php:126
-msgid "Random"
-msgstr ""
-
-#: backend/inc/class-widget.php:130
-msgid "Top Left Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:131
-msgid "Top Center Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:132
-msgid "Center Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:133
-msgid "Bottom Left Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:134
-msgid "Bottom Center Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:138
-msgid "No Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:139
-msgid "Landscape (4:3)"
-msgstr ""
-
-#: backend/inc/class-widget.php:140
-msgid "Landscape (3:2)"
-msgstr ""
-
-#: backend/inc/class-widget.php:141
-msgid "Portrait (3:4)"
-msgstr ""
-
-#: backend/inc/class-widget.php:142
-msgid "Portrait (2:3)"
-msgstr ""
-
-#: backend/inc/class-widget.php:143
-msgid "Widescreen (16:9)"
-msgstr ""
-
-#: backend/inc/class-widget.php:144
-msgid "Square (1:1)"
-msgstr ""
-
-#: backend/inc/class-widget.php:149
-msgid "Thumbnail"
-msgstr ""
-
-#: backend/inc/class-widget.php:151
-msgid "Meta info"
-msgstr ""
-
-#: backend/inc/class-widget.php:152
-msgid "Category"
-msgstr ""
-
+#. Plugin Name of the plugin
+#: display-post-types.php
+#: backend/admin/class-options.php:79
+#: backend/admin/class-options.php:80
+#: backend/admin/templates/main.php:16
 #: backend/inc/class-widget.php:153
-msgid "Excerpt"
-msgstr ""
-
-#: backend/inc/class-widget.php:159
-msgid "Create a display post types widget."
-msgstr ""
-
-#: backend/inc/class-widget.php:162
+#: backend/js/partials/blocks/index.js:7
 msgid "Display Post Types"
 msgstr ""
 
-#: backend/inc/class-widget.php:216
+#. Description of the plugin
+#: display-post-types.php
+msgid "Filter, sort and display post, page or any post type."
+msgstr ""
+
+#. Author of the plugin
+#: display-post-types.php
+msgid "vedathemes"
+msgstr ""
+
+#. Author URI of the plugin
+#: display-post-types.php
+msgid "https://easyprolabs.com/display-post-types/"
+msgstr ""
+
+#: backend/admin/class-options.php:51
+msgid "Home"
+msgstr ""
+
+#: backend/admin/class-options.php:54
+msgid "Generate Shortcode"
+msgstr ""
+
+#: backend/admin/class-options.php:89
+msgid "Shortcode"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:128
+#: backend/inc/class-widget.php:107
+#: backend/js/partials/blocks/edit.js:395
+msgid "Publish Date"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:129
+#: backend/inc/class-widget.php:108
+#: backend/js/partials/blocks/edit.js:396
+msgid "Modified Date"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:130
+#: backend/admin/class-shortcodegen.php:158
+#: backend/admin/class-shortcodegen.php:214
+#: backend/admin/class-shortcodegen.php:671
+#: backend/inc/class-widget.php:109
+#: backend/inc/class-widget.php:137
+#: backend/inc/class-widget.php:225
+#: backend/inc/class-widget.php:682
+#: backend/js/partials/blocks/edit.js:317
+#: backend/js/partials/blocks/edit.js:397
+msgid "Title"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:131
+#: backend/admin/class-shortcodegen.php:164
+#: backend/inc/class-widget.php:110
+#: backend/inc/class-widget.php:143
+#: backend/js/partials/blocks/edit.js:322
+#: backend/js/partials/blocks/edit.js:398
+msgid "Author"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:132
+#: backend/inc/class-widget.php:111
+#: backend/js/partials/blocks/edit.js:399
+msgid "Comment Count"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:133
+#: backend/inc/class-widget.php:112
+#: backend/js/partials/blocks/edit.js:400
+msgid "Random"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:137
+#: backend/inc/class-widget.php:116
+#: backend/js/partials/blocks/edit.js:413
+msgid "Top Left Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:138
+#: backend/inc/class-widget.php:117
+#: backend/js/partials/blocks/edit.js:414
+msgid "Top Center Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:139
+#: backend/inc/class-widget.php:118
+#: backend/js/partials/blocks/edit.js:415
+msgid "Center Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:140
+#: backend/inc/class-widget.php:119
+#: backend/js/partials/blocks/edit.js:417
+msgid "Bottom Left Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:141
+#: backend/inc/class-widget.php:120
+#: backend/js/partials/blocks/edit.js:416
+msgid "Bottom Center Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:145
+#: backend/inc/class-widget.php:124
+#: backend/js/partials/blocks/edit.js:403
+msgid "No Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:146
+#: backend/inc/class-widget.php:125
+#: backend/js/partials/blocks/edit.js:404
+msgid "Landscape (4:3)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:147
+#: backend/inc/class-widget.php:126
+#: backend/js/partials/blocks/edit.js:405
+msgid "Landscape (3:2)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:148
+#: backend/inc/class-widget.php:127
+#: backend/js/partials/blocks/edit.js:406
+msgid "Portrait (3:4)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:149
+#: backend/inc/class-widget.php:128
+#: backend/js/partials/blocks/edit.js:407
+msgid "Portrait (2:3)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:150
+#: backend/inc/class-widget.php:129
+#: backend/js/partials/blocks/edit.js:408
+msgid "Widescreen (16:9)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:151
+#: backend/inc/class-widget.php:130
+#: backend/js/partials/blocks/edit.js:409
+msgid "Square (1:1)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:152
+#: backend/inc/class-widget.php:131
+#: backend/js/partials/blocks/edit.js:410
+msgid "Custom Aspect Ratio"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:157
+#: backend/admin/class-shortcodegen.php:661
+#: backend/inc/class-widget.php:136
+#: backend/inc/class-widget.php:672
+#: backend/js/partials/blocks/edit.js:315
+msgid "Thumbnail"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:159
+#: backend/admin/class-shortcodegen.php:691
+#: backend/inc/class-widget.php:138
+#: backend/inc/class-widget.php:702
+#: backend/js/partials/blocks/edit.js:316
+msgid "Meta Info 1"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:160
+#: backend/admin/class-shortcodegen.php:701
+#: backend/inc/class-widget.php:139
+#: backend/inc/class-widget.php:712
+msgid "Meta Info 2"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:161
+#: backend/admin/class-shortcodegen.php:681
+#: backend/inc/class-widget.php:140
+#: backend/inc/class-widget.php:692
+#: backend/js/partials/blocks/edit.js:318
+msgid "Excerpt"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:162
+#: backend/inc/class-widget.php:141
+#: backend/js/partials/blocks/edit.js:320
+msgid "Date"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:163
+#: backend/inc/class-widget.php:142
+#: backend/js/partials/blocks/edit.js:321
+msgid "Ago"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:165
+#: backend/inc/class-widget.php:144
+#: backend/js/partials/blocks/edit.js:323
+msgid "Content"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:201
+#: backend/inc/class-misc.php:152
+#: backend/inc/class-misc.php:162
+#: backend/inc/class-widget.php:212
+#: backend/js/partials/blocks/edit.js:485
+#: backend/js/partials/blocks/edit.js:496
 msgid "None"
 msgstr ""
 
-#: backend/inc/class-widget.php:217
-msgid "Select Post Type"
+#: backend/admin/class-shortcodegen.php:207
+#: backend/inc/class-widget.php:218
+msgid "General Options"
 msgstr ""
 
-#: backend/inc/class-widget.php:222
+#: backend/admin/class-shortcodegen.php:219
+#: backend/inc/class-widget.php:230
+#: backend/js/partials/blocks/edit.js:753
+msgid "Select a Post Type"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:226
+#: backend/inc/class-widget.php:237
 msgid "Get items to be displayed"
 msgstr ""
 
-#: backend/inc/class-widget.php:231
-msgid "Get items by Post IDs (optional)"
+#: backend/admin/class-shortcodegen.php:254
+#: backend/inc/class-widget.php:265
+#: backend/js/partials/blocks/edit.js:789
+msgid "Terms Relationship"
 msgstr ""
 
-#: backend/inc/class-widget.php:232
+#: backend/admin/class-shortcodegen.php:257
+#: backend/inc/class-widget.php:268
+msgid "OR - Show posts belong to any of the terms selected above."
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:258
+#: backend/inc/class-widget.php:269
+#: backend/js/partials/blocks/edit.js:794
+msgid "AND - Show posts only if they belong to all of the selected terms."
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:266
+#: backend/inc/class-widget.php:277
+#: backend/js/partials/blocks/edit.js:799
+msgid "Number of items to display"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:276
+#: backend/inc/class-widget.php:287
+msgid "Offset (number of posts to displace)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:289
+#: backend/inc/class-widget.php:300
+msgid "Show Pagination"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:298
+#: backend/inc/class-widget.php:309
+#: backend/js/partials/blocks/edit.js:815
+msgid "Sort & Filter Items"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:305
+#: backend/inc/class-widget.php:316
+msgid "Get items by Post IDs"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:308
+#: backend/inc/class-widget.php:319
 msgctxt "Placeholder text for post ids"
 msgid "Comma separated ids, i.e. 230,300"
 msgstr ""
 
-#: backend/inc/class-widget.php:244
-msgid "Number of items to display"
-msgstr ""
-
-#: backend/inc/class-widget.php:250
+#: backend/admin/class-shortcodegen.php:316
+#: backend/inc/class-widget.php:327
 msgid "Order By"
 msgstr ""
 
-#: backend/inc/class-widget.php:257
+#: backend/admin/class-shortcodegen.php:325
+#: backend/inc/class-widget.php:336
+#: backend/js/partials/blocks/edit.js:835
 msgid "Sort Order"
 msgstr ""
 
-#: backend/inc/class-widget.php:259
+#: backend/admin/class-shortcodegen.php:328
+#: backend/inc/class-widget.php:339
+#: backend/js/partials/blocks/edit.js:839
 msgid "Descending"
 msgstr ""
 
-#: backend/inc/class-widget.php:260
+#: backend/admin/class-shortcodegen.php:329
+#: backend/inc/class-widget.php:340
+#: backend/js/partials/blocks/edit.js:840
 msgid "Ascending"
 msgstr ""
 
-#: backend/inc/class-widget.php:268
-msgid "Styling selected items"
+#: backend/admin/class-shortcodegen.php:338
+#: backend/inc/class-widget.php:349
+#: backend/js/partials/blocks/edit.js:846
+msgid "Layout & Styling"
 msgstr ""
 
-#: backend/inc/class-widget.php:273
+#: backend/admin/class-shortcodegen.php:345
+#: backend/inc/class-widget.php:356
+#: backend/js/partials/blocks/edit.js:850
 msgid "Display Style"
 msgstr ""
 
-#: backend/inc/class-widget.php:285
-msgid "Image Cropping"
-msgstr ""
-
-#: backend/inc/class-widget.php:292
-msgid "Image Cropping Position"
-msgstr ""
-
-#: backend/inc/class-widget.php:300
-msgid "Left Aligned"
-msgstr ""
-
-#: backend/inc/class-widget.php:301
-msgid "Right Aligned"
-msgstr ""
-
-#: backend/inc/class-widget.php:303
-msgid "Image Alignment"
-msgstr ""
-
-#: backend/inc/class-widget.php:309
-msgid "Border Radius (in px)"
-msgstr ""
-
-#: backend/inc/class-widget.php:314
+#: backend/admin/class-shortcodegen.php:351
+#: backend/inc/class-widget.php:362
 msgid "Number of grid columns"
 msgstr ""
 
-#: backend/inc/class-widget.php:319
-msgid "Thumbnail Placeholder"
+#: backend/admin/class-shortcodegen.php:365
+#: backend/inc/class-widget.php:376
+#: backend/js/partials/blocks/edit.js:867
+msgid "Horizontal Gutter (in px)"
 msgstr ""
 
+#: backend/admin/class-shortcodegen.php:375
+#: backend/inc/class-widget.php:386
+#: backend/js/partials/blocks/edit.js:874
+msgid "Vertical Gutter (in px)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:385
+#: backend/inc/class-widget.php:396
+#: backend/js/partials/blocks/edit.js:178
+msgid "Auto slide timer (delay in ms)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:401
+#: backend/inc/class-widget.php:412
+#: backend/js/partials/blocks/edit.js:884
+msgid "Manage Item Components"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:412
+#: backend/inc/class-widget.php:423
+#: backend/js/partials/blocks/edit.js:893
+msgid "Text Align"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:415
+#: backend/inc/class-widget.php:426
+#: backend/js/partials/blocks/edit.js:897
+msgid "Left Align"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:416
+#: backend/inc/class-widget.php:427
+#: backend/js/partials/blocks/edit.js:898
+msgid "Right Align"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:417
 #: backend/inc/class-widget.php:428
+#: backend/js/partials/blocks/edit.js:899
+msgid "Center Align"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:423
+#: backend/inc/class-widget.php:434
+#: backend/js/partials/blocks/edit.js:905
+msgid "Horizontal Text Position on Image"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:426
+#: backend/inc/class-widget.php:437
+#: backend/js/partials/blocks/components/dpt-foursides.js:26
+#: backend/js/partials/blocks/edit.js:909
+msgid "Left"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:427
+#: backend/inc/class-widget.php:438
+#: backend/js/partials/blocks/components/dpt-foursides.js:24
+#: backend/js/partials/blocks/edit.js:910
+msgid "Right"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:428
+#: backend/inc/class-widget.php:439
+#: backend/js/partials/blocks/edit.js:911
+msgid "Center"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:437
+#: backend/inc/class-widget.php:448
+msgid "Verticle Text Position on Image"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:440
+#: backend/inc/class-widget.php:451
+#: backend/js/partials/blocks/components/dpt-foursides.js:25
+#: backend/js/partials/blocks/edit.js:922
+msgid "Bottom"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:441
+#: backend/inc/class-widget.php:452
+#: backend/js/partials/blocks/components/dpt-foursides.js:23
+#: backend/js/partials/blocks/edit.js:923
+msgid "Top"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:442
+#: backend/inc/class-widget.php:453
+#: backend/js/partials/blocks/edit.js:924
+msgid "Middle"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:451
+#: backend/inc/class-widget.php:462
+msgid "Show Thumbnail"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:461
+#: backend/inc/class-widget.php:472
+msgid "ThumbnailBorder Radius (in px)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:475
+#: backend/inc/class-widget.php:486
+msgid "Thumbnail Placeholder."
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:484
+#: backend/inc/class-widget.php:495
+#: backend/js/partials/blocks/edit.js:566
+msgid "Image Cropping"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:508
+#: backend/inc/class-widget.php:519
+#: backend/js/partials/blocks/edit.js:584
+msgid "Image Cropping Position"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:518
+#: backend/inc/class-widget.php:529
+#: backend/js/partials/blocks/edit.js:593
+msgid "Image Alignment"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:521
+#: backend/inc/class-widget.php:532
+#: backend/js/partials/blocks/edit.js:597
+msgid "Left Aligned"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:522
+#: backend/inc/class-widget.php:533
+#: backend/js/partials/blocks/edit.js:598
+msgid "Right Aligned"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:531
+#: backend/inc/class-widget.php:542
+msgid "Show Title"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:541
+#: backend/inc/class-widget.php:552
+#: backend/js/partials/blocks/edit.js:624
+msgid "Show Title Shadow"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:550
+#: backend/inc/class-widget.php:561
+msgid "Show Excerpt"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:560
+#: backend/inc/class-widget.php:571
+#: backend/js/partials/blocks/edit.js:653
+msgid "Excerpt Length (in words)"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:574
+#: backend/inc/class-widget.php:585
+#: backend/js/partials/blocks/edit.js:659
+msgid "Excerpt Teaser Text"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:577
+#: backend/inc/class-widget.php:588
+msgctxt "Placeholder text for excerpt teaser"
+msgid "i.e., Continue Reading, Read More"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:586
+#: backend/inc/class-widget.php:597
+msgid "Show Meta Info - 1"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:596
+#: backend/admin/class-shortcodegen.php:615
+#: backend/inc/class-widget.php:607
+#: backend/inc/class-widget.php:626
+#: backend/js/partials/blocks/edit.js:701
+#: backend/js/partials/blocks/edit.js:729
+msgid "Meta Info to be displayed"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:605
+#: backend/inc/class-widget.php:616
+msgid "Show Meta Info - 2"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:637
+#: backend/inc/class-widget.php:648
+#: backend/js/partials/blocks/edit.js:887
+msgid "Header"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:647
+#: backend/inc/class-widget.php:658
+msgid "Container"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:654
+#: backend/inc/class-widget.php:665
+msgid "Style Wrapper Container"
+msgstr ""
+
+#: backend/admin/class-shortcodegen.php:971
+#: backend/inc/class-widget.php:1075
+#: backend/js/partials/blocks/edit.js:774
 msgid "Select Pages"
 msgstr ""
 
-#: backend/inc/class-widget.php:458
+#: backend/admin/class-shortcodegen.php:1001
+#: backend/inc/class-widget.php:1105
 msgid "Select Terms"
 msgstr ""
 
-#: backend/inc/class-widget.php:488
-msgid "Items supported by display style"
-msgstr ""
-
-#: backend/inc/class-widget.php:518
+#: backend/admin/class-shortcodegen.php:1031
+#: backend/inc/class-widget.php:1135
+#: backend/js/partials/blocks/edit.js:762
 msgid "Get items by Taxonomy"
 msgstr ""
 
-#: backend/inc/functions.php:18
-msgid "Posts"
+#: backend/admin/class-shortcodegen.php:1179
+msgid "Select a Shortcode to Edit"
 msgstr ""
 
-#: backend/inc/functions.php:19
-msgid "Pages"
+#: backend/admin/class-shortcodegen.php:1188
+msgid "DPT Shortcode"
 msgstr ""
 
-#: backend/inc/functions.php:45
-msgid "Ignore Taxonomy"
+#: backend/admin/templates/main.php:47
+msgid "EasyPro Labs"
 msgstr ""
 
-#: backend/inc/functions.php:46
-msgid "Categories"
+#: backend/admin/templates/main.php:47
+msgid "Y"
 msgstr ""
 
-#: backend/inc/functions.php:47
-msgid "Tags"
+#: backend/admin/templates/sidebar.php:12
+msgid "Upgrade to Display Post Types Pro"
 msgstr ""
 
-#: backend/inc/functions.php:92
-msgid "- Ignore Taxonomy -"
+#: backend/class-register.php:200
+msgid "There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.0. If you have not received an automated update notice, please login to our website and download latest version."
 msgstr ""
 
-#: frontend/class-frontend.php:58
-msgid "List - Full"
+#: backend/class-register.php:227
+#: backend/class-register.php:298
+#: backend/class-register.php:331
+msgid "Invalid data provided"
 msgstr ""
 
-#: frontend/class-frontend.php:62
-msgid "List - Mini"
+#: backend/class-register.php:273
+#: backend/class-register.php:361
+msgid "Shortcode data not provided correctly."
 msgstr ""
 
-#: frontend/class-frontend.php:66
-msgid "Grid - Normal"
+#: backend/class-register.php:283
+msgid "Shortcode created successfully."
 msgstr ""
 
-#: frontend/class-frontend.php:70
-msgid "Grid - Overlay"
+#: backend/class-register.php:369
+msgid "Shortcode updated successfully."
 msgstr ""
 
-#: frontend/class-frontend.php:74
-msgid "Slider - Normal"
+#: backend/inc/class-block.php:173
+#: helper/class-getters.php:192
+msgid "Continue reading"
 msgstr ""
 
-#: frontend/class-frontend.php:383
-#, php-format
+#: backend/inc/class-block.php:473
+msgid "Post Type"
+msgstr ""
+
+#: backend/inc/class-block.php:491
+msgid "Taxonomy"
+msgstr ""
+
+#: backend/inc/class-misc.php:104
+#: backend/js/partials/blocks/edit.js:439
+msgid "Font Style"
+msgstr ""
+
+#: backend/inc/class-misc.php:107
+#: backend/js/partials/blocks/edit.js:443
+msgid "Normal"
+msgstr ""
+
+#: backend/inc/class-misc.php:108
+#: backend/js/partials/blocks/edit.js:444
+msgid "Italic"
+msgstr ""
+
+#: backend/inc/class-misc.php:109
+#: backend/js/partials/blocks/edit.js:445
+msgid "Oblique"
+msgstr ""
+
+#: backend/inc/class-misc.php:113
+#: backend/js/partials/blocks/edit.js:449
+msgid "Font Weight"
+msgstr ""
+
+#: backend/inc/class-misc.php:122
+#: backend/js/partials/blocks/edit.js:457
+msgid "Font Size (in px)"
+msgstr ""
+
+#: backend/inc/class-misc.php:131
+#: backend/js/partials/blocks/edit.js:465
+msgid "Line Height"
+msgstr ""
+
+#: backend/inc/class-misc.php:140
+#: backend/js/partials/blocks/edit.js:473
+msgid "Letter Spacing (in em)"
+msgstr ""
+
+#: backend/inc/class-misc.php:149
+#: backend/js/partials/blocks/edit.js:481
+msgid "Text Transform"
+msgstr ""
+
+#: backend/inc/class-misc.php:153
+#: backend/js/partials/blocks/edit.js:486
+msgid "Uppercase"
+msgstr ""
+
+#: backend/inc/class-misc.php:154
+#: backend/js/partials/blocks/edit.js:487
+msgid "Lowercase"
+msgstr ""
+
+#: backend/inc/class-misc.php:155
+#: backend/js/partials/blocks/edit.js:488
+msgid "Capitalize"
+msgstr ""
+
+#: backend/inc/class-misc.php:159
+#: backend/js/partials/blocks/edit.js:492
+msgid "Text Decoration"
+msgstr ""
+
+#: backend/inc/class-misc.php:163
+#: backend/js/partials/blocks/edit.js:497
+msgid "Underline"
+msgstr ""
+
+#: backend/inc/class-misc.php:164
+#: backend/js/partials/blocks/edit.js:498
+msgid "Overline"
+msgstr ""
+
+#: backend/inc/class-misc.php:165
+#: backend/js/partials/blocks/edit.js:499
+msgid "Line Through"
+msgstr ""
+
+#: backend/inc/class-misc.php:169
+#: backend/js/partials/blocks/edit.js:507
+msgid "Text Color"
+msgstr ""
+
+#: backend/inc/class-misc.php:173
+#: backend/js/partials/blocks/edit.js:513
+msgid "Link Color"
+msgstr ""
+
+#: backend/inc/class-misc.php:177
+#: backend/js/partials/blocks/edit.js:519
+msgid "Link Hover Color"
+msgstr ""
+
+#: backend/inc/class-misc.php:206
+msgid "Class"
+msgstr ""
+
+#: backend/inc/class-misc.php:235
+#: backend/js/partials/blocks/edit.js:195
+msgid "Wrapper Type"
+msgstr ""
+
+#: backend/inc/class-misc.php:238
+#: backend/js/partials/blocks/edit.js:199
+msgid "No Wrapper"
+msgstr ""
+
+#: backend/inc/class-misc.php:239
+#: backend/js/partials/blocks/edit.js:200
+msgid "Contained Wrap"
+msgstr ""
+
+#: backend/inc/class-misc.php:240
+#: backend/js/partials/blocks/edit.js:201
+msgid "Content Wrap"
+msgstr ""
+
+#: backend/inc/class-misc.php:244
+#: backend/js/partials/blocks/edit.js:210
+msgid "Wrapper Width (in %)"
+msgstr ""
+
+#: backend/inc/class-misc.php:257
+#: backend/js/partials/blocks/edit.js:221
+msgid "Wrapper Height (in px)"
+msgstr ""
+
+#: backend/inc/class-misc.php:270
+msgid "Padding (in px)"
+msgstr ""
+
+#: backend/inc/class-misc.php:274
+msgid "Border Width (in px)"
+msgstr ""
+
+#: backend/inc/class-misc.php:278
+msgid "Border Radius (in px)"
+msgstr ""
+
+#: backend/inc/class-misc.php:282
+#: backend/js/partials/blocks/edit.js:255
+msgid "Wrapper Border Color"
+msgstr ""
+
+#: backend/inc/class-misc.php:347
+msgid "Container Extra Options"
+msgstr ""
+
+#: backend/inc/class-widget.php:150
+msgid "Create a display post types widget."
+msgstr ""
+
+#: backend/inc/notifications.php:13
+msgid "Thanks for trying/updating Display Post Types."
+msgstr ""
+
+#: backend/inc/notifications.php:16
+msgid "New: Various options added to customize typography of the content. In \"Manage Item Components\" section of the DPT block, you can customize typography."
+msgstr ""
+
+#: backend/inc/notifications.php:21
+msgid "Raise a support request"
+msgstr ""
+
+#: backend/inc/notifications.php:26
+msgid "Give us 5 stars rating"
+msgstr ""
+
+#: backend/inc/notifications.php:31
+msgid "Dismiss this notice"
+msgstr ""
+
+#: frontend/class-register.php:201
+msgid "Search"
+msgstr ""
+
+#: frontend/class-register.php:218
+msgid "Filter By"
+msgstr ""
+
+#. translators: %s: human-readable time difference
+#: frontend/class-register.php:581
 msgctxt "human-readable time difference"
 msgid "%s ago"
 msgstr ""
 
-#: frontend/class-frontend.php:510
-msgid "Continue Reading"
+#: helper/class-getters.php:34
+msgid "Posts"
 msgstr ""
 
-#: frontend/class-frontend.php:553
-msgid "on"
+#: helper/class-getters.php:35
+msgid "Pages"
+msgstr ""
+
+#: helper/class-getters.php:61
+msgid "Ignore Taxonomy"
+msgstr ""
+
+#: helper/class-getters.php:62
+msgid "Categories"
+msgstr ""
+
+#: helper/class-getters.php:63
+msgid "Tags"
+msgstr ""
+
+#: helper/class-getters.php:108
+msgid "- Ignore Taxonomy -"
+msgstr ""
+
+#: helper/class-getters.php:256
+msgid "List - Full"
+msgstr ""
+
+#: helper/class-getters.php:261
+msgid "List - Mini"
+msgstr ""
+
+#: helper/class-getters.php:266
+msgid "Grid - Normal"
+msgstr ""
+
+#: helper/class-getters.php:271
+msgid "Grid - Overlay"
+msgstr ""
+
+#: helper/class-getters.php:276
+msgid "Slider - Normal"
+msgstr ""
+
+#: helper/class-getters.php:281
+msgid "Magazine Layout 1"
+msgstr ""
+
+#: helper/class-markup.php:188
+msgid "Please define default parameters in the form of an array."
+msgstr ""
+
+#: helper/class-markup.php:193
+msgid "Please define an SVG icon filename."
+msgstr ""
+
+#: helper/class-singleton.php:46
+msgid "Cannot clone a singleton."
+msgstr ""
+
+#: helper/class-singleton.php:58
+msgid "Cannot serialize a singleton."
+msgstr ""
+
+#: helper/class-singleton.php:70
+msgid "Cannot unserialize a singleton."
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:166
+msgid "Show Pagination."
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:231
+msgid "Wrapper Padding (in px)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:238
+msgid "Wrapper Border Width (in px)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:245
+msgid "Wrapper Border Radius (in px)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:251
+#: backend/js/partials/blocks/edit.js:503
+msgid "Color Scheme"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:319
+msgid "Meta info 2"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:425
+msgid "Custom Class Name"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:428
+msgid "Add custom HTML classes to this element."
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:554
+msgid "Thumbnail Placeholder"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:559
+msgid "Thumbnail Border Radius (in px)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:574
+msgid "Thumbnail custom crop aspect ratio"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:662
+msgid "i.e., Continue Reading, Read More"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:677
+msgid "Show Full Content"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:744
+msgid "Setup Display Post Types"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:746
+msgid "Title (Optional)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:783
+msgid "Select Taxonomy Terms"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:793
+msgid "OR - Show posts from any of the terms selected above."
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:807
+msgid "Offset (Starting Item Number)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:819
+msgid "Filter items by Post IDs (optional)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:822
+msgid "Comma separated ids, i.e. 230,300"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:829
+msgid "Sort By"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:859
+msgid "Maximum grid columns (Responsive)"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:891
+msgid "Item Wrapper"
+msgstr ""
+
+#: backend/js/partials/blocks/edit.js:918
+msgid "Vertical Text Position on Image"
+msgstr ""
+
+#: backend/js/partials/blocks/index.js:8
+msgid "Filter and display any pages, posts or post types."
+msgstr ""
+
+#: backend/js/partials/blocks/index.js:14
+msgid "display posts"
+msgstr ""
+
+#: backend/js/partials/blocks/index.js:15
+msgid "post types"
 msgstr ""

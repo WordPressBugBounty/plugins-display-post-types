@@ -129,7 +129,7 @@ class Register {
 	public function dpt_header( $instance, $id ) {
 		$args  = $instance['args'];
 		$query = $instance['query'];
-		$title = isset( $args[ 'title' ] ) ? $args[ 'title' ] : false;
+		$title = isset( $args[ 'title' ] ) ? esc_html( $args[ 'title' ] ) : false;
 
 		if ( ! $title ) {
 			return;
@@ -679,7 +679,7 @@ class Register {
 					echo '<div class="dpt-thumbnail-inner">';
 					the_post_thumbnail( $size, array( 'context' => 'dpt' ) );
 					echo '</div>';
-					echo '<span class="dpt-thumbnail-aspect-ratio" style="padding-top: ' . $aspect_ratio . '"></span>';
+					echo '<span class="dpt-thumbnail-aspect-ratio" style="padding-top: ' . esc_attr( $aspect_ratio ) . '"></span>';
 				}
 			)
 		);
@@ -711,7 +711,7 @@ class Register {
 		$teaser_button = isset( $args['excerpt_teaser_btn'] ) && $args['excerpt_teaser_btn'] ? true : false;
 
 		// Generate excerpt teaser text and link.
-		$exrpt_text  = $args['e_teaser'] ? esc_html( $args['e_teaser'] ) : ( $teaser_button ? __( 'Continue Reading', 'dpt-pro' ) : '' );
+		$exrpt_text  = $args['e_teaser'] ? esc_html( $args['e_teaser'] ) : ( $teaser_button ? esc_html__( 'Continue Reading', 'dpt-pro' ) : '' );
 		$excerpt_teaser = '';
 		$teaser_class = $excerpt_length > 0 ? 'dpt-has-teaser dpt-link-more' : 'dpt-link-more';
 		if ( $exrpt_text ) {

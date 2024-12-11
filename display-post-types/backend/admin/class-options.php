@@ -2,7 +2,7 @@
 /**
  * The admin-options page of the plugin.
  *
- * @link       https://www.vedathemes.com
+ * @link       https://www.easyprolabs.com
  * @since      1.0.0
  *
  * @package    Display_Post_Types
@@ -13,6 +13,7 @@ namespace Display_Post_Types\Backend\Admin;
 
 use Display_Post_Types\Backend\Admin\ShortCodeGen;
 use Display_Post_Types\Helper\Getters as Get_Fn;
+use Display_Post_Types\Frontend\Inc\Instance_Counter;
 
 /**
  * The admin options page of the plugin.
@@ -47,10 +48,10 @@ class Options {
 	public function __construct() {
 		$this->modules = array(
 			'options'     => array(
-				'label' => esc_html__( 'Home', 'podcast-player' ),
+				'label' => esc_html__( 'Home', 'display-post-types' ),
 			),
 			'shortcode' => array(
-				'label' => esc_html__( 'Generate Shortcode', 'podcast-player' ),
+				'label' => esc_html__( 'Generate Shortcode', 'display-post-types' ),
 			),
 		);
 	}
@@ -116,9 +117,10 @@ class Options {
 	 */
 	public function display_content() {
 		global $pagenow;
-		if ( 'admin.php' === $pagenow && isset( $_GET['page'] ) ) {
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		if ( 'admin.php' === $pagenow && $page ) {
             $current_page = 'home';
-			switch ( $_GET['page'] ) {
+			switch ( $page ) {
 				case 'dpt-shortcode':
 					$shcode_gen   = ShortCodeGen::get_instance();
 					$current_page = 'shortcode';
@@ -168,6 +170,7 @@ class Options {
 	 */
 	public function page_scripts() {
 		$current_screen = get_current_screen();
+		$dpt = Instance_Counter::get_instance();
 		$load_on = array(
 			'toplevel_page_dpt-options',
 			'display-post-types_page_dpt-shortcode',
@@ -186,11 +189,16 @@ class Options {
 			wp_enqueue_script(
 				'dptadminoptions',
 				DISPLAY_POST_TYPES_URL . 'backend/js/admin.build.js',
-				array( 'jquery-ui-tabs' ),
+				array( 'jquery-ui-tabs', 'wp-color-picker' ),
 				DISPLAY_POST_TYPES_VERSION,
 				true
 			);
 			wp_localize_script( 'dptadminoptions', 'dptShortgenData', $shortgen_data );
+			wp_localize_script( 'dptadminoptions', 'dptScriptData', array(
+				'security'  => wp_create_nonce( 'dpt-frontend-ajax-nonce' ),
+				'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+				'instances' => $dpt->get_script_data(),
+			) );
 
 			/**
 			 * Enqueue admin stylesheet.
@@ -198,7 +206,7 @@ class Options {
 			wp_enqueue_style(
 				'dptadminoptions',
 				DISPLAY_POST_TYPES_URL . 'backend/css/admin-options.css',
-				array(),
+				array( 'wp-color-picker' ),
 				DISPLAY_POST_TYPES_VERSION,
 				'all'
 			);

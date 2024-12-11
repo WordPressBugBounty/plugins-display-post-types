@@ -645,7 +645,7 @@ class Misc {
 
         if ( $css ) {
             $css = sprintf( '#dpt-wrapper-%1$s { %2$s }', $id, $css );
-            printf( '<style type="text/css">%1$s</style>', wp_strip_all_tags( $css, true ) );
+            printf( '<style type="text/css">%1$s</style>', esc_html( wp_strip_all_tags( $css, true ) ) );
         }
     }
 

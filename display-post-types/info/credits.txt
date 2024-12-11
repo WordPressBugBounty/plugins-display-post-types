@@ -1,3 +1,10 @@
 == Resources ==
 * flickity.pkgd.js https://github.com/metafizzy/flickity, (C) Desandro, [GPLV3]
 * Font Awesome SVG icon http://fontawesome.io/, (C) Dave Gandy, [CC BY 4.0](https://fontawesome.com/license/free)
+* Image in cover https://stocksnap.io/photo/flatlay-food-UKIR16JH2V, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/food-sandwich-D8ED06DFE2, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/food-breakfast-79H5DWE31P, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/lifestyle-food-VH94NUHNMI, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/drinks-beverage-3YPMVNU7NS, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/salad-ingredients-R3Q3JUKPM7, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
+* Image in cover https://stocksnap.io/photo/mug-cup-ABLHCER8OH, (C) stocksnap, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)

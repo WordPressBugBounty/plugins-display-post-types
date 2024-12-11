@@ -76,6 +76,9 @@ class Security {
 	 * @param array $data data to be sanitized.
 	 */
 	public static function sanitize_all( $data ) {
+		if ( ! $data || ! is_array( $data ) ) {
+			return false;
+		}
         $setting_type = self::setting_type();
         foreach ( $data as $key => $value ) {
             $type = isset( $setting_type[ $key ] ) ? $setting_type[ $key ] : ( is_array( $value ) ? 'arrstring' : 'string' );
@@ -92,6 +95,9 @@ class Security {
 	 * @param array $data data to be escaped.
 	 */
 	public static function escape_all( $data ) {
+		if ( ! $data || ! is_array( $data ) ) {
+			return false;
+		}
         $setting_type = self::setting_type();
         foreach ( $data as $key => $value ) {
             $type = isset( $setting_type[ $key ] ) ? $setting_type[ $key ] : ( is_array( $value ) ? 'arrstring' : 'string' );

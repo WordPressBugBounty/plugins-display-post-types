@@ -14,7 +14,7 @@
             <button id="dpt-shortcode-generator-btn" class="button button-primary">Create New Shortcode</button>
             <?php if ( ! empty( $shcode_gen->shortcode_settings ) ) : ?>
                 <span class="dpt-separator">or</span>
-                <?php echo $shcode_gen->dropdown(); ?>
+                <?php echo $shcode_gen->dropdown(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endif; ?>
         </div>
     </div>

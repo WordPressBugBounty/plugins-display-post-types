@@ -13,7 +13,7 @@ use Display_Post_Types\Helper\Markup as Markup_Fn;
 <div id="dpt-options-page" class="dpt-options-page">
 	<div class="dpt-options-header">
 		<div class="dpt-options-title">
-			<h3><a class="dpt-options-title-link" href="https://vedathemes.com/display-post-types/" target="_blank"><?php esc_html_e( 'Display Post Types', 'display-post-types' ); ?></a></h3>
+			<h3><a class="dpt-options-title-link" href="https://easyprolabs.com/display-post-types/" target="_blank"><?php esc_html_e( 'Display Post Types', 'display-post-types' ); ?></a></h3>
 		</div>
 		<div class="dpt-options-links">
 			<a class="dpt-options-link" href="https://wordpress.org/support/plugin/display-post-types/" target="_blank"></a>
@@ -44,11 +44,11 @@ use Display_Post_Types\Helper\Markup as Markup_Fn;
 					?>
 				</div>
 				<div class="dpt-options-footer">
-					<div class="dpt-options-copyright"><span><?php esc_html_e( 'Vedathemes', 'display-post-types' ); ?> &copy; <?php echo esc_html( date_i18n( __( 'Y', 'display-post-types' ) ) ); ?></span></div>
+					<div class="dpt-options-copyright"><span><?php esc_html_e( 'EasyPro Labs', 'display-post-types' ); ?> &copy; <?php echo esc_html( date_i18n( __( 'Y', 'display-post-types' ) ) ); ?></span></div>
 				</div>
 			</div>
 		</div>
-		<?php if ( $current_page === 'home' ) { ?>
+		<?php if ( $current_page === 'home' && ! defined( 'DPT_PRO_VERSION' ) ) { ?>
 		<div class="dpt-options-sidebar">
 			<?php require DISPLAY_POST_TYPES_DIR . '/backend/admin/templates/sidebar.php'; ?>
 		</div>

@@ -7,16 +7,16 @@
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link https://vedathemes.com
+ * @link https://easyprolabs.com
  * @since 1.0.0
  * @package Display_Post_Types
  *
  * @wordpress-plugin
  * Plugin Name: Display Post Types
  * Description: Filter, sort and display post, page or any post type.
- * Version: 2.9.0
- * Author: vedathemes
- * Author URI: https://vedathemes.com/display-post-types/
+ * Version: 3.0.0
+ * Author: easyprolabs
+ * Author URI: https://easyprolabs.com/display-post-types/
  * License: GPL-3.0+
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain: display-post-types
@@ -29,16 +29,24 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Currently plugin version.
-define( 'DISPLAY_POST_TYPES_VERSION', '2.9.0' );
+if ( ! defined( 'DISPLAY_POST_TYPES_VERSION' ) ) {
+    define( 'DISPLAY_POST_TYPES_VERSION', '3.0.0' );
+}
 
 // Define plugin constants.
-define( 'DISPLAY_POST_TYPES_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'DISPLAY_POST_TYPES_DIR' ) ) {
+    define( 'DISPLAY_POST_TYPES_DIR', plugin_dir_path( __FILE__ ) );
+}
 
 // Define plugin constants.
-define( 'DISPLAY_POST_TYPES_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'DISPLAY_POST_TYPES_URL' ) ) {
+    define( 'DISPLAY_POST_TYPES_URL', plugin_dir_url( __FILE__ ) );
+}
 
 // Define plugin constants.
-define( 'DISPLAY_POST_TYPES_BASENAME', plugin_basename( __FILE__ ) );
+if ( ! defined( 'DISPLAY_POST_TYPES_BASENAME' ) ) {
+    define( 'DISPLAY_POST_TYPES_BASENAME', plugin_basename( __FILE__ ) );
+}
 
 // Register PHP autoloader.
 spl_autoload_register(
@@ -85,14 +93,24 @@ spl_autoload_register(
 add_action(
 	'plugins_loaded',
 	function() {
-		// Register Display Post Types front-end hooks.
-		Display_Post_Types\Frontend\Register::init();
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.0', '>=' ) ) {
+			return;
+		}
 
-		// Register Display Post Types back-end hooks.
-		Display_Post_Types\Backend\Register::init();
+		display_post_types_register();
 	},
 	8
 );
+
+if ( ! function_exists( 'display_post_types_register' ) ) {
+	function display_post_types_register() {
+		// Register Display Post Types front-end hooks.
+		Display_Post_Types\Frontend\Register::init();
+	
+		// Register Display Post Types back-end hooks.
+		Display_Post_Types\Backend\Register::init();
+	}
+}
 
 add_action(
 	'init',
@@ -101,9 +119,3 @@ add_action(
 		load_plugin_textdomain( 'display-post-types', false, DISPLAY_POST_TYPES_DIR . 'lang/' );
 	}
 );
-
-
-// Load premium features (if exist).
-if ( file_exists( DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php' ) ) {
-	require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
-}

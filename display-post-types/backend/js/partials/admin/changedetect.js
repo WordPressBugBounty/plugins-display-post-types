@@ -350,6 +350,7 @@ class ChangeDetect {
 					} else if ('undefined' !== typeof details.markup) {
 						const wrapper = jQuery('#dpt-shortcode-preview');
 						wrapper.html( details.markup );
+						window.dptScriptData.instances = details.instances;
 					}
 				}
 			},
@@ -515,6 +516,7 @@ class ChangeDetect {
 								<a href="#" class="dpt-copy-shortcode-text">(Copy shortcode)</a>
 							</div>
 						`);
+						window.dptScriptData.instances = details.instances;
 						jQuery(document).trigger('custom-widget-added');
 					}
 				}

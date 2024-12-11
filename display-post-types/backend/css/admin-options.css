@@ -505,6 +505,11 @@ a.dpt-settings-toggle.toggle-active:after
     transform: translateX(21px);
 }
 
+#dpt-options-page .wp-picker-container
+{
+    display: block;
+}
+
 .wp-core-ui #dpt-options-page .button
 {
     font-size: 15px;
