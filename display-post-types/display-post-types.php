@@ -14,7 +14,7 @@
  * @wordpress-plugin
  * Plugin Name: Display Post Types
  * Description: Filter, sort and display post, page or any post type.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: easyprolabs
  * Author URI: https://easyprolabs.com/display-post-types/
  * License: GPL-3.0+
@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Currently plugin version.
 if ( ! defined( 'DISPLAY_POST_TYPES_VERSION' ) ) {
-    define( 'DISPLAY_POST_TYPES_VERSION', '3.0.0' );
+    define( 'DISPLAY_POST_TYPES_VERSION', '3.0.1' );
 }
 
 // Define plugin constants.
@@ -93,24 +93,14 @@ spl_autoload_register(
 add_action(
 	'plugins_loaded',
 	function() {
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.0', '>=' ) ) {
-			return;
-		}
+		// Register Display Post Types front-end hooks.
+		Display_Post_Types\Frontend\Register::init();
 
-		display_post_types_register();
+		// Register Display Post Types back-end hooks.
+		Display_Post_Types\Backend\Register::init();
 	},
 	8
 );
-
-if ( ! function_exists( 'display_post_types_register' ) ) {
-	function display_post_types_register() {
-		// Register Display Post Types front-end hooks.
-		Display_Post_Types\Frontend\Register::init();
-	
-		// Register Display Post Types back-end hooks.
-		Display_Post_Types\Backend\Register::init();
-	}
-}
 
 add_action(
 	'init',
@@ -119,3 +109,8 @@ add_action(
 		load_plugin_textdomain( 'display-post-types', false, DISPLAY_POST_TYPES_DIR . 'lang/' );
 	}
 );
+
+// Load premium features (if exist).
+if ( file_exists( DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php' ) ) {
+	require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
+}

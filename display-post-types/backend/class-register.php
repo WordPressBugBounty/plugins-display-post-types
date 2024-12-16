@@ -194,10 +194,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.0', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.1', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.0. If you have not received an automated update notice, please login to our website and download latest version.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.1. If you have not received an automated update notice, please login to our website and download latest version.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}

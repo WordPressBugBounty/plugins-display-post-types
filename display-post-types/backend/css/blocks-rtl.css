@@ -601,6 +601,18 @@ a.dpt-main-title-link
     display: inline-block;
 }
 
+.dpt-fetch-running
+{
+    font-size: 16px;
+
+    display: none;
+}
+
+.dpt-fetch-running.dpt-show
+{
+    display: block;
+}
+
 .dp-pagination
 {
     display: block;
