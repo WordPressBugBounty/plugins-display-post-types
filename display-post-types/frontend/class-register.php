@@ -106,18 +106,7 @@ class Register {
 	 * @param object $instance DPT script loader instance.
 	 */
 	public static function elementor_support( $instance ) {
-		if (
-			in_array(
-				'elementor/elementor.php',
-				apply_filters( 'active_plugins', get_option( 'active_plugins' ) ),
-				true
-			)
-		) {
-			add_action(
-				'elementor/preview/enqueue_scripts',
-				array( $instance, 'enqueue_scripts' )
-			);
-		}
+		add_action( 'elementor/preview/enqueue_scripts', array( $instance, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -153,7 +142,7 @@ class Register {
 						if ( $is_search ) {
 							$search_markup = '
 							<div class="dpt-header-search-btn">
-								<button type="submit" class="dpt-hsearch-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-search' ) ) . '</button>
+								<button type="submit" class="dpt-hsearch-btn dpt-header-btn">' . Markup::get_icon( 'dpt-search' ) . '</button>
 							</div>
 							';
 						}
@@ -162,14 +151,14 @@ class Register {
 							$class    = 1 === $current_page ? 'is-disabled' : '';
 							$hnext_markup = '
 							<div class="dpt-header-posts-btn">
-								<button type="submit"'  . $disabled . ' class="dpt-hprev-btn dpt-header-btn ' . $class . '">' . Markup::get_icon( array( 'icon' => 'dpt-previous' ) ) . '</button><button type="submit" class="dpt-hnext-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-next' ) ) . '</button>
+								<button type="submit"'  . $disabled . ' class="dpt-hprev-btn dpt-header-btn ' . $class . '">' . Markup::get_icon( 'dpt-previous' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button><button type="submit" class="dpt-hnext-btn dpt-header-btn">' . Markup::get_icon( 'dpt-next' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button>
 							</div>
 							';
 						}
 						if ( $is_filter ) {
 							$filter_markup = '
 							<div class="dpt-header-filter-btn">
-								<button type="submit" class="dpt-hfilter-btn dpt-header-btn">' . Markup::get_icon( array( 'icon' => 'dpt-filter' ) ) . '</button>
+								<button type="submit" class="dpt-hfilter-btn dpt-header-btn">' . Markup::get_icon( 'dpt-filter' ) . '</button>
 							</div>
 							';
 						}
@@ -197,9 +186,9 @@ class Register {
 						$markup_string = '%1$s<input type="text" class="dpt-hsearch-input" placeholder="%2$s"><button class="dpt-hsearch-close dpt-header-btn">%3$s</button>';
 						$markup = sprintf(
 							$markup_string,
-							Markup::get_icon( array( 'icon' => 'dpt-search' ) ),
+							Markup::get_icon( 'dpt-search' ),
 							esc_html__( 'Search', 'display-post-types' ),
-							Markup::get_icon( array( 'icon' => 'dpt-close' ) )
+							Markup::get_icon( 'dpt-close' )
 						);
 						echo $markup;
 					}
@@ -216,7 +205,7 @@ class Register {
 						$markup = sprintf(
 							$markup_string,
 							esc_html__( 'Filter By', 'display-post-types' ),
-							Markup::get_icon( array( 'icon' => 'dpt-close' ) )
+							Markup::get_icon( 'dpt-close' )
 						);
 						echo $markup;
 					}

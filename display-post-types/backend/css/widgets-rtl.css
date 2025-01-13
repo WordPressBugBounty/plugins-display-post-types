@@ -164,6 +164,23 @@ a.dpt-settings-toggle.toggle-active:after
     margin-top: 10px;
 }
 
+.dpt-toggle-container + .dpt-toggle-container
+{
+    margin-top: 3px;
+}
+
+.dpt-toggle-container a.dpt-settings-toggle
+{
+    border-color: #969696 !important;
+    background-color: #fff;
+}
+
+.dpt-toggle-container a.dpt-settings-toggle.toggle-active
+{
+    border: 1px solid #e6e6e6 !important;
+    background-color: #fafafa;
+}
+
 .dpt-settings-content
 {
     display: none;

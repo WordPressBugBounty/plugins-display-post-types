@@ -292,7 +292,7 @@ class Getters {
 	 *
 	 * @param string $size Image crop name.
 	 */
-	public static function  crop_ratio( $size ) {
+	public static function crop_ratio( $size ) {
 		$sizes = array(
 			'land1'  => '75%',
 			'land2'  => '66.66%',
@@ -307,5 +307,89 @@ class Getters {
 		}
 
 		return '100%';
+	}
+
+	/**
+	 * Get list of all custom fields along with their supported post types.
+	 *
+	 * @since 3.0.2
+	 */
+	public static function custom_fields() {
+		global $wpdb;
+
+		// Try to get cached data
+		$cached = get_transient( 'dpt_custom_fields_with_post_types' );
+		if ( $cached !== false ) {
+			return $cached;
+		}
+
+		// Get all unique meta_keys and their associated post types
+		$meta_keys = $wpdb->get_results("
+			SELECT DISTINCT pm.meta_key, p.post_type
+			FROM {$wpdb->postmeta} pm
+			INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+			WHERE pm.meta_key NOT LIKE '\_%' -- Exclude hidden/internal meta keys
+			ORDER BY pm.meta_key ASC
+		");
+
+		// Group post types by meta_key
+		$fields_with_post_types = array();
+		foreach ( $meta_keys as $meta ) {
+			if ( ! isset( $fields_with_post_types[ $meta->meta_key ] ) ) {
+				$fields_with_post_types[ $meta->meta_key ] = [];
+			}
+			if ( ! in_array( $meta->post_type, $fields_with_post_types[ $meta->meta_key ] ) ) {
+				$fields_with_post_types[ $meta->meta_key ][] = $meta->post_type;
+			}
+		}
+
+		// Cache the results for 12 hours
+		set_transient( 'dpt_custom_fields_with_post_types', $fields_with_post_types, 12 * HOUR_IN_SECONDS );
+
+		return $fields_with_post_types;
+	}
+
+	/**
+	 * Get list of all custom fields for a specific posttype.
+	 *
+	 * @since 3.0.2
+	 *
+	 * @param  WP_REST_Request $request Request data.
+	 */
+	public static function posttype_custom_fields( $request ) {
+		$custom_fields = self::custom_fields();
+		$posttype      = sanitize_text_field( $request['post_type'] );
+
+		// Format the array as [key => key]
+		$formatted_meta_keys = array(
+			'' => esc_html__( 'Select a Custom Field', 'display-post-types' ),
+		);
+		foreach ( $custom_fields as $meta_key => $post_types ) {
+			if ( in_array( $posttype, $post_types, true ) ) {
+				$formatted_meta_keys[ $meta_key ] = $meta_key;
+			}
+		}
+
+		return $formatted_meta_keys;
+	}
+
+	/**
+	 * Get custom fields comparison operators.
+	 *
+	 * @since 3.0.2
+	 */
+	public static function custom_field_operators() {
+		return array(
+			''        => array( esc_html__( 'Equal', 'display-post-types' ), array( 'always-visible' ) ),
+            'ne'      => array( esc_html__( 'Not Equal', 'display-post-types' ), array( 'always-visible' ) ),
+            'gt'      => array( esc_html__( 'Greater Than', 'display-post-types' ), array( 'date', 'number' ) ),
+            'gte'     => array( esc_html__( 'Greater Than or Equal', 'display-post-types' ), array( 'date', 'number' ) ),
+            'lt'      => array( esc_html__( 'Less Than', 'display-post-types' ), array( 'date', 'number' ) ),
+            'lte'     => array( esc_html__( 'Less Than or Equal', 'display-post-types' ), array( 'date', 'number' ) ),
+            'like'    => array( esc_html__( 'Like', 'display-post-types' ), array( 'string' ) ),
+            'nlike'   => array( esc_html__( 'Not Like', 'display-post-types' ), array( 'string' ) ),
+            'exists'  => array( esc_html__( 'Exists', 'display-post-types' ), array( 'always-visible' ) ),
+            'nexists' => array( esc_html__( 'Not Exists', 'display-post-types' ), array( 'always-visible' ) ),
+		);
 	}
 }

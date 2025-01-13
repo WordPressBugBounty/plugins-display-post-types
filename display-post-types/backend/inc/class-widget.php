@@ -246,32 +246,6 @@ class Widget extends \WP_Widget {
 								return 'page' !== $instance['post_type'];
 							},
 						),
-						'taxonomy'      => array(
-							'setting'       => 'taxonomy',
-							'type'          => 'taxonomy',
-							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'];
-							},
-						),
-						'terms'         => array(
-							'setting'       => 'terms',
-							'type'          => 'terms',
-							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
-							},
-						),
-						'relation'      => array(
-							'setting'       => 'relation',
-							'label'         => esc_html__( 'Terms Relationship', 'display-post-types' ),
-							'type'          => 'select',
-							'choices'       => array(
-								'IN'  => esc_html__( 'OR - Show posts belong to any of the terms selected above.', 'display-post-types' ),
-								'AND' => esc_html__( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ),
-							),
-							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
-							},
-						),
 						'number'        => array(
 							'setting'     => 'number',
 							'label'       => esc_html__( 'Number of items to display', 'display-post-types' ),
@@ -311,16 +285,46 @@ class Widget extends \WP_Widget {
 						return '' !== $instance['post_type'];
 					},
 					'items'       => array(
+						'taxonomy'      => array(
+							'setting'       => 'taxonomy',
+							'type'          => 'taxonomy',
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return 'page' === $instance['post_type'];
+							},
+							'wrapper'       => 'filter_taxonomy',
+						),
+						'terms'         => array(
+							'setting'       => 'terms',
+							'type'          => 'terms',
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
+							},
+							'wrapper'       => 'filter_taxonomy',
+						),
+						'relation'      => array(
+							'setting'       => 'relation',
+							'label'         => esc_html__( 'Terms Relationship', 'display-post-types' ),
+							'type'          => 'select',
+							'choices'       => array(
+								'IN'  => esc_html__( 'OR - Show posts belong to any of the terms selected above.', 'display-post-types' ),
+								'AND' => esc_html__( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ),
+							),
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
+							},
+							'wrapper'       => 'filter_taxonomy',
+						),
 						'post_ids'      => array(
 							'setting'       => 'post_ids',
 							'label'         => esc_html__( 'Get items by Post IDs', 'display-post-types' ),
 							'type'          => 'text',
 							'input_attrs'   => array(
-								'placeholder' => esc_attr_x( 'Comma separated ids, i.e. 230,300', 'Placeholder text for post ids', 'display-post-types' ),
+								'placeholder' => esc_attr_x( 'Comma separated list of post ids, i.e. 230,300', 'Placeholder text for post ids', 'display-post-types' ),
 							),
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return 'page' === $instance['post_type'];
 							},
+							'wrapper'       => 'filter_postids',
 						),
 						'orderby'       => array(
 							'setting'       => 'orderby',
@@ -330,6 +334,7 @@ class Widget extends \WP_Widget {
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return 'page' === $instance['post_type'];
 							},
+							'wrapper'       => 'sort_items',
 						),
 						'order'         => array(
 							'setting'       => 'order',
@@ -342,6 +347,7 @@ class Widget extends \WP_Widget {
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return 'page' === $instance['post_type'];
 							},
+							'wrapper'       => 'sort_items',
 						),
 					),
 				),
@@ -716,6 +722,43 @@ class Widget extends \WP_Widget {
 						return ! $widget->is_style_support( $instance['styles'], 'category' );
 					},
 				),
+				'filter_postids'  => array(
+					'id'            => 'filter_postids',
+					'type'          => 'toggle',
+					'label'         => esc_html__( 'Filter By Post IDs', 'display-post-types' ),
+					'class'         => 'dpt-filter-postids-section',
+					'children'      => false,
+					'hide_callback' => function() use ( $widget, $instance ) {
+						return 'page' === $instance['post_type'];
+					},
+				),
+				'filter_taxonomy'  => array(
+					'id'            => 'filter_taxonomy',
+					'type'          => 'toggle',
+					'label'         => esc_html__( 'Filter By Taxonomy', 'display-post-types' ),
+					'class'         => 'dpt-filter-taxonomy-section',
+					'children'      => false,
+					'hide_callback' => function() use ( $widget, $instance ) {
+						return 'page' === $instance['post_type'];
+					},
+				),
+				'filter_custom_fields'  => array(
+					'id'       => 'filter_custom_fields',
+					'type'     => 'toggle',
+					'label'    => esc_html__( 'Filter By Custom Fields', 'display-post-types' ),
+					'class'    => 'dpt-filter-cf-section',
+					'children' => false,
+				),
+				'sort_items'  => array(
+					'id'            => 'sort_items',
+					'type'          => 'toggle',
+					'label'         => esc_html__( 'Sort Items', 'display-post-types' ),
+					'class'         => 'dpt-sort_posts-section',
+					'children'      => false,
+					'hide_callback' => function() use ( $widget, $instance ) {
+						return 'page' === $instance['post_type'];
+					},
+				),
 			),
 			$widget,
 			$instance
@@ -765,7 +808,7 @@ class Widget extends \WP_Widget {
 				switch ( $type ) {
 					case 'select':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= $this->select( $set, $attr['choices'], $instance[ $set ], array(), false );
+						$optmar .= $this->select( $set, $attr['choices'], $instance[ $set ], array(), false, $inputattr );
 						break;
 					case 'checkbox':
 						$optmar  = sprintf( '<input name="%s" id="%s" type="checkbox" value="yes" %s %s />', $name, $id, checked( $instance[ $set ], 'yes', false ), $instance[ $set ] );
@@ -782,7 +825,7 @@ class Widget extends \WP_Widget {
 						break;
 					case 'text':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= sprintf( '<input class="widefat dpt-%1$s" name="%2$s" id="%3$s" type="text" value="%4$s" />', str_replace( '_', '-', $set ), $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ) );
+						$optmar .= sprintf( '<input class="widefat dpt-%1$s" name="%2$s" id="%3$s" type="text" value="%4$s" %5$s />', str_replace( '_', '-', $set ), $name, $id, is_array( $instance[ $set ] ) ? implode( ',', $instance[ $set ] ) : esc_attr( $instance[ $set ] ), $inputattr );
 						$optmar .= sprintf( '<div class="dpt-desc">%s</div>', $desc );
 						break;
 					case 'url':
@@ -811,6 +854,12 @@ class Widget extends \WP_Widget {
 						break;
 					case 'pages':
 						$optmar = $this->pages_checklist( $instance['pages'] );
+						break;
+					case 'cfields':
+						$optmar = $this->custom_fields_select( $instance['post_type'], $instance['filter_custom_field_key'] );
+						break;
+					case 'cfieldsoperators':
+						$optmar = $this->custom_fields_operator_select( $instance['filter_custom_field_type'], $instance['filter_custom_field_operator'] );
 						break;
 					default:
 						$optmar = apply_filters( 'dpt_custom_option_field', false, $item, $attr, $this, $instance );
@@ -899,6 +948,9 @@ class Widget extends \WP_Widget {
 		if ( $wrap && isset( $wrap['children'] ) && is_array( $wrap['children'] ) ) {
 			foreach ( $wrap['children'] as $child ) {
 				$child_content = $this->get_wrapped_markup( $child, $markup, $wrappers );
+				if ( ! $child_content ) {
+					continue;
+				}
 				if ('tabs' === $type) {
 					$child_wrap = isset( $wrappers[ $child ] ) ? $wrappers[ $child ] : false;
 					if ($child_wrap) {
@@ -1138,6 +1190,58 @@ class Widget extends \WP_Widget {
 	}
 
 	/**
+	 * Prints select list of all custom fields.
+	 *
+	 * @param str   $post_type Selected post type.
+	 * @param str   $custom_field Selected Custom Field.
+	 */
+	public function custom_fields_select( $post_type, $custom_field ) {
+		$custom_fields = Get_Fn::custom_fields();
+		$options       = array_merge( array( '' => esc_html__( 'Select a Custom Field', 'display-post-types' ) ), array_combine( array_keys( $custom_fields ), array_keys( $custom_fields ) ) );
+		if ( $post_type && 'page' !== $post_type ) {
+			foreach ( $custom_fields as $name => $type ) {
+				$type = (array) $type;
+				if ( ! in_array( $post_type, $type, true ) ) {
+					$type[]           = 'dpt-hidden';
+					$custom_fields[ $name ] = $type;
+				}
+			}
+		}
+		$custom_fields[''] = 'always-visible';
+
+		// Custom Field Select markup.
+		$markup  = $this->label( 'filter_custom_field_key', esc_html__( 'Select a Custom Field', 'display-post-types' ), false );
+		$markup .= $this->select( 'filter_custom_field_key', $options, $custom_field, $custom_fields, false );
+		return $markup;
+	}
+
+	/**
+	 * Prints select list of all custom fields comparison operators.
+	 *
+	 * @param str   $field_type Custom Field Data Type.
+	 * @param str   $selected   Custom Field Operator.
+	 */
+	public function custom_fields_operator_select( $field_type, $selected ) {
+		$operators  = Get_Fn::custom_field_operators();
+		$field_type = '' === $field_type ? 'string' : $field_type;
+		$options    = array();
+		$classes    = array();
+		foreach ( $operators as $operator => $args ) {
+			$options[ $operator ] = $args['0'];
+			$type = $args['1'];
+			if ( ! in_array( $field_type, $type, true ) && ! in_array( 'always-visible', $type, true ) ) {
+				$type[] = 'dpt-hidden';
+			}
+			$classes[ $operator ] = $type;
+		}
+
+		// Custom Field Select markup.
+		$markup  = $this->label( 'filter_custom_field_operator', esc_html__( 'Operator for Comparison', 'display-post-types' ), false );
+		$markup .= $this->select( 'filter_custom_field_operator', $options, $selected, $classes, false );
+		return $markup;
+	}
+
+	/**
 	 * Markup for 'label' for widget input options.
 	 *
 	 * @param str  $for  Label for which ID.
@@ -1157,14 +1261,15 @@ class Widget extends \WP_Widget {
 	/**
 	 * Markup for Select dropdown lists for widget options.
 	 *
-	 * @param str   $for      Select for which ID.
-	 * @param array $options  Select options as 'value => label' pair.
-	 * @param str   $selected selected option.
-	 * @param array $classes  Options HTML classes.
-	 * @param bool  $echo     Display or return.
+	 * @param string $for      Select for which ID.
+	 * @param array  $options  Select options as 'value => label' pair.
+	 * @param string $selected selected option.
+	 * @param array  $classes  Options HTML classes.
+	 * @param bool   $echo     Display or return.
+	 * @param string $atts     HTML attributes.
 	 * @return void|string
 	 */
-	public function select( $for, $options, $selected, $classes = array(), $echo = true ) {
+	public function select( $for, $options, $selected, $classes = array(), $echo = true, $atts = '' ) {
 		$select      = '';
 		$final_class = '';
 		foreach ( $options as $value => $label ) {
@@ -1177,11 +1282,12 @@ class Widget extends \WP_Widget {
 		}
 
 		$select = sprintf(
-			'<select id="%1$s" name="%2$s" class="dpt-%3$s widefat">%4$s</select>',
+			'<select id="%1$s" name="%2$s" class="dpt-%3$s widefat" %5$s>%4$s</select>',
 			esc_attr( $this->get_field_id( $for ) ),
 			esc_attr( $this->get_field_name( $for ) ),
 			esc_attr( str_replace( '_', '-', $for ) ),
-			$select
+			$select,
+			$atts
 		);
 
 		if ( $echo ) {

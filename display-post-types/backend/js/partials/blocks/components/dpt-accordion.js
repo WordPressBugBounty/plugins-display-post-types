@@ -35,7 +35,7 @@ class DptAccordion extends Component {
         return false;
       }
 
-      const hasChildren = Array.isArray(children) ? children.length > 0 : children.props.children;
+      const hasChildren = Array.isArray(children) ? children.length > 0 : React.isValidElement(children);
       if (! hasChildren) {
         return false;
       }

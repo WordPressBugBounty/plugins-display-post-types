@@ -12,9 +12,12 @@
 	<p class="intro-msg">
 		<?php esc_html_e( 'Thanks for trying/updating Display Post Types.', 'display-post-types' ); ?>
 	</p>
-	<p>
-		<?php esc_html_e( 'New: Various options added to customize typography of the content. In "Manage Item Components" section of the DPT block, you can customize typography.', 'display-post-types' ); ?>
-    </p>
+	<h4 style="margin-bottom: 0.25em;padding: 5px;"><?php esc_html_e( 'What\'s New in Pro version?.', 'display-post-types' ); ?></h4>
+	<ol>
+		<li class="premium">Filter Posts by Custom Fields</li>
+		<li class="premium">Front-end ajax enabled live Search and Filter options.</li>
+		<li class="premium">Front-end ajax post navigation.</li>
+	</ol>
 	<div class="common-links">
 		<p class="dpt-link">
 			<a href="https://wordpress.org/support/plugin/display-post-types/" target="_blank">

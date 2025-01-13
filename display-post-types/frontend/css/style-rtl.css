@@ -979,7 +979,7 @@ a.dpt-main-title-link
 
 .dpt-hidden
 {
-    display: none !important;
+    display: none;
 }
 
 .icon
@@ -997,6 +997,11 @@ a.dpt-main-title-link
     stroke-width: 0;
     stroke: currentColor;
     fill: currentColor;
+}
+
+.icon.dpt-hidden
+{
+    display: none;
 }
 
 @keyframes dptAdded

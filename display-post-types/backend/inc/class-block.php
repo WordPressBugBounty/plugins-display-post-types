@@ -479,6 +479,24 @@ class Block {
 
 		register_rest_route(
 			'dpt/v1',
+			'/customFields/(?P<post_type>[\w-]+)',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( 'Display_Post_Types\Helper\Getters', 'posttype_custom_fields' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+				'args'                => array(
+					'post_type' => array(
+						'description' => esc_html__( 'Post Type', 'display-post-types' ),
+						'type'        => 'string',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'dpt/v1',
 			'/terms/(?P<taxonomy>[\w-]+)',
 			array(
 				'methods'             => 'GET',

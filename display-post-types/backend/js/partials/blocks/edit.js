@@ -21,6 +21,7 @@ class DisplayPostTypes extends Component {
 			taxonomies: [],
 			termsList: [],
 			styleList: [],
+			customFields: [],
 		};
 		this.fetching = false;
 		this.styleSupport = {};
@@ -69,6 +70,10 @@ class DisplayPostTypes extends Component {
 				this.updateTaxonomy();
 				this.updateTerms();
 			}
+
+			if ( this.isPro ) {
+				this.apiDataFetch('customFields', 'customfields/' + postType);
+			}
 		}
 		this.getStyleList();
 	}
@@ -82,6 +87,9 @@ class DisplayPostTypes extends Component {
 
 		if (oldPostType !== postType) {
 			this.updateTaxonomy();
+			if ( this.isPro ) {
+				this.apiDataFetch('customFields', 'customfields/' + postType);
+			}
 			if ('page' === postType) { this.getPagesList() }
 		}
 
@@ -267,7 +275,7 @@ class DisplayPostTypes extends Component {
 	}
 
 	render() {
-		const { postTypes, taxonomies, pageList, termsList, styleList } = this.state;
+		const { postTypes, taxonomies, pageList, termsList, styleList, customFields } = this.state;
 		const { attributes, setAttributes } = this.props;
 		const {
 			title,
@@ -757,42 +765,12 @@ class DisplayPostTypes extends Component {
 							/>
 						}
 						{
-							!! taxonomies.length &&
-							<SelectControl
-								label={ __( 'Get items by Taxonomy', 'display-post-types' ) }
-								value={ taxonomy }
-								options={ taxonomies }
-								onChange={ ( value ) => onChangeTaxonomy(value) }
-							/>
-						}
-						{
 							('page' === postType && !! pageList.length) &&
 							<MultipleCheckboxControl
 								listItems={ pageList }
 								selected={ pages }
 								onItemChange={ pageCheckChange }
 								label = { __( 'Select Pages', 'display-post-types' ) }
-							/>
-						}
-						{
-							!! termsList.length &&
-							<MultipleCheckboxControl
-								listItems={ termsList }
-								selected={ terms }
-								onItemChange={ termCheckChange }
-								label = { __( 'Select Taxonomy Terms', 'display-post-types' ) }
-							/>
-						}
-						{
-							!! termsList.length &&
-							<SelectControl
-								label={ __( 'Terms Relationship', 'display-post-types' ) }
-								value={ relation }
-								onChange={ ( relation ) => setAttributes( { relation } ) }
-								options={ [
-									{ value: 'IN', label: __( 'OR - Show posts from any of the terms selected above.', 'display-post-types' ) },
-									{ value: 'AND', label: __( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ) },
-								] }
 							/>
 						}
 						<RangeControl
@@ -815,16 +793,59 @@ class DisplayPostTypes extends Component {
 					<DptAccordion initialOpen={ false } title={ __( 'Sort & Filter Items', 'display-post-types' ) }>
 						{
 							'page' !== postType &&
-							<TextControl
-								label={ __( 'Filter items by Post IDs (optional)', 'display-post-types' ) }
-								value={ postIds }
-								onChange={ ( postIds ) => setAttributes( { postIds } ) }
-								help={ __( 'Comma separated ids, i.e. 230,300', 'display-post-types' ) }
-							/>
+							<DptAccordion initialOpen={ false } title={ __( 'Filter By Post IDs', 'display-post-types' ) }>
+								<TextControl
+									label={ __( 'Filter items by Post IDs (optional)', 'display-post-types' ) }
+									value={ postIds }
+									onChange={ ( postIds ) => setAttributes( { postIds } ) }
+									help={ __( 'Comma separated ids, i.e. 230,300', 'display-post-types' ) }
+								/>
+							</DptAccordion>
 						}
 						{
 							'page' !== postType &&
-							<div>
+							<DptAccordion initialOpen={ false } title={ __( 'Filter By Taxonomy', 'display-post-types' ) }>
+								{
+									!! taxonomies.length &&
+									<SelectControl
+										label={ __( 'Get items by Taxonomy', 'display-post-types' ) }
+										value={ taxonomy }
+										options={ taxonomies }
+										onChange={ ( value ) => onChangeTaxonomy(value) }
+									/>
+								}
+								{
+									!! termsList.length &&
+									<MultipleCheckboxControl
+										listItems={ termsList }
+										selected={ terms }
+										onItemChange={ termCheckChange }
+										label = { __( 'Select Taxonomy Terms', 'display-post-types' ) }
+									/>
+								}
+								{
+									!! termsList.length &&
+									<SelectControl
+										label={ __( 'Terms Relationship', 'display-post-types' ) }
+										value={ relation }
+										onChange={ ( relation ) => setAttributes( { relation } ) }
+										options={ [
+											{ value: 'IN', label: __( 'OR - Show posts from any of the terms selected above.', 'display-post-types' ) },
+											{ value: 'AND', label: __( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ) },
+										] }
+									/>
+								}
+							</DptAccordion>
+						}
+						{
+							!! this.isPro &&
+							<DptAccordion initialOpen={ false } title={ __( 'Filter By Custom Fields', 'display-post-types' ) }>
+								{this.displayElems('filterCustomFields', {ifStyleSupport, customFields})}
+							</DptAccordion>
+						}
+						{
+							'page' !== postType &&
+							<DptAccordion initialOpen={ false } title={ __( 'Sort Items', 'display-post-types' ) }>
 								<SelectControl
 									label={ __( 'Sort By', 'display-post-types' ) }
 									value={ orderBy }
@@ -840,7 +861,7 @@ class DisplayPostTypes extends Component {
 										{ value: 'ASC', label: __( 'Ascending', 'display-post-types' ) },
 									] }
 								/>
-							</div>
+							</DptAccordion>
 						}
 					</DptAccordion>
 					<DptAccordion initialOpen={ false } title={ __( 'Layout & Styling', 'display-post-types' ) }>

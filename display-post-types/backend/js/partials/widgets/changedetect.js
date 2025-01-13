@@ -58,6 +58,10 @@ class ChangeDetect {
         const toggleBtn     = wrapper.find('.dpt-settings-toggle');
 		const toggleContent = wrapper.find('.dpt-settings-content');
 		const taxonomy      = wrapper.find( 'select.dpt-taxonomy' );
+		const customFieldKey   = wrapper.find( 'select.dpt-filter-custom-field-key' );
+		const customFieldOp    = wrapper.find( 'select.dpt-filter-custom-field-operator' );
+		const customFieldType  = wrapper.find( 'select.dpt-filter-custom-field-type' );
+		const customFieldValue = wrapper.find( 'input.dpt-filter-custom-field-value' );
 		const postSupports  = [
 			'.post_ids',
 			'.taxonomy',
@@ -83,6 +87,13 @@ class ChangeDetect {
 			}
             toggleContent.toggleClass('not-post', 'post' !== postType);
 			toggleContent.find('.terms, .relation').hide();
+			customFieldKey.find( 'option' ).hide();
+			customFieldKey.find( '.always-visible, .' + postType ).show();
+			customFieldKey.val('');
+			customFieldOp.val('');
+			customFieldValue.val('');
+			customFieldValue.prop('disabled', false);
+			customFieldType.prop('disabled', false);
 		} else {
 			toggleBtn.hide();
 			toggleContent.hide();
