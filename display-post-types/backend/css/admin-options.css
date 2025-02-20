@@ -1,5 +1,6 @@
 .toplevel_page_dpt-options #wpcontent,
-.display-post-types_page_dpt-shortcode #wpcontent
+.display-post-types_page_dpt-shortcode #wpcontent,
+.display-post-types_page_dpt-faq #wpcontent
 {
     padding: 0;
 }
@@ -1014,6 +1015,30 @@ a.dpt-settings-toggle.toggle-active:after
     display: inline-block;
 
     color: #00b33c;
+}
+
+.dpt-support-table
+{
+    width: 100%;
+    margin: 0 0 30px 20px;
+}
+
+.dpt-support-table li
+{
+    margin: 10px 0 !important;
+}
+
+.dpt-help-section
+{
+    font-weight: bold;
+
+    display: block;
+
+    width: 100%;
+    margin-bottom: 0;
+    padding: 15px 0;
+
+    border-bottom: 1px solid #e6e6e6;
 }
 
 .dpt-slider-viewport

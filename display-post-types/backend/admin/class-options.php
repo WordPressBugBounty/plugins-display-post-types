@@ -53,6 +53,9 @@ class Options {
 			'shortcode' => array(
 				'label' => esc_html__( 'Generate Shortcode', 'display-post-types' ),
 			),
+			'faq'         => array(
+				'label' => esc_html__( 'Help & Support', 'display-post-types' ),
+			),
 		);
 	}
 
@@ -87,6 +90,7 @@ class Options {
         // Sub Menu pages.
 		$submenu_pages = array(
 			'dpt-shortcode' => __( 'Shortcode', 'display-post-types' ),
+			'dpt-faq'       => __( 'Help & Support', 'display-post-types' ),
 		);
 
 		foreach ( $submenu_pages as $key => $label ) {
@@ -124,6 +128,9 @@ class Options {
 				case 'dpt-shortcode':
 					$shcode_gen   = ShortCodeGen::get_instance();
 					$current_page = 'shortcode';
+					break;
+				case 'dpt-faq':
+					$current_page = 'faq';
 					break;
 				default:
 					$current_page = 'home';
@@ -174,6 +181,7 @@ class Options {
 		$load_on = array(
 			'toplevel_page_dpt-options',
 			'display-post-types_page_dpt-shortcode',
+			'display-post-types_page_dpt-faq',
 		);
 		if ( $current_screen && in_array( $current_screen->id, $load_on, true ) ) {
 
