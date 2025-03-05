@@ -29,8 +29,9 @@ class ColorPicker {
 	colorPicker() {
 		const params = {
 			change: function(e, ui) {
-				jQuery( e.target ).val( ui.color.toString() );
-				jQuery( e.target ).trigger('change'); // enable widget "Save" button
+				setTimeout(function() {
+					jQuery( e.target ).trigger('change');
+				}, 60);
 			},
 		};
 		jQuery('.dpt-color-picker').not('[id*="__i__"]').wpColorPicker( params );

@@ -339,7 +339,7 @@ class Register {
 
 				switch ( $args['text_pos_hor'] ) {
 					case 'right':
-						$vars .= '--dpt-text_pos_right: 5%;';
+						$vars .= '--dpt-text_pos_right: 0%;';
 						$vars .= '--dpt-text_pos_left: auto;';
 						break;
 					case 'center':
@@ -348,7 +348,7 @@ class Register {
 						break;
 					default:
 						$vars .= '--dpt-text_pos_right: auto;';
-						$vars .= '--dpt-text_pos_left: 5%;';
+						$vars .= '--dpt-text_pos_left: 0%;';
 						break;
 				}
 

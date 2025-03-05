@@ -267,7 +267,7 @@ class Block {
                 'items'   => array(
                     'type' => 'number',
                 ),
-                'default' => array(1, 1, 1, 1),
+                'default' => array(0, 0, 0, 0),
             ),
             'br_radius' => array(
                 'type'    => 'array',

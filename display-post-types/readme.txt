@@ -4,7 +4,7 @@ Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 6.7
 Requires PHP: 7.2
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,6 +12,8 @@ Display list of posts, pages or any custom post types anywhere using block and w
 
 == Description ==
 Easily display post grid, list or post sliders. Display post types provides easiest way to fetch, sort and display list of posts, pages or any custom post types using block or widget.
+
+[youtube https://www.youtube.com/watch?v=qn2164Iodac]
 
 **Display Post Types** is the ultimate plugin to showcase your WordPress posts, pages, or custom post types in visually stunning grids, lists, and sliders. Whether you’re displaying blog posts, portfolios, or any custom content, this plugin makes it incredibly easy and flexible, with no coding skills required.  
 
@@ -98,6 +100,10 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+
+= 3.0.4 =
+* Bug Fix: Elementor DPT issues.
+* Modify: Added color alpha in the color customization options.
 
 = 3.0.3 =
 * Modify: More user friendly admin page including Help & Support section.

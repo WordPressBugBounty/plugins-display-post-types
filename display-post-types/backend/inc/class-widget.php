@@ -844,7 +844,7 @@ class Widget extends \WP_Widget {
 						break;
 					case 'color':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= sprintf( '<input class="dpt-color-picker" name="%1$s" id="%2$s" type="text" value="%3$s" />', $name, $id, esc_attr( sanitize_hex_color( $instance[ $set ] ) ) );
+						$optmar .= sprintf( '<input class="dpt-color-picker" data-alpha-enabled="true" name="%1$s" id="%2$s" type="text" value="%3$s" />', $name, $id, esc_attr( sanitize_text_field( $instance[ $set ] ) ) );
 						break;
 					case 'taxonomy':
 						$optmar = $this->taxonomies_select( $instance['post_type'], $instance['taxonomy'] );

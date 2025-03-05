@@ -126,7 +126,7 @@ class Security {
                 $data = floatval( $data );
                 break;
             case 'color':
-                $data = sanitize_hex_color( $data );
+				$data = sanitize_text_field( $data );
                 break;
             case 'arrint':
 				if ( ! $data ) {
@@ -170,7 +170,7 @@ class Security {
                 $data = floatval( $data );
                 break;
             case 'color':
-                $data = sanitize_hex_color( $data );
+				$data = sanitize_text_field( $data );
                 break;
             case 'arrint':
 				if ( ! $data ) {

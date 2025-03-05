@@ -122,7 +122,15 @@ class Register {
 		$widget_data = apply_filters( 'dpt_widget_data', array(
 			'styleSupport' => array_column( Get_Fn::styles(), 'support', 'style' ),
 		) );
-		$script_deps = apply_filters( 'dpt_widget_script_deps', array( 'jquery', 'wp-color-picker' ) );
+
+		wp_register_script(
+			'wp-color-picker-alpha',
+			plugin_dir_url( __FILE__ ) . 'js/wp-color-picker-alpha.min.js',
+			array( 'wp-color-picker' ),
+			DISPLAY_POST_TYPES_VERSION,
+			true
+		);
+		$script_deps = apply_filters( 'dpt_widget_script_deps', array( 'jquery', 'wp-color-picker-alpha' ) );
 		$style_deps  = apply_filters( 'dpt_widget_style_deps', array() );
 
 		wp_enqueue_style(
@@ -194,10 +202,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.2', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.3', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.2.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.3.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}

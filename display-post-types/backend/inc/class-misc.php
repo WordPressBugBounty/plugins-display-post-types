@@ -413,7 +413,7 @@ class Misc {
                         $data[ $set_name ] = floatval( $set_val );
                         break;
                     case 'color':
-                        $data[ $set_name ] = sanitize_hex_color( $set_val );
+                        $data[ $set_name ] = sanitize_text_field( $set_val );
                         break;
                     default:
                         $data[ $set_name ] = $set_val;
@@ -433,17 +433,12 @@ class Misc {
                     $data[ $set_name ] = intval( $set_val );
                     break;
                 case 'color':
-                    $data[ $set_name ] = sanitize_hex_color( $set_val );
+                    $data[ $set_name ] = sanitize_text_field( $set_val );
                     break;
                 case 'arrint':
                     $set_val = isset( $new_data[ $set_name ] ) ? $new_data[ $set_name ] : array();
                     $set_val = ! is_array( $set_val ) ? explode( ',', $set_val ) : $set_val;
-                    $old_val = isset( $data[ $set_name ] ) ? $data[ $set_name ] : array();
-                    if ( ( empty( $old_val ) && empty( array_filter( $set_val ) ) ) || ! is_array( $set_val ) ) {
-                        $data[ $set_name ] = array();
-                    } else {
-                        $data[ $set_name ] = array_map( 'intval', $set_val );
-                    }
+                    $data[ $set_name ] = array_map( 'intval', $set_val );
                     break;
                 default:
                     $data[ $set_name ] = $set_val;

@@ -229,7 +229,7 @@ class Getters {
 		$wrapper_sets = array(
 			'type'                   => '',
             'padding'                => array(10, 10, 10, 10),
-            'br_width'               => array(1, 1, 1, 1),
+            'br_width'               => array(0, 0, 0, 0),
             'br_radius'              => array(5, 5, 5, 5),
             'width'                  => 80,
             'height'                 => 0,

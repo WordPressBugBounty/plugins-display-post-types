@@ -191,13 +191,21 @@ class Options {
 				'security'     => wp_create_nonce( 'dpt-admin-ajax-nonce' ),
 			) );
 
+			wp_register_script(
+				'wp-color-picker-alpha',
+				DISPLAY_POST_TYPES_URL . 'backend/js/wp-color-picker-alpha.min.js',
+				array( 'wp-color-picker' ),
+				DISPLAY_POST_TYPES_VERSION,
+				true
+			);
+
 			/**
 			 * Enqueue admin scripts.
 			 */
 			wp_enqueue_script(
 				'dptadminoptions',
 				DISPLAY_POST_TYPES_URL . 'backend/js/admin.build.js',
-				array( 'jquery-ui-tabs', 'wp-color-picker' ),
+				array( 'jquery-ui-tabs', 'wp-color-picker-alpha' ),
 				DISPLAY_POST_TYPES_VERSION,
 				true
 			);

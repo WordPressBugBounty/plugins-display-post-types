@@ -538,19 +538,17 @@ a.dpt-settings-toggle.toggle-active:after
 
 .wp-core-ui #dpt-options-page .wp-color-result
 {
+    font-size: 12px;
+
+    height: auto;
     padding: 0 0 0 30px;
 }
 
 .wp-core-ui #dpt-options-page .wp-picker-clear
 {
-    padding: 0 4px;
-}
+    line-height: 2.33333;
 
-#dpt-options-page .dpt-color-picker,
-#dpt-options-page .wp-picker-clear
-{
-    width: 4rem !important;
-    height: 40px;
+    height: auto;
 }
 
 #dpt-options-page .dpt-options-footer

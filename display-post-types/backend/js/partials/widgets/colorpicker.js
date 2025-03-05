@@ -15,10 +15,13 @@ class ColorPicker {
 	// Event handling.
 	events() {
 		const _this  = this;
-		jQuery(function() { _this.colorPicker() });
-		jQuery(document).on( 'widget-added widget-updated', function() {
-			_this.colorPicker();
-		} );
+		const widget = jQuery('#widgets-right, #elementor-editor-wrapper, #widgets-editor');
+
+		jQuery(function() { _this.colorPicker(widget.find('.widget-content')) });
+
+		widget.on('click', '.dpt-style-toggle', function() {
+			_this.colorPicker(jQuery(this).closest('.widget-content'));
+		});
 	}
 
 	/**
@@ -26,14 +29,16 @@ class ColorPicker {
 	 * 
 	 * @since 3.7.0
 	 */
-	colorPicker() {
+	colorPicker(widget) {
 		const params = {
 			change: function(e, ui) {
-				jQuery( e.target ).val( ui.color.toString() );
-				jQuery( e.target ).trigger('change'); // enable widget "Save" button
+				// jQuery( e.target ).val( ui.color.toString() );
+				setTimeout(function() {
+					jQuery( e.target ).trigger('change');
+				}, 60);
 			},
 		};
-		jQuery('.dpt-color-picker').not('[id*="__i__"]').wpColorPicker( params );
+		widget.find('.dpt-color-picker').not('[id*="__i__"]').wpColorPicker( params );
 	}
 }
 
