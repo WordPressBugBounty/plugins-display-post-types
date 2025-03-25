@@ -380,16 +380,16 @@ class Getters {
 	 */
 	public static function custom_field_operators() {
 		return array(
-			''        => array( esc_html__( 'Equal', 'display-post-types' ), array( 'always-visible' ) ),
-            'ne'      => array( esc_html__( 'Not Equal', 'display-post-types' ), array( 'always-visible' ) ),
+			''        => array( esc_html__( 'Equal', 'display-post-types' ), array( 'date', 'number', 'string', 'bool' ) ),
+            'ne'      => array( esc_html__( 'Not Equal', 'display-post-types' ), array( 'date', 'number', 'string', 'bool' ) ),
             'gt'      => array( esc_html__( 'Greater Than', 'display-post-types' ), array( 'date', 'number' ) ),
             'gte'     => array( esc_html__( 'Greater Than or Equal', 'display-post-types' ), array( 'date', 'number' ) ),
             'lt'      => array( esc_html__( 'Less Than', 'display-post-types' ), array( 'date', 'number' ) ),
             'lte'     => array( esc_html__( 'Less Than or Equal', 'display-post-types' ), array( 'date', 'number' ) ),
             'like'    => array( esc_html__( 'Like', 'display-post-types' ), array( 'string' ) ),
             'nlike'   => array( esc_html__( 'Not Like', 'display-post-types' ), array( 'string' ) ),
-            'exists'  => array( esc_html__( 'Exists', 'display-post-types' ), array( 'always-visible' ) ),
-            'nexists' => array( esc_html__( 'Not Exists', 'display-post-types' ), array( 'always-visible' ) ),
+            'exists'  => array( esc_html__( 'Exists', 'display-post-types' ), array( 'date', 'number', 'string' ) ),
+            'nexists' => array( esc_html__( 'Not Exists', 'display-post-types' ), array( 'date', 'number', 'string' ) ),
 		);
 	}
 }

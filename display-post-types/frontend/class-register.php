@@ -752,13 +752,8 @@ class Register {
 			array(
 				function() use ( $args ) {
 					$meta = isset( $args['meta1'] ) && $args['meta1'] ? $args['meta1'] : false;
-					$content = $meta ? $this->get_converted_meta( $meta ) : false;
-					if ( $content ) {
-						echo $content;
-					} else {
-						$this->author();
-						$this->date();
-					}
+					$content = $meta ? $this->get_converted_meta( $meta ) : '';
+					echo $content;
 				}
 			)
 		);
@@ -777,12 +772,8 @@ class Register {
 			array(
 				function() use ( $args ) {
 					$meta = isset( $args['meta2'] ) && $args['meta2'] ? $args['meta2'] : false;
-					$content = $meta ? $this->get_converted_meta( $meta ) : false;
-					if ( $content ) {
-						echo $content;
-					} else {
-						$this->category();
-					}
+					$content = $meta ? $this->get_converted_meta( $meta ) : '';
+					echo $content;
 				}
 			)
 		);

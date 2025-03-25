@@ -169,7 +169,7 @@ class Register {
 
 		// Podcast Player Admin Notice.
 		if ( DISPLAY_POST_TYPES_VERSION !== get_option( 'dpt-admin-notice' ) ) {
-			include_once DISPLAY_POST_TYPES_DIR . '/backend/inc/notifications.php';
+			// include_once DISPLAY_POST_TYPES_DIR . '/backend/inc/notifications.php';
 
 			?>
 			<style type="text/css" media="screen">
@@ -202,10 +202,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.3', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.4', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.3.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.4.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}

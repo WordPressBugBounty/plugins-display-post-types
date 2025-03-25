@@ -75,12 +75,18 @@ class ChangeDetect {
 		if (postType) {
 			toggleBtn.show();
 			if ('page' === postType) {
-				toggleContent.find(pageSupports.join(',')).show();
-                toggleContent.find(postSupports.join(',')).hide();
+				toggleContent.find(pageSupports.join(',')).show().closest('.dpt-wrapper-container').show();
+                toggleContent.find(postSupports.join(',')).hide()
+				.closest('.dpt-settings-content').hide()
+				.closest('.dpt-wrapper-container').hide()
+				.find('.dpt-settings-toggle').removeClass('toggle-active');
 				
 			} else {
-                toggleContent.find(pageSupports.join(',')).hide();
-                toggleContent.find(postSupports.join(',')).show();
+                toggleContent.find(pageSupports.join(',')).hide()
+				.closest('.dpt-settings-content').hide()
+				.closest('.dpt-wrapper-container').hide()
+				.find('.dpt-settings-toggle').removeClass('toggle-active');
+                toggleContent.find(postSupports.join(',')).show().closest('.dpt-wrapper-container').show();
 				taxonomy.find( 'option' ).hide();
 				taxonomy.find( '.always-visible, .' + postType ).show();
 				taxonomy.val('');

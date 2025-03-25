@@ -76,9 +76,10 @@ class Display {
 		if ( ! $args['post_type'] ) {
 			return;
 		} elseif ( 'page' === $args['post_type'] ) {
+			$pages = isset( $args['pages'] ) ? ( is_array( $args['pages'] ) ? $args['pages'] : explode( ',', $args['pages'] ) ) : array();
 			$query_args = array(
 				'post_type'           => 'page',
-				'post__in'            => $args['pages'],
+				'post__in'            => $pages,
 				'post_status'         => 'publish',
 				'ignore_sticky_posts' => true,
 				'posts_per_page'      => $args['number'],
