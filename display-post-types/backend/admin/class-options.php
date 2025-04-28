@@ -45,19 +45,7 @@ class Options {
 	 *
 	 * @since  1.0.0
 	 */
-	public function __construct() {
-		$this->modules = array(
-			'options'     => array(
-				'label' => esc_html__( 'Home', 'display-post-types' ),
-			),
-			'shortcode' => array(
-				'label' => esc_html__( 'Generate Shortcode', 'display-post-types' ),
-			),
-			'faq'         => array(
-				'label' => esc_html__( 'Help & Support', 'display-post-types' ),
-			),
-		);
-	}
+	public function __construct() {}
 
     /**
 	 * Register hooked functions.
@@ -122,6 +110,17 @@ class Options {
 	public function display_content() {
 		global $pagenow;
 		$page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+		$this->modules = array(
+			'options'     => array(
+				'label' => esc_html__( 'Home', 'display-post-types' ),
+			),
+			'shortcode' => array(
+				'label' => esc_html__( 'Generate Shortcode', 'display-post-types' ),
+			),
+			'faq'         => array(
+				'label' => esc_html__( 'Help & Support', 'display-post-types' ),
+			),
+		);
 		if ( 'admin.php' === $pagenow && $page ) {
             $current_page = 'home';
 			switch ( $page ) {
