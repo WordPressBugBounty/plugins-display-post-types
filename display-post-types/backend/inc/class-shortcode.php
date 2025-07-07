@@ -111,6 +111,7 @@ class Shortcode {
 				'image_crop'    => isset( $atts['img_croppos'] ) ? $atts['img_croppos'] : 'centercrop',
 				'img_aspect'    => $atts['img_aspect'],
 				'custom_aspect' => $atts['custom_aspect'],
+				'thumb_fetch'   => ( 'false' === $atts['thumb_fetch'] || ! $atts['thumb_fetch'] ) ? '' : 'yes',
 				'text_pos_hor'  => $atts['text_pos_hor'],
 				'text_pos_ver'  => $atts['text_pos_ver'],
 				'img_align'     => $atts['img_align'],

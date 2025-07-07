@@ -104,6 +104,10 @@ class Block {
 				),
 				'default' => array( 'thumbnail', 'title' ),
 			),
+			'thumbFetch' => array(
+				'type'    => 'boolean',
+				'default' => false,
+			),
 			'imageCrop'    => array(
 				'type'    => 'string',
 				'default' => 'centercrop',
@@ -344,6 +348,7 @@ class Block {
 			'order'         => $atts['order'],
 			'styles'        => $atts['styles'],
 			'style_sup'     => $atts['styleSup'],
+			'thumb_fetch'   => ( 'false' === $atts['thumbFetch'] || ! $atts['thumbFetch'] ) ? '' : 'yes',
 			'image_crop'    => $atts['imageCrop'],
 			'img_aspect'    => $atts['imgAspect'],
 			'custom_aspect' => $atts['customAspect'],

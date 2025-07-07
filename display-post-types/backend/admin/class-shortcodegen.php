@@ -462,9 +462,19 @@ class ShortCodeGen {
 							'type'       => 'spcheckbox',
 							'wrapper'    => 'thumbnail',
 						),
+						'thumb_fetch'  => array(
+							'setting'     => 'thumb_fetch',
+							'label'       => esc_html__( 'Fetch Thumbnail from Content as fallback', 'display-post-types' ),
+							'desc'        => esc_html__( 'If featured image is not set, fetch first image from post content as thumbnail', 'display-post-type' ),
+							'type'        => 'checkbox',
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! in_array( 'thumbnail', $instance['style_sup'], true );
+							},
+							'wrapper'     => 'thumbnail',
+						),
 						'br_radius'    => array(
 							'setting'     => 'br_radius',
-							'label'       => esc_html__( 'ThumbnailBorder Radius (in px)', 'display-post-types' ),
+							'label'       => esc_html__( 'Thumbnail Border Radius (in px)', 'display-post-types' ),
 							'type'        => 'number',
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return ! in_array( 'thumbnail', $instance['style_sup'], true );
@@ -804,6 +814,7 @@ class ShortCodeGen {
 					case 'checkbox':
 						$optmar  = sprintf( '<input class="dpt-getval" name="%s" id="%s" type="checkbox" value="yes" %s %s />', $name, $id, checked( $instance[ $set ], 'yes', false ), $instance[ $set ] );
 						$optmar .= $this->label( $set, $label, false );
+						$optmar .= $desc ? sprintf( '<div class="dpt-desc">%s</div>', $desc ) : '';
 						break;
 					case 'spcheckbox':
 						$checked = isset( $attr['is_checked'] ) && is_callable( $attr['is_checked'] ) ? call_user_func( $attr['is_checked'] ) : '';

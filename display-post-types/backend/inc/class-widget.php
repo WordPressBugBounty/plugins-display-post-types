@@ -473,6 +473,16 @@ class Widget extends \WP_Widget {
 							'type'       => 'spcheckbox',
 							'wrapper'    => 'thumbnail',
 						),
+						'thumb_fetch' => array(
+							'setting'       => 'thumb_fetch',
+							'label'         => esc_html__( 'Fetch Thumbnail from Content as fallback', 'display-post-types' ),
+							'desc'          => esc_html__( 'If featured image is not set, fetch first image from post content as thumbnail', 'display-post-type' ),
+							'type'          => 'checkbox',
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! in_array( 'thumbnail', $instance['style_sup'], true );
+							},
+							'wrapper'       => 'thumbnail',
+						),
 						'br_radius'    => array(
 							'setting'     => 'br_radius',
 							'label'       => esc_html__( 'ThumbnailBorder Radius (in px)', 'display-post-types' ),
@@ -813,6 +823,7 @@ class Widget extends \WP_Widget {
 					case 'checkbox':
 						$optmar  = sprintf( '<input name="%s" id="%s" type="checkbox" value="yes" %s %s />', $name, $id, checked( $instance[ $set ], 'yes', false ), $instance[ $set ] );
 						$optmar .= $this->label( $set, $label, false );
+						$optmar .= $desc ? sprintf( '<div class="dpt-desc">%s</div>', $desc ) : '';
 						break;
 					case 'spcheckbox':
 						$checked = isset( $attr['is_checked'] ) && is_callable( $attr['is_checked'] ) ? call_user_func( $attr['is_checked'] ) : '';
@@ -1108,6 +1119,7 @@ class Widget extends \WP_Widget {
 		$instance['meta1'] = sanitize_text_field( $new_instance['meta1'] );
 		$instance['meta2'] = sanitize_text_field( $new_instance['meta2'] );
 
+		$instance['thumb_fetch']   = 'yes' === $new_instance['thumb_fetch'] ? 'yes' : '';
 		$instance['show_pgnation'] = 'yes' === $new_instance['show_pgnation'] ? 'yes' : '';
 
 		return apply_filters( 'dpt_widget_update', $instance, $new_instance, $this );

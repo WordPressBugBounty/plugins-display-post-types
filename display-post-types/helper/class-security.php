@@ -53,6 +53,7 @@ class Security {
 				'col_narr'      => 'int',
 				'pl_holder'     => 'check',
 				'show_pgnation' => 'check',
+				'thumb_fetch'   => 'check',
 				'title_shadow'  => 'check',
 				'text_align'    => 'string',
 				'v_gutter'      => 'int',

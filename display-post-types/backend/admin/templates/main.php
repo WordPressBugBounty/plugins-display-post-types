@@ -48,7 +48,7 @@ use Display_Post_Types\Helper\Markup as Markup_Fn;
 				</div>
 			</div>
 		</div>
-		<?php if ( $current_page === 'home' && ! defined( 'DPT_PRO_VERSION' ) ) { ?>
+		<?php if ( 'shortcode' !== $current_page && ! defined( 'DPT_PRO_VERSION' ) ) { ?>
 		<div class="dpt-options-sidebar">
 			<?php require DISPLAY_POST_TYPES_DIR . '/backend/admin/templates/sidebar.php'; ?>
 		</div>

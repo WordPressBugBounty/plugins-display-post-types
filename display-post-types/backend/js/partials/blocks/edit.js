@@ -290,6 +290,7 @@ class DisplayPostTypes extends Component {
 			order,
 			styles,
 			styleSup,
+			thumbFetch,
 			imageCrop,
 			imgAspect,
 			customAspect,
@@ -558,6 +559,11 @@ class DisplayPostTypes extends Component {
 		const getThumbnail = () => {
 			return (
 				<div>
+					<ToggleControl
+						label={ __( 'Fetch Thumbnail from Content as fallback.', 'display-post-types' ) }
+						checked={ !! thumbFetch }
+						onChange={ ( thumbFetch ) => setAttributes( { thumbFetch } ) }
+					/>
 					<ToggleControl
 						label={ __( 'Thumbnail Placeholder', 'display-post-types' ) }
 						checked={ !! plHolder }

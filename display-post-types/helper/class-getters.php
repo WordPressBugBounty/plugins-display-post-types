@@ -195,6 +195,7 @@ class Getters {
 			'autotime'      => 0,
 			'meta1'         => '[author] &middot; [date]',
 			'meta2'         => '[category]',
+			'thumb_fetch'   => '',
 		);
 		$components = array( 'thumbnail', 'title', 'excerpt', 'meta1', 'meta2' );
 		foreach ( $components as $component ) {

@@ -625,7 +625,7 @@ class Register {
 	public function featured( $size, $args ) {
 		$style = $args['styles'];
 
-		if ( has_post_thumbnail() || ( isset( $args['pl_holder'] ) && 'yes' === $args['pl_holder'] ) ) {
+		if ( has_post_thumbnail() || ( isset( $args['pl_holder'] ) && 'yes' === $args['pl_holder'] ) || $this->get_first_image_id_from_post_content( $args ) ) {
 
 			Markup::markup(
 				'dpt-featured-content',
@@ -648,6 +648,8 @@ class Register {
 	public function thumbnail( $size = 'full', $args = array() ) {
 		$aspect_ratio = '100%';
 		$id      = get_post_thumbnail_id();
+		$id      = ! empty( $id ) ? $id : $this->get_first_image_id_from_post_content( $args );
+		$id      = $id ? $id : 0;
 		$imgmeta = wp_get_attachment_metadata( $id );
 		if ( isset( $imgmeta['width'] ) && isset( $imgmeta['height'] ) && $imgmeta['width'] ) {
 			$aspect_ratio = round($imgmeta['height'] / $imgmeta['width'] * 100) . '%';
@@ -664,14 +666,101 @@ class Register {
 		Markup::markup(
 			'dpt-thumbnail',
 			array(
-				function() use ( $size, $aspect_ratio ) {
+				function() use ( $id, $size, $aspect_ratio ) {
 					echo '<div class="dpt-thumbnail-inner">';
-					the_post_thumbnail( $size, array( 'context' => 'dpt' ) );
+					echo wp_get_attachment_image( $id, $size, false, array( 'context' => 'dpt' ) );
 					echo '</div>';
 					echo '<span class="dpt-thumbnail-aspect-ratio" style="padding-top: ' . esc_attr( $aspect_ratio ) . '"></span>';
 				}
 			)
 		);
+	}
+
+	/**
+	 * Extract the first valid image ID from post content.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array  $args Current instance settings.
+	 */
+	public function get_first_image_id_from_post_content( $args ) {
+
+		$is_fetch_required = isset( $args['thumb_fetch'] ) && 'yes' === $args['thumb_fetch'] ? true : false;
+		if ( ! $is_fetch_required ) {
+			return false;
+		}
+
+		$content = get_the_content();
+
+		// Early exit if there's no <img tag
+		if (stripos($content, '<img') === false) {
+			return null;
+		}
+
+		libxml_use_internal_errors(true);
+		$doc = new \DOMDocument();
+		$doc->loadHTML('<?xml encoding="utf-8" ?>' . $content);
+		libxml_clear_errors();
+
+		$images = $doc->getElementsByTagName('img');
+		if ($images->length === 0) {
+			return null;
+		}
+
+		$site_url = site_url(); // Base URL of the site
+
+		foreach ($images as $img) {
+			$src = $img->getAttribute('src');
+			if (empty($src)) {
+				continue;
+			}
+
+			$class_attr = $img->getAttribute('class');
+			if ($class_attr && preg_match('/wp-image-(\d+)/', $class_attr, $matches)) {
+				$attachment_id = (int) $matches[1];
+				$attachment_url = wp_get_attachment_url($attachment_id);
+
+				if ($attachment_url) {
+					// Normalize both URLs to remove size suffix and extension
+					$src_path = wp_parse_url($src, PHP_URL_PATH);
+					$attachment_path = wp_parse_url($attachment_url, PHP_URL_PATH);
+
+					// Remove size suffix from $src_path if present
+					$src_path_clean = preg_replace('/-\d+x\d+(?=\.\w+$)/', '', $src_path);
+					$attachment_path_clean = preg_replace('/-\d+x\d+(?=\.\w+$)/', '', $attachment_path);
+					if ($src_path_clean === $attachment_path_clean) {
+						return $attachment_id;
+					}
+				}
+			}
+
+			// If not matched by class, ensure image is hosted on same domain
+			if (strpos($src, $site_url) !== 0) {
+				continue; // External image, skip
+			}
+
+			// Try attachment_url_to_postid directly
+			$attachment_id = attachment_url_to_postid($src);
+			if ($attachment_id) {
+				return $attachment_id;
+			}
+
+			// If resized image, try to reconstruct original
+			$parsed_url = wp_parse_url($src);
+			$path = $parsed_url['path'] ?? '';
+
+			if (preg_match('/^(.*)-\d+x\d+(\.\w+)$/', $path, $resize_matches)) {
+				$original_path = $resize_matches[1] . $resize_matches[2];
+				$original_url = str_replace($path, $original_path, $src);
+
+				$attachment_id = attachment_url_to_postid($original_url);
+				if ($attachment_id) {
+					return $attachment_id;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**

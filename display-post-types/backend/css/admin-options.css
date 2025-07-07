@@ -860,10 +860,18 @@ a.dpt-settings-toggle.toggle-active:after
 
 #dpt-shortcode-form label
 {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: bold;
 
     margin-bottom: 5px;
+}
+
+#dpt-shortcode-form .dpt-desc
+{
+    font-size: 13px;
+    font-style: italic;
+
+    color: #666;
 }
 
 #dpt-shortcode-form .dpt-settings-toggle
