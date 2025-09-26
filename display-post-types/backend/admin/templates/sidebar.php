@@ -13,6 +13,7 @@
 	<ul class="dpt-pro-features">
 		<li>Better looking <?php $this->mlink( 'https://easyprolabs.com/dpt-demo-page/', 'professional layouts', 'dpt-pro-link' ); ?>.</li>
 		<li>Layout customization options.</li>
+		<li>Smart sort, filter and navigation options.</li>
 		<li>Typography and color customization options.</li>
 		<li>Support for displaying custom fields and shortcodes.</li>
 		<li>Priority Email Support</li>
