@@ -18,8 +18,9 @@
         <li><span style="font-weight: bold;">Shortcode generator is recommended</span> for simplicity and broad compatibility.</li>
     </ul>
     <p><?php $this->mlink( 'https://www.youtube.com/watch?v=tTVGMylfBhU', 'Check Getting Started Video', 'button dpt-pro-docs' ); ?></p>
-    <h4>New Video</h4>
+    <h4>DPT Pro advanced features</h4>
     <p><?php $this->mlink( 'https://www.youtube.com/watch?v=v6dD4Eurs_Q', 'How many grid layouts you can make with DPT Pro?', 'button dpt-pro-docs' ); ?></p>
+    <p><?php $this->mlink( 'https://www.youtube.com/watch?v=YDeygne5Kn4', 'Using Advanced Custom Fields and Shortcodes with DPT Pro.', 'button dpt-pro-docs' ); ?></p>
     <h4>Key Features</h4>
     <ul class="dpt-list">
         <li><span style="font-weight: bold;">Fetch and organize posts</span>, pages, or custom post types using available filters.</li>

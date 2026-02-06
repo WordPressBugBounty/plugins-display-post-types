@@ -407,7 +407,7 @@ class Widget extends \WP_Widget {
 								'max'  => 10000,
 								'size' => 5,
 							),
-							'desc'          => esc_html__( 'Setting delay time to 0 will disable auto slide.', 'display-post-type' ),
+							'desc'          => esc_html__( 'Setting delay time to 0 will disable auto slide.', 'display-post-types' ),
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return ! $widget->is_style_support( $instance['styles'], 'slider' );
 							},
@@ -476,7 +476,7 @@ class Widget extends \WP_Widget {
 						'thumb_fetch' => array(
 							'setting'       => 'thumb_fetch',
 							'label'         => esc_html__( 'Fetch Thumbnail from Content as fallback', 'display-post-types' ),
-							'desc'          => esc_html__( 'If featured image is not set, fetch first image from post content as thumbnail', 'display-post-type' ),
+							'desc'          => esc_html__( 'If featured image is not set, fetch first image from post content as thumbnail', 'display-post-types' ),
 							'type'          => 'checkbox',
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return ! in_array( 'thumbnail', $instance['style_sup'], true );
@@ -867,7 +867,7 @@ class Widget extends \WP_Widget {
 						$optmar = $this->pages_checklist( $instance['pages'] );
 						break;
 					case 'cfields':
-						$optmar = $this->custom_fields_select( $instance['post_type'], $instance['filter_custom_field_key'] );
+						$optmar = $this->custom_fields_select( $set, $instance['post_type'], $instance[ $set ] );
 						break;
 					case 'cfieldsoperators':
 						$optmar = $this->custom_fields_operator_select( $instance['filter_custom_field_type'], $instance['filter_custom_field_operator'] );
@@ -1041,7 +1041,15 @@ class Widget extends \WP_Widget {
 
 		if ( 'page' === $instance['post_type'] ) {
 			// Get list of all pages.
-			$pages       = get_pages( array( 'exclude' => get_option( 'page_for_posts' ) ) );
+			$page_for_posts = (int) get_option( 'page_for_posts' );
+
+			// Get list of all pages.
+			$pages = get_pages();
+			if ( $page_for_posts ) {
+				$pages = array_filter( $pages, function( $page ) use ( $page_for_posts ) {
+					return (int) $page->ID !== $page_for_posts;
+				} );
+			}
 			$valid_pages = wp_list_pluck( $pages, 'ID' );
 
 			$instance['pages']    = array_intersect( $new_instance['pages'], $valid_pages );
@@ -1132,8 +1140,15 @@ class Widget extends \WP_Widget {
 	 */
 	public function pages_checklist( $selected_pages ) {
 
+		$page_for_posts = (int) get_option( 'page_for_posts' );
+
 		// Get list of all pages.
-		$pages = get_pages( array( 'exclude' => get_option( 'page_for_posts' ) ) );
+		$pages = get_pages();
+		if ( $page_for_posts ) {
+			$pages = array_filter( $pages, function( $page ) use ( $page_for_posts ) {
+				return (int) $page->ID !== $page_for_posts;
+			} );
+		}
 		$pages = wp_list_pluck( $pages, 'post_title', 'ID' );
 
 		$markup  = $this->label( 'pages', esc_html__( 'Select Pages', 'display-post-types' ), false );
@@ -1204,10 +1219,11 @@ class Widget extends \WP_Widget {
 	/**
 	 * Prints select list of all custom fields.
 	 *
-	 * @param str   $post_type Selected post type.
-	 * @param str   $custom_field Selected Custom Field.
+	 * @param str $for For Setting
+	 * @param str $post_type Selected post type.
+	 * @param str $custom_field Selected Custom Field.
 	 */
-	public function custom_fields_select( $post_type, $custom_field ) {
+	public function custom_fields_select( $for, $post_type, $custom_field ) {
 		$custom_fields = Get_Fn::custom_fields();
 		$options       = array_merge( array( '' => esc_html__( 'Select a Custom Field', 'display-post-types' ) ), array_combine( array_keys( $custom_fields ), array_keys( $custom_fields ) ) );
 		if ( $post_type && 'page' !== $post_type ) {
@@ -1222,8 +1238,8 @@ class Widget extends \WP_Widget {
 		$custom_fields[''] = 'always-visible';
 
 		// Custom Field Select markup.
-		$markup  = $this->label( 'filter_custom_field_key', esc_html__( 'Select a Custom Field', 'display-post-types' ), false );
-		$markup .= $this->select( 'filter_custom_field_key', $options, $custom_field, $custom_fields, false );
+		$markup  = $this->label( $for, esc_html__( 'Select a Custom Field', 'display-post-types' ), false );
+		$markup .= $this->select( $for, $options, $custom_field, $custom_fields, false );
 		return $markup;
 	}
 

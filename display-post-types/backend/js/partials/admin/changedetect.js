@@ -30,6 +30,10 @@ class ChangeDetect {
             _this.toggleTerms( jQuery(this) );
         });
 
+		widget.on('change', 'select.dpt-orderby', function() {
+			_this.toggleCustomSort( jQuery(this) );
+		});
+
         widget.on('change', 'select.dpt-styles', function() {
             _this.styleChange( jQuery(this) );
         });
@@ -62,7 +66,20 @@ class ChangeDetect {
 		});
 
 		widget.on('click', '#dpt-shortcode-generator-delete-btn', function() {
+			const modal = widget.find('#dpt-shortcode-action-modal');
+			const wrap  = modal.find('.dpt-shortcode-action-wrapper');
+			modal.removeClass( 'dpt-hidden' );
+			jQuery('html, body').animate({
+				scrollTop: wrap.offset().top - 200
+			}, 400);
+		});
+
+		widget.on('click', '#dpt-shortcode-deletion-btn', function() {
 			_this.deleteShortcode( jQuery(this) );
+		});
+
+		widget.on('click', '#dpt-shortcode-deletion-cancel', function() {
+			widget.find('#dpt-shortcode-action-modal').addClass( 'dpt-hidden' );
 		});
 
 		widget.on('click', '#dpt-shortcode-generator-update-btn', function() {
@@ -97,6 +114,20 @@ class ChangeDetect {
         doc.on( 'click', '.dpt-tab-index-item', function() {
             _this.tabFunctionality( jQuery(this) );
         });
+	}
+
+	toggleCustomSort( orderbyContainer ) {
+		const orderBy      = orderbyContainer.val();
+		const customFields = [ '.sort_custom_field_key', '.sort_custom_field_type' ];
+		const wrapper      = orderbyContainer.closest('.dpt-shortcode-form');
+		if ( 'custom' !== orderBy ) {
+			wrapper.find(customFields.join(',')).each(function() {
+				const cField = jQuery(this);
+				cField.val('').hide();
+			});
+		} else {
+			wrapper.find(customFields.join(',')).show();
+		}
 	}
 
     postTypeChange( postTypeContainer ) {
@@ -412,7 +443,7 @@ class ChangeDetect {
 						const formWrapper = jQuery('#dpt-shortcode-form');
 						const previewWrapper = jQuery('#dpt-shortcode-preview');
 						jQuery('.dpt-shortcode-result').html( '' );
-						formWrapper.html( form ).attr('data-instance', details.instance);
+						formWrapper.html( form ).data('instance', details.instance);
 						previewWrapper.html( preview );
 						jQuery(document).trigger('custom-widget-added');
 						this.newResponse('Shortcode template created successfully', 'dpt-success');
@@ -549,6 +580,7 @@ class ChangeDetect {
 		const widget   = jQuery('#dpt-options-module-shortcode');
 		const instance = widget.find('#dpt-shortcode-form').data('instance');
 		const dropdown = widget.find('select.dpt-shortcode-dropdown');
+		widget.find('#dpt-shortcode-action-modal').addClass( 'dpt-hidden' );
 		if ( 'undefined' === typeof instance ) {
 			return;
 		}

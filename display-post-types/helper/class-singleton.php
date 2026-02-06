@@ -56,6 +56,7 @@ class Singleton {
 	public function __sleep() {
 		// Unserializing instances of the class is forbidden.
 		_doing_it_wrong( __FUNCTION__, esc_html__( 'Cannot serialize a singleton.', 'display-post-types' ), '1.0.0' );
+		return array();
 	}
 
 	/**

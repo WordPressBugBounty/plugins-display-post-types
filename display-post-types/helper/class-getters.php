@@ -116,9 +116,15 @@ class Getters {
 	 * @return array
 	 */
 	public static function pagelist() {
+		$page_for_posts = (int) get_option( 'page_for_posts' );
 
 		// Get list of all pages.
-		$pages = get_pages( array( 'exclude' => get_option( 'page_for_posts' ) ) );
+		$pages = get_pages();
+		if ( $page_for_posts ) {
+			$pages = array_filter( $pages, function( $page ) use ( $page_for_posts ) {
+				return (int) $page->ID !== $page_for_posts;
+			} );
+		}
 		$pages = wp_list_pluck( $pages, 'post_title', 'ID' );
 
 		return $pages;

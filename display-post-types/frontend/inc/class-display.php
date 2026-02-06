@@ -19,13 +19,6 @@ use Display_Post_Types\Helper\Getters as Get_Fn;
 class Display {
 
 	/**
-	 * Constructor method.
-	 *
-	 * @since  1.0.0
-	 */
-	public function __construct() {}
-
-	/**
 	 * Fecilitate display post types markup rendering.
 	 *
 	 * @since  1.0.0
@@ -152,14 +145,15 @@ class Display {
 			?>
 
 			<div class="display-post-types">
-				
+
 				<?php
 				/**
 				 * Fires before display posts wrapper.
 				 *
 				 * @since 1.0.0
 				 *
-				 * @param array $action_args Settings & args for the current widget instance..
+				 * @param array $action_args Settings & args for the current widget instance.
+				 * @param int   $instance    Current instance counter.
 				 */
 				do_action( 'dpt_before_wrapper', $action_args, $instance );
 				?>
@@ -324,19 +318,5 @@ class Display {
 		$query_args['posts_per_page'] = -1;
 		$query_args['fields']         = 'ids';
 		return get_posts( $query_args );
-	}
-
-	/**
-	 * Returns the instance of this class.
-	 *
-	 * @since  1.0.0
-	 *
-	 * @return object Instance of this class.
-	 */
-	public static function get_instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
 	}
 }

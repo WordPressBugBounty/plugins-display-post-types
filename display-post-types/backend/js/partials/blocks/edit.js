@@ -400,7 +400,15 @@ class DisplayPostTypes extends Component {
 				setAttributes({ styleSup: sortedStyleSup });
 			}
 		}
-		const orderbyOptions = [
+		const orderbyOptions = this.isPro ? [
+			{ value: 'date', label: __( 'Publish Date', 'display-post-types' ) },
+			{ value: 'modified', label: __( 'Modified Date', 'display-post-types' ) },
+			{ value: 'title', label: __( 'Title', 'display-post-types' ) },
+			{ value: 'author', label: __( 'Author', 'display-post-types' ) },
+			{ value: 'comment_count', label: __( 'Comment Count', 'display-post-types' ) },
+			{ value: 'rand', label: __( 'Random', 'display-post-types' ) },
+			{ value: 'custom', label: __( 'Custom Fields', 'display-post-types' ) },
+		] : [
 			{ value: 'date', label: __( 'Publish Date', 'display-post-types' ) },
 			{ value: 'modified', label: __( 'Modified Date', 'display-post-types' ) },
 			{ value: 'title', label: __( 'Title', 'display-post-types' ) },
@@ -867,6 +875,12 @@ class DisplayPostTypes extends Component {
 										{ value: 'ASC', label: __( 'Ascending', 'display-post-types' ) },
 									] }
 								/>
+								{
+									!! this.isPro && 'custom' === orderBy &&
+									<DptAccordion initialOpen={ false } title={ __( 'Sort By Custom Fields', 'display-post-types' ) }>
+										{this.displayElems('sortCustomFields', {ifStyleSupport, customFields})}
+									</DptAccordion>
+								}
 							</DptAccordion>
 						}
 					</DptAccordion>

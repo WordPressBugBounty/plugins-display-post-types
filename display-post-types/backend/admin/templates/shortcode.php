@@ -9,7 +9,7 @@
 ?>
 <div class="dpt-shortcode-wrapper">
     <div class="dpt-shortcode-header">
-        <h3><?php printf( 'Shortcode Generator', 'display-post-types' ); ?></h3>
+        <h3><?php esc_html_e( 'Shortcode Generator', 'display-post-types' ); ?></h3>
         <div class="dpt-shortcode-action">
             <button id="dpt-shortcode-generator-btn" class="button button-primary">Create New Shortcode</button>
             <?php if ( ! empty( $shcode_gen->shortcode_settings ) ) : ?>
@@ -32,5 +32,13 @@
 				</div>
             </div>
         </div>
+    </div>
+</div>
+<div id="dpt-shortcode-action-modal" class="dpt-shortcode-action-modal dpt-hidden">
+    <div class="dpt-shortcode-action-wrapper">
+        <h3><?php esc_html_e( 'Confirm Deletion', 'display-post-types' ); ?></h3>
+        <p><?php esc_html_e( 'Are you sure you want to delete this shortcode?', 'display-post-types' ); ?></p>
+        <button id="dpt-shortcode-deletion-btn" class="button button-primary"><?php esc_html_e( 'Delete Shortcode', 'display-post-types' ); ?></button>
+        <button id="dpt-shortcode-deletion-cancel" class="button button-secondary"><?php esc_html_e( 'Cancel', 'display-post-types' ); ?></button>
     </div>
 </div>

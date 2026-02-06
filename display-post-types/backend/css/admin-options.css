@@ -766,6 +766,41 @@ a.dpt-settings-toggle.toggle-active:after
     font-weight: normal;
 }
 
+#dpt-options-page #dpt-options-module-shortcode
+{
+    position: relative;
+}
+
+#dpt-options-page .dpt-shortcode-action-modal
+{
+    position: absolute;
+    z-index: 99;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+}
+
+#dpt-options-page .dpt-shortcode-action-wrapper
+{
+    position: absolute;
+    top: 10%;
+    left: 50%;
+
+    width: auto;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px;
+
+    transform: translateX(-50%);
+
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+}
+
 .dpt-shortcode-generator
 {
     margin-top: 30px;

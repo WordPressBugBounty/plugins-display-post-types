@@ -27,6 +27,10 @@ class ChangeDetect {
             _this.toggleTerms( jQuery(this) );
         });
 
+		widget.on('change', 'select.dpt-orderby', function() {
+			_this.toggleCustomSort( jQuery(this) );
+		});
+
         widget.on('change', 'select.dpt-styles', function() {
             _this.styleChange( jQuery(this) );
         });
@@ -50,6 +54,20 @@ class ChangeDetect {
 		doc.on( 'click', '.dpt-tab-index-item', function() {
             _this.tabFunctionality( jQuery(this) );
         });
+	}
+
+	toggleCustomSort( orderbyContainer ) {
+		const orderBy      = orderbyContainer.val();
+		const customFields = [ '.sort_custom_field_key', '.sort_custom_field_type' ];
+		const wrapper      = orderbyContainer.closest('.dpt-shortcode-form');
+		if ( 'custom' !== orderBy ) {
+			wrapper.find(customFields.join(',')).each(function() {
+				const cField = jQuery(this);
+				cField.val('').hide();
+			});
+		} else {
+			wrapper.find(customFields.join(',')).show();
+		}
 	}
 
     postTypeChange( postTypeContainer ) {

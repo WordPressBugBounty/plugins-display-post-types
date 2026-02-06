@@ -33,8 +33,8 @@ class Security {
 			array(
 				'title'         => 'string',
 				'post_type'     => 'string',
-				'taxonomy'      => 'string',
-				'terms'         => 'arrstring',
+				'taxonomy'      => 'taxonomy',
+				'terms'         => 'terms',
 				'relation'      => 'string',
 				'post_ids'      => 'string',
 				'pages'         => 'string',
@@ -83,7 +83,7 @@ class Security {
         $setting_type = self::setting_type();
         foreach ( $data as $key => $value ) {
             $type = isset( $setting_type[ $key ] ) ? $setting_type[ $key ] : ( is_array( $value ) ? 'arrstring' : 'string' );
-            $data[ $key ] = self::sanitize( $value, $type );
+            $data[ $key ] = self::sanitize( $value, $type, $data );
         }
         return $data;
     }
@@ -114,8 +114,9 @@ class Security {
 	 *
 	 * @param mixed  $data      data to be sanitized.
      * @param string $data_type data type to apply correct sanitization.
+	 * @param array  $instance  All data array to establish connection.
 	 */
-	public static function sanitize( $data, $data_type ) {
+	public static function sanitize( $data, $data_type, $instance ) {
 		switch ( $data_type ) {
             case 'string':
                 $data = sanitize_text_field( $data );
@@ -141,8 +142,30 @@ class Security {
                 $data = ! is_array( $data ) ? explode( ',', $data ) : $data;
                 $data = array_map( 'sanitize_text_field', $data );
                 break;
+			case 'taxonomy':
+				if ( ! empty( $instance['post_type'] ) && 'page' !== $instance['post_type'] ) {
+					$taxonomies = get_object_taxonomies( $instance['post_type'], 'objects' );
+					$taxonomies = wp_list_pluck( $taxonomies, 'label', 'name' );
+					$data       = array_key_exists( $data, $taxonomies ) ? $data : '';
+				} else {
+					$data = '';
+				}
+				break;
+			case 'terms':
+				$data = ! is_array( $data ) ? explode( ',', $data ) : $data;
+				if ( $instance['taxonomy'] && $data ) {
+					$terms       = get_terms( array( 'taxonomy' => $instance['taxonomy'] ) );
+					$terms       = wp_list_pluck( $terms, 'name', 'slug' );
+					$valid_terms = array_keys( $terms );
+
+					$data = array_intersect( $data, $valid_terms );
+				} else {
+					$data = array();
+				}
+				break;
             case 'check':
                 $data = 'yes' === $data ? 'yes' : '';
+				break;
             default:
                 $data = sanitize_text_field( $data );
                 break;
@@ -162,6 +185,7 @@ class Security {
 	public static function escape( $data, $data_type ) {
 		switch ( $data_type ) {
             case 'string':
+			case 'taxonomy':
                 $data = esc_html( $data );
                 break;
             case 'int':
@@ -182,6 +206,7 @@ class Security {
 				}
                 break;
             case 'arrstring':
+			case 'terms':
                 $data = ! is_array( $data ) ? explode( ',', $data ) : $data;
                 $data = array_map( 'esc_html', $data );
                 break;

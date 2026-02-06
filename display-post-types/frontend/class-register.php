@@ -789,7 +789,7 @@ class Register {
 		$teaser_button = isset( $args['excerpt_teaser_btn'] ) && $args['excerpt_teaser_btn'] ? true : false;
 
 		// Generate excerpt teaser text and link.
-		$exrpt_text  = $args['e_teaser'] ? esc_html( $args['e_teaser'] ) : ( $teaser_button ? esc_html__( 'Continue Reading', 'dpt-pro' ) : '' );
+		$exrpt_text  = $args['e_teaser'] ? esc_html( $args['e_teaser'] ) : ( $teaser_button ? esc_html__( 'Continue Reading', 'display-post-types' ) : '' );
 		$excerpt_teaser = '';
 		$teaser_class = $excerpt_length > 0 ? 'dpt-has-teaser dpt-link-more' : 'dpt-link-more';
 		if ( $exrpt_text ) {

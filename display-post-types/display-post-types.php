@@ -14,7 +14,7 @@
  * @wordpress-plugin
  * Plugin Name: Display Post Types
  * Description: Filter, sort and display post, page or any post type.
- * Version: 3.2.0
+ * Version: 3.2.5
  * Author: easyprolabs
  * Author URI: https://easyprolabs.com/display-post-types/
  * License: GPL-3.0+
@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 // Currently plugin version.
 if ( ! defined( 'DISPLAY_POST_TYPES_VERSION' ) ) {
-    define( 'DISPLAY_POST_TYPES_VERSION', '3.2.0' );
+    define( 'DISPLAY_POST_TYPES_VERSION', '3.2.5' );
 }
 
 // Define plugin constants.
@@ -102,15 +102,7 @@ add_action(
 	8
 );
 
-add_action(
-	'init',
-	function() {
-		// Load plugin's text domain.
-		load_plugin_textdomain( 'display-post-types', false, DISPLAY_POST_TYPES_DIR . 'lang/' );
-	}
-);
-
 // Load premium features (if exist).
 if ( file_exists( DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php' ) ) {
-	// require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
+	require_once DISPLAY_POST_TYPES_DIR . '/dpt-pro/dpt-pro.php';
 }

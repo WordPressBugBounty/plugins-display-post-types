@@ -222,7 +222,6 @@ class Markup {
 		 *
 		 * @param string $located Located template file.
 		 * @param string $path Template relative path.
-		 * @param string $name Template file name.
 		 */
 		return apply_filters( 'dpt_locate_admin_template', $located, $path );
 	}
