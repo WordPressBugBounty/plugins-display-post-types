@@ -92,6 +92,22 @@ class Register {
 	}
 
 	/**
+	 * Ensure the current user has sufficient capabilities to perform admin actions.
+	 */
+	private function require_capabilities() {
+		if ( current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		wp_send_json_error(
+			array(
+				'error' => __( 'You are not allowed to perform this action.', 'display-post-types' ),
+			),
+			403
+		);
+	}
+
+	/**
 	 * Register the custom Widget.
 	 *
 	 * @since 1.0.0
@@ -202,10 +218,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.6', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '7', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.6.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.7.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}
@@ -229,22 +245,25 @@ class Register {
 	 */
 	public function get_dpt_preview() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$args = isset( $_POST['data'] ) ? Security::escape_all( wp_unslash( $_POST['data'] ) ) : false;
 		if ( false === $args || ! is_array( $args ) ) {
-			echo wp_json_encode( array(
-				'error' => __( 'Invalid data provided', 'display-post-types' ),
-			) );
-			wp_die();
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid data provided', 'display-post-types' ),
+				)
+			);
 		}
 		ob_start();
 		Display::init( $args );
 		$content = ob_get_clean();
 		$dpt = Instance_Counter::get_instance();
-		echo wp_json_encode( array(
-			'markup' => $content,
-			'instances' => $dpt->get_script_data(),
-		) );
-		wp_die();
+		wp_send_json_success(
+			array(
+				'markup'    => $content,
+				'instances' => $dpt->get_script_data(),
+			)
+		);
 	}
 
 	/**
@@ -254,17 +273,19 @@ class Register {
 	 */
 	public function get_shortcode_form() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
 		$instance       = empty( $shortcode_list ) || ! is_array( $shortcode_list ) ? 0 : max( array_keys( $shortcode_list ) ) + 1;
 		ob_start();
 		$shcode_gen->form( $instance );
 		$form = ob_get_clean();
-		echo wp_json_encode( array(
-			'form'     => $form,
-			'instance' => $instance,
-		) );
-		wp_die();
+		wp_send_json_success(
+			array(
+				'form'     => $form,
+				'instance' => $instance,
+			)
+		);
 	}
 
 	/**
@@ -274,23 +295,26 @@ class Register {
 	 */
 	public function create_new_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$args = isset( $_POST['data'] ) ? Security::sanitize_all( wp_unslash( $_POST['data'] ) ) : false;
 		$inst = isset( $_POST['instance'] ) ? absint(wp_unslash( $_POST['instance'] )) : false;
 		if ( false === $args || false === $inst ) {
-			echo wp_json_encode( array(
-				'error'     => __( 'Shortcode data not provided correctly.', 'display-post-types' ),
-			) );
-			wp_die();
+			wp_send_json_error(
+				array(
+					'message' => __( 'Shortcode data not provided correctly.', 'display-post-types' ),
+				)
+			);
 		}
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
 		$shortcode_list[ $inst ] = $args;
 		$shcode_gen->shortcode_settings = $shortcode_list;
 		$shcode_gen->save();
-		echo wp_json_encode( array(
-			'success' => __( 'Shortcode created successfully.', 'display-post-types' ),
-		) );
-		wp_die();
+		wp_send_json_success(
+			array(
+				'message' => __( 'Shortcode created successfully.', 'display-post-types' ),
+			)
+		);
 	}
 
 	/**
@@ -300,12 +324,14 @@ class Register {
 	 */
 	public function load_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$instance = isset( $_POST['instance'] ) ? absint( wp_unslash( $_POST['instance'] ) ) : false;
 		if ( false === $instance ) {
-			echo wp_json_encode( array(
-				'error' => __( 'Invalid data provided', 'display-post-types' ),
-			) );
-			wp_die();
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid data provided', 'display-post-types' ),
+				)
+			);
 		}
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
@@ -317,13 +343,14 @@ class Register {
 		$shcode_gen->form( $instance );
 		$form = ob_get_clean();
 		$dpt = Instance_Counter::get_instance();
-		echo wp_json_encode( array(
-			'form'      => $form,
-			'preview'   => $preview,
-			'instance'  => $instance,
-			'instances' => $dpt->get_script_data(),
-		) );
-		wp_die();
+		wp_send_json_success(
+			array(
+				'form'      => $form,
+				'preview'   => $preview,
+				'instance'  => $instance,
+				'instances' => $dpt->get_script_data(),
+			)
+		);
 	}
 
 	/**
@@ -333,12 +360,14 @@ class Register {
 	 */
 	public function delete_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$instance = isset( $_POST['instance'] ) ? absint( wp_unslash( $_POST['instance'] ) ) : false;
 		if ( false === $instance ) {
-			echo wp_json_encode( array(
-				'error' => __( 'Invalid data provided', 'display-post-types' ),
-			) );
-			wp_die();
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid data provided', 'display-post-types' ),
+				)
+			);
 		}
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
@@ -347,10 +376,7 @@ class Register {
 			$shcode_gen->shortcode_settings = $shortcode_list;
 			$shcode_gen->save();
 		}
-		echo wp_json_encode( array(
-			'success' => true,
-		) );
-		wp_die();
+		wp_send_json_success();
 	}
 
 	/**
@@ -360,23 +386,26 @@ class Register {
 	 */
 	public function update_shortcode() {
 		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
 		$args = isset( $_POST['data'] ) ? Security::sanitize_all( wp_unslash( $_POST['data'] ) ) : false;
 		$inst = isset( $_POST['instance'] ) ? absint(wp_unslash( $_POST['instance'] )) : false;
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
 		if ( false === $args || false === $inst || ! isset( $shortcode_list[ $inst ] ) ) {
-			echo wp_json_encode( array(
-				'error'     => __( 'Shortcode data not provided correctly.', 'display-post-types' ),
-			) );
-			wp_die();
+			wp_send_json_error(
+				array(
+					'message' => __( 'Shortcode data not provided correctly.', 'display-post-types' ),
+				)
+			);
 		}
 		$shortcode_list[ $inst ] = $args;
 		$shcode_gen->shortcode_settings = $shortcode_list;
 		$shcode_gen->save();
-		echo wp_json_encode( array(
-			'success' => __( 'Shortcode updated successfully.', 'display-post-types' ),
-		) );
-		wp_die();
+		wp_send_json_success(
+			array(
+				'message' => __( 'Shortcode updated successfully.', 'display-post-types' ),
+			)
+		);
 	}
 
 	/**

@@ -697,10 +697,15 @@ class Register {
 			return null;
 		}
 
-		libxml_use_internal_errors(true);
+		if ( ! class_exists( 'DOMDocument' ) ) {
+			return false;
+		}
+
+		$previous_libxml_state = libxml_use_internal_errors(true);
 		$doc = new \DOMDocument();
 		$doc->loadHTML('<?xml encoding="utf-8" ?>' . $content);
 		libxml_clear_errors();
+		libxml_use_internal_errors( $previous_libxml_state );
 
 		$images = $doc->getElementsByTagName('img');
 		if ($images->length === 0) {

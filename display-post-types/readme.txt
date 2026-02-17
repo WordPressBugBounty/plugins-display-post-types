@@ -4,7 +4,7 @@ Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.2.5
+Stable tag: 3.2.6
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,9 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+= 3.2.6 =
+* Big Fixes and code improvements.
+
 = 3.2.5 =
 * Pro Feature: Sort by Custom Fields feature.
 

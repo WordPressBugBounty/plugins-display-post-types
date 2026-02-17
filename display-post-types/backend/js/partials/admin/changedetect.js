@@ -379,6 +379,41 @@ class ChangeDetect {
 		return { instance, values };
 	}
 
+	normalizeAjaxResponse(response) {
+		let details = response;
+		if ( 'string' === typeof response ) {
+			try {
+				details = JSON.parse( response );
+			} catch (e) {
+				return {};
+			}
+		}
+
+		if ( ! details || 'object' !== typeof details ) {
+			return {};
+		}
+
+		if ( Object.prototype.hasOwnProperty.call( details, 'success' ) && Object.prototype.hasOwnProperty.call( details, 'data' ) ) {
+			if ( false === details.success ) {
+				const errorMessage = details.data && ( details.data.message || details.data.error || details.data );
+				return {
+					error: errorMessage || ''
+				};
+			}
+
+			if ( true === details.success ) {
+				if ( details.data && 'object' === typeof details.data ) {
+					return details.data;
+				}
+				return {
+					success: true
+				};
+			}
+		}
+
+		return details;
+	}
+
 	updatePreview( input ) {
 		const { instance, values } = this.getShortcodeFormValues();
 		// Let's get next set of episodes.
@@ -389,13 +424,13 @@ class ChangeDetect {
 				security: vars.security,
 				data    : values,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.markup) {
 						const wrapper = jQuery('#dpt-shortcode-preview');
 						wrapper.html( details.markup );
@@ -418,13 +453,13 @@ class ChangeDetect {
 				action  : 'dpt_blank_shortcode_template',
 				security: vars.security,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.form && 'undefined' !== typeof details.instance) {
 						const form = `
 						<div class="dpt-shortcode-form-wrapper">${details.form}</div>
@@ -468,17 +503,17 @@ class ChangeDetect {
 				data    : values,
 				instance: instance,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
-					} else if ('undefined' !== typeof details.success) {
-						const widget   = jQuery('#dpt-options-module-shortcode');
-						const wrapper  = widget.find('.dpt-shortcode-action');
-						let dropdown = widget.find('select.dpt-shortcode-dropdown');
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
+						} else {
+							const widget   = jQuery('#dpt-options-module-shortcode');
+							const wrapper  = widget.find('.dpt-shortcode-action');
+							let dropdown = widget.find('select.dpt-shortcode-dropdown');
 						if (0 === dropdown.length) {
 							wrapper.append(`
 								<span class="dpt-separator">or</span>
@@ -525,13 +560,13 @@ class ChangeDetect {
 				security: vars.security,
 				instance: instance,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.form && 'undefined' !== typeof details.preview) {
 						const form = `
 						<div class="dpt-shortcode-form-wrapper">${details.form}</div>
@@ -592,17 +627,17 @@ class ChangeDetect {
 				security: vars.security,
 				instance: instance,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
-					} else if ('undefined' !== typeof details.success) {
-						dropdown.val('');
-						dropdown.find(`option[value="${instance}"]`).remove();
-						// check if dropdown does not have any option left.
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
+						} else {
+							dropdown.val('');
+							dropdown.find(`option[value="${instance}"]`).remove();
+							// check if dropdown does not have any option left.
 						if ( 0 === dropdown.find('option').length ) {
 							dropdown.remove();
 						} else {
@@ -633,17 +668,17 @@ class ChangeDetect {
 				data    : values,
 				instance: instance,
 			},
-			type: 'POST',
-			timeout: 60000,
-			success: response => {
-				const details = JSON.parse( response );
-				if (!jQuery.isEmptyObject(details)) {
-					if ('undefined' !== typeof details.error) {
-						this.newResponse(details.error, 'dpt-error');
-					} else if ('undefined' !== typeof details.success) {
-						this.newResponse('Shortcode updated successfully', 'dpt-success');
+				type: 'POST',
+				timeout: 60000,
+				success: response => {
+					const details = this.normalizeAjaxResponse( response );
+					if (!jQuery.isEmptyObject(details)) {
+						if ('undefined' !== typeof details.error) {
+							this.newResponse(details.error, 'dpt-error');
+						} else {
+							this.newResponse('Shortcode updated successfully', 'dpt-success');
+						}
 					}
-				}
 			},
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
