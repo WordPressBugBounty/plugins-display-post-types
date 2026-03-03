@@ -81,12 +81,22 @@ class Instance_Counter {
 	private $script_data = array();
 
 	/**
+	 * DPT inline CSS data.
+	 *
+	 * @since  3.3.0
+	 * @access private
+	 * @var    array
+	 */
+	private $inline_css = array();
+
+	/**
 	 * Constructor method.
 	 *
 	 * @since  1.0.0
 	 */
 	public function __construct() {
 		$this->counter = wp_rand( 1, 1000 );
+		add_action( 'wp_footer', array( $this, 'render_inline_css' ), 99 );
 	}
 
 	/**
@@ -187,6 +197,40 @@ class Instance_Counter {
 	 */
 	public function add_script_data( $instance, $data ) {
 		$this->script_data[ $instance ] = $data;
+	}
+
+	/**
+	 * Add inline CSS.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param string $css CSS rule.
+	 */
+	public function add_inline_css( $css ) {
+		$this->inline_css[] = $css;
+	}
+
+	/**
+	 * Get inline CSS string.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @return string
+	 */
+	public function get_inline_css() {
+		return implode( ' ', $this->inline_css );
+	}
+
+	/**
+	 * Render gathered inline CSS in the footer.
+	 *
+	 * @since 3.3.0
+	 */
+	public function render_inline_css() {
+		if ( ! empty( $this->inline_css ) ) {
+			$css = $this->get_inline_css();
+			printf( '<style type="text/css" id="dpt-dynamic-css">%1$s</style>', wp_strip_all_tags( $css, true ) );
+		}
 	}
 
 	/**

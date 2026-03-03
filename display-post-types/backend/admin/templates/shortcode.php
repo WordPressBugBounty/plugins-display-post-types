@@ -9,9 +9,8 @@
 ?>
 <div class="dpt-shortcode-wrapper">
     <div class="dpt-shortcode-header">
-        <h3><?php esc_html_e( 'Shortcode Generator', 'display-post-types' ); ?></h3>
         <div class="dpt-shortcode-action">
-            <button id="dpt-shortcode-generator-btn" class="button button-primary">Create New Shortcode</button>
+            <button id="dpt-shortcode-generator-btn" class="button button-primary !rounded">Create New Shortcode</button>
             <?php if ( ! empty( $shcode_gen->shortcode_settings ) ) : ?>
                 <span class="dpt-separator">or</span>
                 <?php echo $shcode_gen->dropdown(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

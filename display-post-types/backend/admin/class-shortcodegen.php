@@ -837,7 +837,25 @@ class ShortCodeGen {
 						break;
 					case 'number':
 						$optmar  = $this->label( $set, $label, false );
-						$optmar .= sprintf( '<input class="widefat dpt-getval" name="%1$s" id="%2$s" type="number" value="%3$s" %4$s />', $name, $id, esc_attr( $instance[ $set ] ), $inputattr );
+
+						$range_attrs = $inputattr;
+						if ( false === strpos( $range_attrs, 'min=' ) ) {
+							$range_attrs .= ' min="0"';
+						}
+						// Sensible default max if not defined
+						if ( false === strpos( $range_attrs, 'max=' ) ) {
+							$range_attrs .= ' max="200"';
+						}
+						if ( false === strpos( $range_attrs, 'step=' ) ) {
+							$range_attrs .= ' step="1"';
+						}
+						$range_id = esc_attr( $id . '_range' );
+
+						$optmar .= '<div class="dpt-slider-group">';
+						$optmar .= sprintf( '<input class="dpt-range-slider" id="%1$s" type="range" value="%2$s" aria-label="%3$s" %4$s />', $range_id, esc_attr( $instance[ $set ] ), esc_attr( wp_strip_all_tags( $label ) ), $range_attrs );
+						$optmar .= sprintf( '<input class="dpt-getval dpt-number-input" name="%1$s" id="%2$s" type="number" value="%3$s" aria-controls="%4$s" %5$s />', $name, $id, esc_attr( $instance[ $set ] ), $range_id, $inputattr );
+						$optmar .= '</div>';
+
 						$optmar .= sprintf( '<div class="dpt-desc">%s</div>', $desc );
 						break;
 					case 'textarea':
@@ -882,8 +900,9 @@ class ShortCodeGen {
 				$default_markup = $markup;
 			} else {
 				$opstyle         = $showop ? '' : 'style="display: none;"';
-				$section         = sprintf( '<a class="dpt-settings-toggle dpt-%1$s-toggle" %2$s>%3$s</a>', $option, $opstyle, $args['title'] );
-				$section        .= sprintf( '<div class="dpt-settings-content dpt-%1$s-content">%2$s</div>', $option, $markup );
+				$section_id      = esc_attr( $this->get_field_id( 'section_' . $option ) );
+				$section         = sprintf( '<a class="dpt-settings-toggle dpt-%1$s-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="%4$s" %2$s>%3$s</a>', $option, $opstyle, $args['title'], $section_id );
+				$section        .= sprintf( '<div class="dpt-settings-content dpt-%1$s-content" id="%3$s">%2$s</div>', $option, $markup, $section_id );
 				$options_markup .= $section;
 			}
 		}
@@ -976,12 +995,14 @@ class ShortCodeGen {
 		}
 
 		if ( 'toggle' === $type ) {
+			$content_id = esc_attr( $this->get_field_id( 'toggle_' . $key ) );
 			$content = sprintf(
-				'<div class="dpt-wrapper-container dpt-toggle-container %1$s" %2$s><a class="dpt-settings-toggle">%3$s</a><div class="dpt-settings-content">%4$s</div></div>',
+				'<div class="dpt-wrapper-container dpt-toggle-container %1$s" %2$s><a class="dpt-settings-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="%5$s">%3$s</a><div class="dpt-settings-content" id="%5$s">%4$s</div></div>',
 				$class,
 				$style,
 				$label,
-				$content
+				$content,
+				$content_id
 			);
 		} elseif ( 'normal' === $type ) {
 			$content = sprintf(

@@ -11,117 +11,234 @@ class ChangeDetect {
 		this.muChecklistTimer = null;
 		this.newFeedback = jQuery('#dpt-action-feedback');
 		this.serverTimeOut = null;
+		this.hasUnsavedChanges = false;
 		// Run methods.
 		this.events();
+		this.initRangeSliders();
+		this.syncToggleAria();
+	}
+
+	setUnsavedState() {
+		this.hasUnsavedChanges = true;
+		const updateBtn = jQuery('#dpt-shortcode-generator-update-btn');
+		if (updateBtn.length && !updateBtn.hasClass('dpt-unsaved')) {
+			updateBtn.addClass('dpt-unsaved');
+			if (updateBtn.find('.dpt-unsaved-dot').length === 0) {
+				updateBtn.append('<span class="dpt-unsaved-dot" style="display:inline-block; width:8px; height:8px; background-color:red; border-radius:50%; margin-left:8px;"></span>');
+			}
+		}
+	}
+
+	clearUnsavedState() {
+		this.hasUnsavedChanges = false;
+		const updateBtn = jQuery('#dpt-shortcode-generator-update-btn');
+		updateBtn.removeClass('dpt-unsaved');
+		updateBtn.find('.dpt-unsaved-dot').remove();
 	}
 
 	// Event handling.
 	events() {
-		const _this  = this;
+		const _this = this;
 		const widget = jQuery('#dpt-options-module-shortcode');
-		const doc    = jQuery(document);
+		const doc = jQuery(document);
 
-        // Add event triggers to the show/hide items.
-        widget.on('change', 'select.dpt-post-type', function() {
-            _this.postTypeChange( jQuery(this) );
-        });
-
-        widget.on('change', 'select.dpt-taxonomy', function() {
-            _this.toggleTerms( jQuery(this) );
-        });
-
-		widget.on('change', 'select.dpt-orderby', function() {
-			_this.toggleCustomSort( jQuery(this) );
+		// Add event triggers to the show/hide items.
+		widget.on('change', 'select.dpt-post-type', function () {
+			_this.postTypeChange(jQuery(this));
 		});
 
-        widget.on('change', 'select.dpt-styles', function() {
-            _this.styleChange( jQuery(this) );
-        });
-
-        widget.on('change', 'select.dpt-img-aspect', function() {
-            _this.showCroppos( jQuery(this) );
-        });
-
-        widget.on('change', 'input[type="checkbox"].spcheckbox', function() {
-            _this.showElemOptions( jQuery(this) );
-        });
-
-		widget.on('change', '.dpt-mu-checklist input[type="checkbox"]', function() {
-			_this.updateMuChecklist( jQuery(this) );
+		widget.on('change', 'select.dpt-taxonomy', function () {
+			_this.toggleTerms(jQuery(this));
 		});
 
-		widget.on('change', '.dpt-getval', function() {
-			clearTimeout( _this.serverTimeOut );
-			_this.serverTimeOut = setTimeout( function() {
-				_this.updatePreview( jQuery(this) );
-			}, 100);
+		widget.on('change', 'select.dpt-orderby', function () {
+			_this.toggleCustomSort(jQuery(this));
 		});
 
-		widget.on('click', '#dpt-shortcode-generator-btn', function() {
-			_this.blankShortcodeTemplate( jQuery(this) );
+		widget.on('change', 'select.dpt-styles', function () {
+			_this.styleChange(jQuery(this));
 		});
 
-		widget.on('click', '#dpt-shortcode-generator-submit-btn', function() {
-			_this.createNewShortcode( jQuery(this) );
+		widget.on('change', 'select.dpt-img-aspect', function () {
+			_this.showCroppos(jQuery(this));
 		});
 
-		widget.on('click', '#dpt-shortcode-generator-delete-btn', function() {
+		widget.on('change', 'input[type="checkbox"].spcheckbox', function () {
+			_this.showElemOptions(jQuery(this));
+		});
+
+		widget.on('change', '.dpt-mu-checklist input[type="checkbox"]', function () {
+			_this.updateMuChecklist(jQuery(this));
+		});
+
+		widget.on('input change', '.dpt-range-slider', function () {
+			_this.syncRangeToNumber(jQuery(this));
+		});
+
+		widget.on('input change', '.dpt-number-input', function () {
+			_this.syncNumberToRange(jQuery(this));
+		});
+
+		widget.on('change input', '.dpt-getval', function () {
+			clearTimeout(_this.serverTimeOut);
+			const $this = jQuery(this);
+			_this.serverTimeOut = setTimeout(function () {
+				_this.updatePreview($this);
+			}, 600);
+			_this.setUnsavedState();
+		});
+
+		window.addEventListener('beforeunload', function (e) {
+			if (_this.hasUnsavedChanges) {
+				e.preventDefault();
+				e.returnValue = '';
+			}
+		});
+
+		widget.on('click', '#dpt-shortcode-generator-btn', function () {
+			_this.blankShortcodeTemplate(jQuery(this));
+		});
+
+		widget.on('click', '#dpt-shortcode-generator-submit-btn', function () {
+			_this.createNewShortcode(jQuery(this));
+		});
+
+		widget.on('click', '#dpt-shortcode-generator-delete-btn', function () {
 			const modal = widget.find('#dpt-shortcode-action-modal');
-			const wrap  = modal.find('.dpt-shortcode-action-wrapper');
-			modal.removeClass( 'dpt-hidden' );
+			const wrap = modal.find('.dpt-shortcode-action-wrapper');
+			modal.removeClass('dpt-hidden');
 			jQuery('html, body').animate({
 				scrollTop: wrap.offset().top - 200
 			}, 400);
 		});
 
-		widget.on('click', '#dpt-shortcode-deletion-btn', function() {
-			_this.deleteShortcode( jQuery(this) );
+		widget.on('click', '#dpt-shortcode-deletion-btn', function () {
+			_this.deleteShortcode(jQuery(this));
 		});
 
-		widget.on('click', '#dpt-shortcode-deletion-cancel', function() {
-			widget.find('#dpt-shortcode-action-modal').addClass( 'dpt-hidden' );
+		widget.on('click', '#dpt-shortcode-deletion-cancel', function () {
+			widget.find('#dpt-shortcode-action-modal').addClass('dpt-hidden');
 		});
 
-		widget.on('click', '#dpt-shortcode-generator-update-btn', function() {
-			_this.updateShortcode( jQuery(this) );
+		widget.on('click', '#dpt-shortcode-generator-update-btn', function () {
+			_this.updateShortcode(jQuery(this));
 		});
 
-		widget.on('change', 'select.dpt-shortcode-dropdown', function() {
-			_this.loadShortcode( jQuery(this) );
+		widget.on('change', 'select.dpt-shortcode-dropdown', function () {
+			_this.loadShortcode(jQuery(this));
 		});
 
-		widget.on('click', '.dpt-collapse-sidebar', function(e) {
+		widget.on('click', '.dpt-collapse-sidebar', function (e) {
 			e.preventDefault();
-			_this.toggleSidebar( jQuery(this) );
+			_this.toggleSidebar(jQuery(this));
 		});
 
-		widget.on('click', '.dpt-copy-shortcode-text', function(e) {
+		widget.on('click', '.dpt-copy-shortcode-text', function (e) {
 			e.preventDefault();
-			_this.copyShortcodeText( jQuery(this) );
+			_this.copyShortcodeText(jQuery(this));
 		});
 
 		this.newFeedback.on('click', '.dpt-error-close', (e) => {
 			this.newFeedback.removeClass('dpt-error');
 		});
-    
-        doc.on( 'click', '.dpt-settings-toggle', function( event ) {
-            const $this = jQuery( this );
-            event.preventDefault();
-            $this.next( '.dpt-settings-content' ).slideToggle('fast');
-            $this.toggleClass( 'toggle-active' );
-        });
 
-        doc.on( 'click', '.dpt-tab-index-item', function() {
-            _this.tabFunctionality( jQuery(this) );
-        });
+		doc.on('click', '.dpt-collapse-all-toggles', function (event) {
+			event.preventDefault();
+			jQuery('#dpt-shortcode-form .dpt-settings-toggle').removeClass('toggle-active');
+			jQuery('#dpt-shortcode-form .dpt-settings-content').slideUp('fast', function () {
+				_this.updateCollapseAllButton();
+				_this.syncToggleAria();
+			});
+			_this.updateCollapseAllButton();
+			_this.syncToggleAria();
+		});
+
+		doc.on('click', '.dpt-settings-toggle', function (event) {
+			const $this = jQuery(this);
+			event.preventDefault();
+			$this.next('.dpt-settings-content').slideToggle('fast', function () {
+				_this.updateCollapseAllButton();
+				_this.syncToggleAria();
+			});
+			$this.toggleClass('toggle-active');
+			_this.updateCollapseAllButton();
+			_this.syncToggleAria();
+		});
+
+		doc.on('keydown', '.dpt-settings-toggle', function (event) {
+			if ('Enter' === event.key || ' ' === event.key) {
+				event.preventDefault();
+				jQuery(this).trigger('click');
+			}
+		});
+
+		doc.on('click', '.dpt-tab-index-item', function () {
+			_this.tabFunctionality(jQuery(this));
+		});
+
+		doc.on('custom-widget-added', function () {
+			_this.initRangeSliders();
+			_this.syncToggleAria();
+		});
 	}
 
-	toggleCustomSort( orderbyContainer ) {
-		const orderBy      = orderbyContainer.val();
-		const customFields = [ '.sort_custom_field_key', '.sort_custom_field_type' ];
-		const wrapper      = orderbyContainer.closest('.dpt-shortcode-form');
-		if ( 'custom' !== orderBy ) {
-			wrapper.find(customFields.join(',')).each(function() {
+	syncToggleAria(context = jQuery(document)) {
+		context.find('.dpt-settings-toggle').each((index, toggleNode) => {
+			const toggle = jQuery(toggleNode);
+			const expanded = toggle.hasClass('toggle-active');
+			toggle.attr('aria-expanded', expanded ? 'true' : 'false');
+		});
+	}
+
+	initRangeSliders(context = jQuery(document)) {
+		context.find('.dpt-slider-group').each((index, groupNode) => {
+			const group = jQuery(groupNode);
+			const range = group.find('.dpt-range-slider');
+			const number = group.find('.dpt-number-input');
+
+			if (!range.length || !number.length) {
+				return;
+			}
+
+			if ('' !== number.val()) {
+				range.val(number.val());
+			} else if ('' !== range.val()) {
+				number.val(range.val());
+			}
+
+			this.updateRangeProgress(range);
+		});
+	}
+
+	syncRangeToNumber(rangeInput) {
+		const group = rangeInput.closest('.dpt-slider-group');
+		const numberInput = group.find('.dpt-number-input');
+		numberInput.val(rangeInput.val()).trigger('input');
+		this.updateRangeProgress(rangeInput);
+	}
+
+	syncNumberToRange(numberInput) {
+		const group = numberInput.closest('.dpt-slider-group');
+		const rangeInput = group.find('.dpt-range-slider');
+		rangeInput.val(numberInput.val());
+		this.updateRangeProgress(rangeInput);
+	}
+
+	updateRangeProgress(rangeInput) {
+		const min = Number(rangeInput.attr('min') || 0);
+		const max = Number(rangeInput.attr('max') || 100);
+		const value = Number(rangeInput.val() || min);
+		const delta = Math.max(max - min, 1);
+		const percent = Math.min(Math.max(((value - min) * 100) / delta, 0), 100);
+		rangeInput.css('--dpt-slider-progress', `${percent}%`);
+	}
+
+	toggleCustomSort(orderbyContainer) {
+		const orderBy = orderbyContainer.val();
+		const customFields = ['.sort_custom_field_key', '.sort_custom_field_type'];
+		const wrapper = orderbyContainer.closest('.dpt-shortcode-form');
+		if ('custom' !== orderBy) {
+			wrapper.find(customFields.join(',')).each(function () {
 				const cField = jQuery(this);
 				cField.val('').hide();
 			});
@@ -130,49 +247,49 @@ class ChangeDetect {
 		}
 	}
 
-    postTypeChange( postTypeContainer ) {
-        const postType      = postTypeContainer.val();
-		const wrapper       = postTypeContainer.closest('.dpt-shortcode-form');
-        const toggleBtn     = wrapper.find('.dpt-settings-toggle');
+	postTypeChange(postTypeContainer) {
+		const postType = postTypeContainer.val();
+		const wrapper = postTypeContainer.closest('.dpt-shortcode-form');
+		const toggleBtn = wrapper.find('.dpt-settings-toggle');
 		const toggleContent = wrapper.find('.dpt-settings-content');
-		const taxonomy      = wrapper.find( 'select.dpt-taxonomy' );
-		const customFieldKey   = wrapper.find( 'select.dpt-filter-custom-field-key' );
-		const customFieldOp    = wrapper.find( 'select.dpt-filter-custom-field-operator' );
-		const customFieldValue = wrapper.find( 'input.dpt-filter-custom-field-value' );
-		const customFieldType  = wrapper.find( 'select.dpt-filter-custom-field-type' );
-		const postSupports  = [
+		const taxonomy = wrapper.find('select.dpt-taxonomy');
+		const customFieldKey = wrapper.find('select.dpt-filter-custom-field-key');
+		const customFieldOp = wrapper.find('select.dpt-filter-custom-field-operator');
+		const customFieldValue = wrapper.find('input.dpt-filter-custom-field-value');
+		const customFieldType = wrapper.find('select.dpt-filter-custom-field-type');
+		const postSupports = [
 			'.post_ids',
 			'.taxonomy',
 			'.offset',
 			'.orderby',
 			'.order',
 		];
-        const pageSupports  = [
-            '.pages',
-        ];
+		const pageSupports = [
+			'.pages',
+		];
 		if (postType) {
 			toggleBtn.show();
 			if ('page' === postType) {
 				toggleContent.find(pageSupports.join(',')).show().closest('.dpt-wrapper-container').show();
-                toggleContent.find(postSupports.join(',')).hide()
-				.closest('.dpt-settings-content').hide()
-				.closest('.dpt-wrapper-container').hide()
-				.find('.dpt-settings-toggle').removeClass('toggle-active');
-				
+				toggleContent.find(postSupports.join(',')).hide()
+					.closest('.dpt-settings-content').hide()
+					.closest('.dpt-wrapper-container').hide()
+					.find('.dpt-settings-toggle').removeClass('toggle-active');
+
 			} else {
-                toggleContent.find(pageSupports.join(',')).hide()
-				.closest('.dpt-settings-content').hide()
-				.closest('.dpt-wrapper-container').hide()
-				.find('.dpt-settings-toggle').removeClass('toggle-active');
-                toggleContent.find(postSupports.join(',')).show().closest('.dpt-wrapper-container').show();
-				taxonomy.find( 'option' ).hide();
-				taxonomy.find( '.always-visible, .' + postType ).show();
+				toggleContent.find(pageSupports.join(',')).hide()
+					.closest('.dpt-settings-content').hide()
+					.closest('.dpt-wrapper-container').hide()
+					.find('.dpt-settings-toggle').removeClass('toggle-active');
+				toggleContent.find(postSupports.join(',')).show().closest('.dpt-wrapper-container').show();
+				taxonomy.find('option').hide();
+				taxonomy.find('.always-visible, .' + postType).show();
 				taxonomy.val('');
 			}
-            toggleContent.toggleClass('not-post', 'post' !== postType);
+			toggleContent.toggleClass('not-post', 'post' !== postType);
 			toggleContent.find('.terms, .relation').hide();
-			customFieldKey.find( 'option' ).hide();
-			customFieldKey.find( '.always-visible, .' + postType ).show();
+			customFieldKey.find('option').hide();
+			customFieldKey.find('.always-visible, .' + postType).show();
 			customFieldKey.val('');
 			customFieldOp.val('');
 			customFieldValue.val('').prop('disabled', false);
@@ -183,25 +300,26 @@ class ChangeDetect {
 			toggleContent.find('.dpt-settings-toggle').removeClass('toggle-active');
 			toggleContent.hide();
 		}
-    }
+		this.syncToggleAria(wrapper);
+	}
 
-    toggleTerms( taxonomy ) {
+	toggleTerms(taxonomy) {
 		const wrapper = taxonomy.closest('.dpt-settings-content');
 		const taxVal = taxonomy.val();
-		if ( taxVal ) {
+		if (taxVal) {
 			wrapper.find('.terms, .relation').show();
-			wrapper.find('.terms').find( '.terms-checklist li' ).hide();
-			wrapper.find('.terms').find( '.terms-checklist .' + taxVal ).show();
+			wrapper.find('.terms').find('.terms-checklist li').hide();
+			wrapper.find('.terms').find('.terms-checklist .' + taxVal).show();
 		} else {
 			wrapper.find('.terms, .relation').hide();
 		}
 	}
 
-    styleChange( styleSelect ) {
+	styleChange(styleSelect) {
 		const style = styleSelect.val();
 		const wrapper = styleSelect.closest('.dpt-shortcode-form');
 
-		this.saneDefaults( style, wrapper );
+		this.saneDefaults(style, wrapper);
 
 		if (vars.isStyleSupport(style, 'multicol')) {
 			wrapper.find('.col_narr').show();
@@ -218,14 +336,14 @@ class ChangeDetect {
 		if (vars.isStyleSupport(style, 'slider')) {
 			wrapper.find('.autotime').show();
 		} else {
-            wrapper.find('.autotime').hide();
-        }
+			wrapper.find('.autotime').hide();
+		}
 
 		if (vars.isStyleSupport(style, 'pagination')) {
 			wrapper.find('.show_pgnation').show();
 		} else {
 			wrapper.find('.show_pgnation').hide();
-        }
+		}
 
 		if (vars.isStyleSupport(style, 'overlay')) {
 			wrapper.find('.text_pos_hor').show();
@@ -244,10 +362,10 @@ class ChangeDetect {
 			wrapper.find('.title_shadow').hide();
 			wrapper.find('.wrapper_width').hide();
 			wrapper.find('.wrapper_height').hide();
-        }
+		}
 
 		const supported = wrapper.find('.spcheckbox');
-		supported.each(function( ) {
+		supported.each(function () {
 			const value = jQuery(this).val();
 			if (vars.isStyleSupport(style, value)) {
 				jQuery(this).closest('.dpt-toggle-container').show();
@@ -257,7 +375,7 @@ class ChangeDetect {
 		});
 	}
 
-	saneDefaults( style, wrapper ) {
+	saneDefaults(style, wrapper) {
 		const styleSupDefaults = {
 			'dpt-list1': ['thumbnail', 'title', 'meta', 'excerpt'],
 			'dpt-list2': ['thumbnail', 'title', 'meta'],
@@ -267,7 +385,7 @@ class ChangeDetect {
 		const defaultThumbCropStyles = ['dpt-list1', 'dpt-list2', 'dpt-slider1', 'dpt-mag1'];
 		const supported = wrapper.find('.spcheckbox');
 		if ('undefined' !== typeof styleSupDefaults[style]) {
-			supported.each(function( ) {
+			supported.each(function () {
 				const value = jQuery(this).val();
 				if (styleSupDefaults[style].includes(value)) {
 					jQuery(this).prop('checked', true).trigger('change');
@@ -276,7 +394,7 @@ class ChangeDetect {
 				}
 			});
 		} else {
-			supported.each(function( ) {
+			supported.each(function () {
 				const value = jQuery(this).val();
 				if (['thumbnail', 'title'].includes(value)) {
 					jQuery(this).prop('checked', true).trigger('change');
@@ -285,7 +403,7 @@ class ChangeDetect {
 				}
 			});
 		}
-		
+
 		if (defaultThumbCropStyles.includes(style)) {
 			wrapper.find('select.dpt-img-aspect').val('land1').trigger('change');
 		} else if (['dpt-pro-slider1', 'dpt-pro-slider3'].includes(style)) {
@@ -297,8 +415,8 @@ class ChangeDetect {
 		}
 	}
 
-	showCroppos( crop ) {
-		var cropping  = crop.val(),
+	showCroppos(crop) {
+		var cropping = crop.val(),
 			wrapper = crop.closest('.dpt-shortcode-form');
 
 		if ('' !== cropping) {
@@ -314,62 +432,62 @@ class ChangeDetect {
 		}
 	}
 
-	showElemOptions( option ) {
+	showElemOptions(option) {
 		const destElem = option.closest('.dpt-style-wrapper');
 		const container = option.closest('.dpt-widget-option');
-		if ( option.prop('checked') ) {
+		if (option.prop('checked')) {
 			container.parent().find('.dpt-widget-option, .dpt-tabs-container').show();
 		} else {
 			container.siblings('.dpt-widget-option, .dpt-tabs-container').hide();
 		}
-		this.updateStyleSup( destElem );
+		this.updateStyleSup(destElem);
 	}
 
-	updateStyleSup( styleSup ) {
+	updateStyleSup(styleSup) {
 		var elemId = styleSup.find('input.spcheckbox').first().attr('data-id');
-		if ( ! elemId ) {
+		if (!elemId) {
 			return;
 		}
 		var elems = styleSup.find('input.spcheckbox:checked');
-		if ( ! elems.length ) {
+		if (!elems.length) {
 			jQuery('#' + elemId).val('').trigger('change');
 			return;
 		}
 		var supported = elems.map(
-			function() {
+			function () {
 				return this.value;
 			}
 		).get().join(',');
 		jQuery('#' + elemId).val(supported).trigger('change');
 	}
 
-	updateMuChecklist( input ) {
-		clearTimeout( this.muChecklistTimer );
+	updateMuChecklist(input) {
+		clearTimeout(this.muChecklistTimer);
 		this.muChecklistTimer = setTimeout(
 			() => {
 				const list = input.closest('.dpt-mu-checklist');
 				// Get values of all checked input boxes in the list.
 				const values = list.find('input[type="checkbox"]:checked').map(
-					function() {
+					function () {
 						return this.value;
 					}
 				).get().join(',');
-				const hiddenField = list.find('.dpt-getval').val( values ).trigger('change');
+				const hiddenField = list.find('.dpt-getval').val(values).trigger('change');
 			},
 			500
 		);
 	}
 
 	getShortcodeFormValues() {
-		const widget   = jQuery('#dpt-shortcode-form');
-		const fields   = widget.find('.dpt-getval');
+		const widget = jQuery('#dpt-shortcode-form');
+		const fields = widget.find('.dpt-getval');
 		const instance = widget.data('instance');
 		const values = {};
 		fields.each(
-			function() {
+			function () {
 				// Remove 'dpt_field_name_' from this.name.
-				const name = this.name.replace( /^dpt_field_name_/, '' );
-				if ( 'checkbox' === this.type ) {
+				const name = this.name.replace(/^dpt_field_name_/, '');
+				if ('checkbox' === this.type) {
 					values[name] = this.checked ? this.value : '';
 				} else {
 					values[name] = this.value;
@@ -381,28 +499,28 @@ class ChangeDetect {
 
 	normalizeAjaxResponse(response) {
 		let details = response;
-		if ( 'string' === typeof response ) {
+		if ('string' === typeof response) {
 			try {
-				details = JSON.parse( response );
+				details = JSON.parse(response);
 			} catch (e) {
 				return {};
 			}
 		}
 
-		if ( ! details || 'object' !== typeof details ) {
+		if (!details || 'object' !== typeof details) {
 			return {};
 		}
 
-		if ( Object.prototype.hasOwnProperty.call( details, 'success' ) && Object.prototype.hasOwnProperty.call( details, 'data' ) ) {
-			if ( false === details.success ) {
-				const errorMessage = details.data && ( details.data.message || details.data.error || details.data );
+		if (Object.prototype.hasOwnProperty.call(details, 'success') && Object.prototype.hasOwnProperty.call(details, 'data')) {
+			if (false === details.success) {
+				const errorMessage = details.data && (details.data.message || details.data.error || details.data);
 				return {
 					error: errorMessage || ''
 				};
 			}
 
-			if ( true === details.success ) {
-				if ( details.data && 'object' === typeof details.data ) {
+			if (true === details.success) {
+				if (details.data && 'object' === typeof details.data) {
 					return details.data;
 				}
 				return {
@@ -414,26 +532,26 @@ class ChangeDetect {
 		return details;
 	}
 
-	updatePreview( input ) {
+	updatePreview(input) {
 		const { instance, values } = this.getShortcodeFormValues();
 		// Let's get next set of episodes.
-		jQuery.ajax( {
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_render_preview',
+				action: 'dpt_render_preview',
 				security: vars.security,
-				data    : values,
+				data: values,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.markup) {
 						const wrapper = jQuery('#dpt-shortcode-preview');
-						wrapper.html( details.markup );
+						wrapper.html(details.markup);
 						window.dptScriptData.instances = details.instances;
 					}
 				}
@@ -441,25 +559,25 @@ class ChangeDetect {
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	blankShortcodeTemplate(button) {
 		button.siblings('select.dpt-shortcode-dropdown').val('');
 		// Let's get next set of episodes.
-		jQuery.ajax( {
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_blank_shortcode_template',
+				action: 'dpt_blank_shortcode_template',
 				security: vars.security,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.form && 'undefined' !== typeof details.instance) {
 						const form = `
 						<div class="dpt-shortcode-form-wrapper">${details.form}</div>
@@ -477,9 +595,9 @@ class ChangeDetect {
 						`;
 						const formWrapper = jQuery('#dpt-shortcode-form');
 						const previewWrapper = jQuery('#dpt-shortcode-preview');
-						jQuery('.dpt-shortcode-result').html( '' );
-						formWrapper.html( form ).data('instance', details.instance);
-						previewWrapper.html( preview );
+						jQuery('.dpt-shortcode-result').html('');
+						formWrapper.html(form).data('instance', details.instance);
+						previewWrapper.html(preview);
 						jQuery(document).trigger('custom-widget-added');
 						this.newResponse('Shortcode template created successfully', 'dpt-success');
 					}
@@ -488,32 +606,32 @@ class ChangeDetect {
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	createNewShortcode() {
 		const { instance, values } = this.getShortcodeFormValues();
 		const title = values.title || 'DPT Shortcode' + ' ' + (instance + 1);
 		// Let's get next set of episodes.
-		jQuery.ajax( {
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_create_new_shortcode',
+				action: 'dpt_create_new_shortcode',
 				security: vars.security,
-				data    : values,
+				data: values,
 				instance: instance,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
-						} else {
-							const widget   = jQuery('#dpt-options-module-shortcode');
-							const wrapper  = widget.find('.dpt-shortcode-action');
-							let dropdown = widget.find('select.dpt-shortcode-dropdown');
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
+					} else {
+						const widget = jQuery('#dpt-options-module-shortcode');
+						const wrapper = widget.find('.dpt-shortcode-action');
+						let dropdown = widget.find('select.dpt-shortcode-dropdown');
 						if (0 === dropdown.length) {
 							wrapper.append(`
 								<span class="dpt-separator">or</span>
@@ -533,12 +651,12 @@ class ChangeDetect {
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	loadShortcode(select) {
 		const instance = select.val();
-		if ( ! instance ) {
+		if (!instance) {
 			jQuery('#dpt-shortcode-form').html('');
 			jQuery('#dpt-shortcode-preview').html(`
 				<div style="padding: 20px; font-size: 20px; color: #aaa;">
@@ -549,32 +667,32 @@ class ChangeDetect {
 					<span> Shortcode using the menu above.</span>
 				</div>
 			`);
-			jQuery('.dpt-shortcode-result').html( '' );
+			jQuery('.dpt-shortcode-result').html('');
 			return;
 		}
 		// Let's get next set of episodes.
-		jQuery.ajax( {
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_load_shortcode',
+				action: 'dpt_load_shortcode',
 				security: vars.security,
 				instance: instance,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
 					} else if ('undefined' !== typeof details.form && 'undefined' !== typeof details.preview) {
 						const form = `
 						<div class="dpt-shortcode-form-wrapper">${details.form}</div>
 						<div class="dpt-shortcode-form-update dpt-button-wrapper">
-							<button id="dpt-shortcode-generator-update-btn" class="button button-secondary" style="width: 100%;">Update Shortcode</button>
+							<button id="dpt-shortcode-generator-update-btn" class="button button-secondary !rounded" style="width: 100%;">Update Shortcode</button>
 						</div>
 						<div class="dpt-shortcode-form-delete dpt-button-wrapper">
-							<button id="dpt-shortcode-generator-delete-btn" class="button button-secondary" style="width: 100%;">Delete Shortcode</button>
+							<button id="dpt-shortcode-generator-delete-btn" class="button button-secondary !rounded" style="width: 100%;">Delete Shortcode</button>
 						</div>
 						`;
 
@@ -584,14 +702,17 @@ class ChangeDetect {
 						const resultsWrapper = jQuery('.dpt-shortcode-result');
 						const formWrapper = jQuery('#dpt-shortcode-form');
 						const previewWrapper = jQuery('#dpt-shortcode-preview');
-						formWrapper.html( form ).attr('data-instance', details.instance);
-						previewWrapper.html( preview );
+						formWrapper.html(form).attr('data-instance', details.instance);
+						previewWrapper.html(preview);
 						resultsWrapper.html(`
-							<div class="dpt-shortcode-sidebar-collapse">
+							<div class="dpt-shortcode-sidebar-collapse flex justify-between align-center">
 								<a href="#" class="dpt-collapse-sidebar">
 									<span class="dashicons dashicons-arrow-left-alt2"></span>
-									<span class="dpt-collapse-side">Collapse</span>
-									<span class="dpt-expand-side" style="display: none;">Expand</span>
+									<span class="dpt-collapse-side">Collapse Sidebar</span>
+									<span class="dpt-expand-side" style="display: none;">Expand Sidebar</span>
+								</a>
+								<a href="#" class="dpt-collapse-all-toggles !rounded" title="Collapse All Settings Toggles" style="display: none;">
+									<svg class="icon icon-dpt-collapse-all !w-[20px] !h-[20px]" aria-hidden="true" role="img" focusable="false"><use href="#icon-dpt-collapse-all" xlink:href="#icon-dpt-collapse-all"></use></svg>
 								</a>
 							</div>
 							<div class="dpt-shortcode-copy">
@@ -602,43 +723,44 @@ class ChangeDetect {
 						`);
 						window.dptScriptData.instances = details.instances;
 						jQuery(document).trigger('custom-widget-added');
+						this.updateCollapseAllButton();
 					}
 				}
 			},
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	deleteShortcode(button) {
-		const widget   = jQuery('#dpt-options-module-shortcode');
+		const widget = jQuery('#dpt-options-module-shortcode');
 		const instance = widget.find('#dpt-shortcode-form').data('instance');
 		const dropdown = widget.find('select.dpt-shortcode-dropdown');
-		widget.find('#dpt-shortcode-action-modal').addClass( 'dpt-hidden' );
-		if ( 'undefined' === typeof instance ) {
+		widget.find('#dpt-shortcode-action-modal').addClass('dpt-hidden');
+		if ('undefined' === typeof instance) {
 			return;
 		}
-		widget.find('.dpt-shortcode-result').html( '' );
-		jQuery.ajax( {
+		widget.find('.dpt-shortcode-result').html('');
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_delete_shortcode',
+				action: 'dpt_delete_shortcode',
 				security: vars.security,
 				instance: instance,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
-						} else {
-							dropdown.val('');
-							dropdown.find(`option[value="${instance}"]`).remove();
-							// check if dropdown does not have any option left.
-						if ( 0 === dropdown.find('option').length ) {
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
+					} else {
+						dropdown.val('');
+						dropdown.find(`option[value="${instance}"]`).remove();
+						// check if dropdown does not have any option left.
+						if (0 === dropdown.find('option').length) {
 							dropdown.remove();
 						} else {
 							dropdown.trigger('change');
@@ -650,40 +772,41 @@ class ChangeDetect {
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	updateShortcode(button) {
 		const { instance, values } = this.getShortcodeFormValues();
-		if ( values.title ) {
+		if (values.title) {
 			const selectedShortcode = jQuery('.dpt-shortcode-dropdown option:selected');
-			selectedShortcode.text( values.title );
+			selectedShortcode.text(values.title);
 		}
 		// Let's get next set of episodes.
-		jQuery.ajax( {
+		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
-				action  : 'dpt_update_shortcode',
+				action: 'dpt_update_shortcode',
 				security: vars.security,
-				data    : values,
+				data: values,
 				instance: instance,
 			},
-				type: 'POST',
-				timeout: 60000,
-				success: response => {
-					const details = this.normalizeAjaxResponse( response );
-					if (!jQuery.isEmptyObject(details)) {
-						if ('undefined' !== typeof details.error) {
-							this.newResponse(details.error, 'dpt-error');
-						} else {
-							this.newResponse('Shortcode updated successfully', 'dpt-success');
-						}
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
+					} else {
+						this.newResponse('Shortcode updated successfully', 'dpt-success');
+						this.clearUnsavedState();
 					}
+				}
 			},
 			error: (jqXHR, textStatus, errorThrown) => {
 				this.newResponse(errorThrown, 'dpt-error');
 			}
-		} );
+		});
 	}
 
 	/**
@@ -703,12 +826,12 @@ class ChangeDetect {
 		}
 
 		// Remove classes after 2 seconds
-		setTimeout(function() {
+		setTimeout(function () {
 			this.newFeedback.removeClass('dpt-success dpt-running');
 			if (reload) {
 				window.location.reload();
 			}
-		}.bind(this), 1000);
+		}.bind(this), 2000);
 	}
 
 	/**
@@ -721,6 +844,23 @@ class ChangeDetect {
 		sidebar.toggleClass('dpt-sidebar-close');
 		link.toggleClass('dpt-sidebar-close');
 		window.dispatchEvent(new Event('resize'));
+		this.updateCollapseAllButton();
+	}
+
+	updateCollapseAllButton() {
+		const sidebar = jQuery('#dpt-shortcode-form');
+		const collapseBtn = jQuery('.dpt-collapse-all-toggles');
+
+		if (sidebar.hasClass('dpt-sidebar-close')) {
+			collapseBtn.hide();
+			return;
+		}
+
+		if (sidebar.find('.dpt-settings-toggle.toggle-active').length > 0) {
+			collapseBtn.show();
+		} else {
+			collapseBtn.hide();
+		}
 	}
 
 	/**
@@ -742,7 +882,7 @@ class ChangeDetect {
 		this.newResponse('Shortcode copied to clipboard', 'dpt-success');
 	}
 
-	tabFunctionality( tab ) {
+	tabFunctionality(tab) {
 		const tabId = tab.attr('data-id');
 		const contentWrapper = tab.closest('.dpt-tabs').find('.dpt-tab-content');
 		const content = contentWrapper.find('[data-attr="' + tabId + '"]');

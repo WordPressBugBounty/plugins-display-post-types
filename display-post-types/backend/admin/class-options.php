@@ -115,7 +115,7 @@ class Options {
 				'label' => esc_html__( 'Home', 'display-post-types' ),
 			),
 			'shortcode' => array(
-				'label' => esc_html__( 'Generate Shortcode', 'display-post-types' ),
+				'label' => esc_html__( 'Manage Shortcode', 'display-post-types' ),
 			),
 			'faq'         => array(
 				'label' => esc_html__( 'Help & Support', 'display-post-types' ),

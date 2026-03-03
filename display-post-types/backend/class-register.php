@@ -218,10 +218,10 @@ class Register {
 			<?php
 		}
 
-		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '7', '<' ) ) {
+		if ( defined( 'DPT_PRO_VERSION' ) && version_compare( DPT_PRO_VERSION, '1.4.8', '<' ) ) {
 			?>
 			<div class="notice-warning notice is-dismissible pp-welcome-notice">
-				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.7.', 'display-post-types' ); ?></p>
+				<p><?php esc_html_e( 'There is an update available to Display Post Types Pro. Please update to Display Post Types Pro v1.4.8.', 'display-post-types' ); ?></p>
 			</div>
 			<?php
 		}
@@ -256,8 +256,9 @@ class Register {
 		}
 		ob_start();
 		Display::init( $args );
-		$content = ob_get_clean();
 		$dpt = Instance_Counter::get_instance();
+		$dpt->render_inline_css();
+		$content = ob_get_clean();
 		wp_send_json_success(
 			array(
 				'markup'    => $content,
@@ -338,11 +339,12 @@ class Register {
 		$args = isset( $shortcode_list[ $instance ] ) ? $shortcode_list[ $instance ] : array();
 		ob_start();
 		Display::init( $args );
+		$dpt = Instance_Counter::get_instance();
+		$dpt->render_inline_css();
 		$preview = ob_get_clean();
 		ob_start();
 		$shcode_gen->form( $instance );
 		$form = ob_get_clean();
-		$dpt = Instance_Counter::get_instance();
 		wp_send_json_success(
 			array(
 				'form'      => $form,
