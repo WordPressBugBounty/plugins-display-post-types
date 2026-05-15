@@ -301,9 +301,14 @@ class Register {
 
 		// Inline style for the grid columns.
 		if ( isset( $args['styles'] ) && $this->is_style_support( $args['styles'], 'multicol' ) ) {
-			$columns    = isset( $args['col_narr'] ) ? absint( $args['col_narr'] ) : 1;
-			$sml_grid   = 2 < $columns ? '33.33%' : '50%';
+			$columns    = isset( $args['col_narr'] ) ? max( 1, absint( $args['col_narr'] ) ) : 1;
+			$tablet_col = isset( $args['col_narr_tab'] ) ? absint( $args['col_narr_tab'] ) : 0;
+			$mobile_col = isset( $args['col_narr_mob'] ) ? absint( $args['col_narr_mob'] ) : 0;
+			$sml_grid   = 0 < $tablet_col ? ( 100 / $tablet_col ) . '%' : ( 2 < $columns ? '33.33%' : '50%' );
 			$vars .= '--dpt-small-grid-column: ' . $sml_grid . ';';
+			if ( 0 < $mobile_col ) {
+				$vars .= '--dpt-mobile-grid-column: ' . ( 100 / $mobile_col ) . '%;';
+			}
 			$large_grid = (100 / $columns) . '%';
 			$vars .= '--dpt-large-grid-column: ' . $large_grid . ';';
 		}

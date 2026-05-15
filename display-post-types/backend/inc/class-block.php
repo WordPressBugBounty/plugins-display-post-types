@@ -132,6 +132,14 @@ class Block {
 				'type'    => 'number',
 				'default' => 3,
 			),
+			'colNarrTab'   => array(
+				'type'    => 'number',
+				'default' => 0,
+			),
+			'colNarrMob'   => array(
+				'type'    => 'number',
+				'default' => 0,
+			),
 			'autoTime'     => array(
 				'type'    => 'number',
 				'default' => 0,
@@ -355,6 +363,8 @@ class Block {
 			'img_align'     => $atts['imgAlign'],
 			'br_radius'     => $atts['brRadius'],
 			'col_narr'      => $atts['colNarr'],
+			'col_narr_tab'  => $atts['colNarrTab'],
+			'col_narr_mob'  => $atts['colNarrMob'],
 			'autotime'      => $atts['autoTime'],
 			'text_pos_hor'  => $atts['textPosHor'],
 			'text_pos_ver'  => $atts['textPosVer'],

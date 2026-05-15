@@ -75,16 +75,15 @@ class Shortcode {
 		$pages = array();
 		if ( ! empty( $atts['pages'] ) ) {
 			$pages = explode( ',', $atts['pages'] );
-			$pages = array_map( 'trim', $ids );
+			$pages = array_map( 'trim', $pages );
 		}
 
 		// Check if all pages IDs are valid.
 		if ( 'page' === $atts['post_type'] && ! empty( $pages ) ) {
 			// Get list of all pages.
 			$all_pages        = get_all_page_ids();
-			$all_pages        = explode( ',', $all_pages );
 			$valid_pages      = array_diff( $all_pages, array( get_option( 'page_for_posts' ) ) );
-			$pages            = array_intersect( $pages, $valid_pages );
+			$pages            = array_map( 'absint', array_intersect( array_map( 'absint', $pages ), array_map( 'absint', $valid_pages ) ) );
 			$atts['taxonomy'] = array();
 		}
 
@@ -101,7 +100,7 @@ class Shortcode {
 				'taxonomy'      => $atts['taxonomy'],
 				'terms'         => $terms,
 				'relation'      => $atts['relation'],
-				'post_ids'      => $ids,
+				'post_ids'      => implode( ',', array_map( 'absint', $ids ) ),
 				'pages'         => $pages,
 				'number'        => $atts['number'],
 				'orderby'       => $atts['orderby'],

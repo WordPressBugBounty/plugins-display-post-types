@@ -144,8 +144,12 @@ class ChangeDetect {
 
 		if (vars.isStyleSupport(style, 'multicol')) {
 			wrapper.find('.col_narr').show();
+			wrapper.find('.col_narr_tab').show();
+			wrapper.find('.col_narr_mob').show();
 		} else {
 			wrapper.find('.col_narr').hide();
+			wrapper.find('.col_narr_tab').hide();
+			wrapper.find('.col_narr_mob').hide();
 		}
 
 		if (vars.isStyleSupport(style, 'ialign')) {

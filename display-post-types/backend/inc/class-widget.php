@@ -365,7 +365,7 @@ class Widget extends \WP_Widget {
 						),
 						'col_narr' => array(
 							'setting'       => 'col_narr',
-							'label'         => esc_html__( 'Number of grid columns', 'display-post-types' ),
+							'label'         => esc_html__( 'Desktop grid columns', 'display-post-types' ),
 							'type'          => 'number',
 							'input_attrs'   => array(
 								'step' => 1,
@@ -373,6 +373,36 @@ class Widget extends \WP_Widget {
 								'max'  => 8,
 								'size' => 1,
 							),
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
+							},
+						),
+						'col_narr_tab' => array(
+							'setting'       => 'col_narr_tab',
+							'label'         => esc_html__( 'Tablet grid columns', 'display-post-types' ),
+							'type'          => 'number',
+							'input_attrs'   => array(
+								'step' => 1,
+								'min'  => 0,
+								'max'  => 8,
+								'size' => 1,
+							),
+							'desc'          => esc_html__( 'Set to 0 to use the automatic tablet layout.', 'display-post-types' ),
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
+							},
+						),
+						'col_narr_mob' => array(
+							'setting'       => 'col_narr_mob',
+							'label'         => esc_html__( 'Mobile grid columns', 'display-post-types' ),
+							'type'          => 'number',
+							'input_attrs'   => array(
+								'step' => 1,
+								'min'  => 0,
+								'max'  => 4,
+								'size' => 1,
+							),
+							'desc'          => esc_html__( 'Set to 0 to use the automatic mobile layout.', 'display-post-types' ),
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
 							},
@@ -1110,6 +1140,8 @@ class Widget extends \WP_Widget {
 
 		$instance['br_radius'] = absint( $new_instance['br_radius'] );
 		$instance['col_narr']  = absint( $new_instance['col_narr'] );
+		$instance['col_narr_tab'] = absint( $new_instance['col_narr_tab'] );
+		$instance['col_narr_mob'] = absint( $new_instance['col_narr_mob'] );
 		$instance['autotime']  = absint( $new_instance['autotime'] );
 
 		$valid_styles       = $this->get_display_styles();

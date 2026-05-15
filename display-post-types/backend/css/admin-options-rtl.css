@@ -570,6 +570,10 @@ video {
   display: inline-flex;
 }
 
+.table {
+  display: table;
+}
+
 .grid {
   display: grid;
 }
@@ -1525,6 +1529,49 @@ a.dpt-settings-toggle.toggle-active:after {
   border-top: 1px solid #e6e6e6;
 }
 
+.dpt-shortcode-list-container {
+  margin-top: 18px;
+}
+
+.dpt-shortcode-list-search {
+  height: 41px;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  padding: 0 12px;
+}
+
+.dpt-shortcode-list-wrap {
+  overflow-x: auto;
+}
+
+.dpt-shortcode-row-shortcode {
+  white-space: nowrap;
+}
+
+.dpt-shortcode-row-actions {
+  white-space: nowrap;
+}
+
+.dpt-shortcode-row-code {
+  white-space: nowrap;
+}
+
+.dpt-icon-button.button {
+  width: 41px;
+  min-width: 40px;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.dpt-icon-button.button .dashicons {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+}
+
 .dpt-shortcode-workspace {
   display: flex;
   justify-content: space-between;
@@ -1534,11 +1581,12 @@ a.dpt-settings-toggle.toggle-active:after {
 
 .dpt-shortcode-action {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  gap: 10px;
 }
 
 .dpt-shortcode-action .dpt-separator {
-  margin: 0 10px;
+  margin: 0;
 }
 
 .dpt-shortcode-action select {
@@ -2785,14 +2833,6 @@ a.dpt-settings-toggle.toggle-active:after {
 
   .lg\:w-auto {
     width: auto;
-  }
-
-  .lg\:max-w-\[320px\] {
-    max-width: 320px;
-  }
-
-  .lg\:flex-none {
-    flex: none;
   }
 
   .lg\:grid-cols-3 {

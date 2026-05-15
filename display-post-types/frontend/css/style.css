@@ -190,8 +190,8 @@ a.dpt-main-title-link {
 }
 
 .display-post-types .dpt-wrapper {
-  margin-top: calc(-1 * var(calc(--dpt-v-gutter - 1px), 9px));
-  margin-bottom: calc(-1 * var(calc(--dpt-v-gutter - 1px), 9px));
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .display-post-types .dpt-wrapper .dpt-entry {
   padding-top: var(--dpt-v-gutter, 10px);
@@ -822,9 +822,9 @@ https://flickity.metafizzy.co
 }
 @media only screen and (min-width: 450px) {
   .multi-col.mob-wrap .dpt-entry, .multi-col.tab-wrap .dpt-entry, .multi-col.wide-wrap .dpt-entry {
-    flex-basis: 50%;
-    max-width: 50%;
-    width: 50%;
+    flex-basis: var(--dpt-mobile-grid-column, 50%);
+    max-width: var(--dpt-mobile-grid-column, 50%);
+    width: var(--dpt-mobile-grid-column, 50%);
   }
   .display-post-types .multi-col {
     margin-left: calc(-1 * var(--dpt-h-gutter, 10px));

@@ -188,6 +188,8 @@ class Getters {
 			'img_align'     => '',
 			'br_radius'     => 5,
 			'col_narr'      => 3,
+			'col_narr_tab'  => 0,
+			'col_narr_mob'  => 0,
 			'pl_holder'     => 'yes',
 			'show_pgnation' => '',
 			'title_shadow'  => 'yes',

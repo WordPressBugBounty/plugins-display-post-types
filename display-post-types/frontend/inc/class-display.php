@@ -69,7 +69,7 @@ class Display {
 		if ( ! $args['post_type'] ) {
 			return;
 		} elseif ( 'page' === $args['post_type'] ) {
-			$pages = isset( $args['pages'] ) ? ( is_array( $args['pages'] ) ? $args['pages'] : explode( ',', $args['pages'] ) ) : array();
+			$pages = self::normalize_id_list( isset( $args['pages'] ) ? $args['pages'] : array() );
 			$query_args = array(
 				'post_type'           => 'page',
 				'post__in'            => $pages,
@@ -105,7 +105,7 @@ class Display {
 			}
 
 			if ( $args['post_ids'] ) {
-				$query_args['post__in'] = explode( ',', $args['post_ids'] );
+				$query_args['post__in'] = self::normalize_id_list( $args['post_ids'] );
 			}
 		}
 
@@ -124,10 +124,16 @@ class Display {
 
 		$query_args = apply_filters( 'dpt_display_posts_args', $query_args, $args );
 
-		$all_post_ids           = self::get_all_post_ids( $query_args );
-		$query_args['post__in'] = $all_post_ids;
-		unset( $query_args['tax_query'] );
-		$post_query     = new \WP_Query( $query_args );
+		$needs_full_index = self::needs_full_index( $args );
+		$script_query_args = $query_args;
+		$all_post_ids = array();
+		if ( $needs_full_index ) {
+			$all_post_ids = self::get_all_post_ids( $query_args );
+			$script_query_args['post__in'] = ! empty( $all_post_ids ) ? $all_post_ids : array( 0 );
+			unset( $script_query_args['tax_query'] );
+		}
+
+		$post_query = new \WP_Query( $query_args );
 		if ( $post_query->have_posts() ) :
 			$action_args = array(
 				'args'  => $args,
@@ -135,13 +141,7 @@ class Display {
 			);
 
 			$all_taxonomies = get_object_taxonomies( $args['post_type'] );
-			$terms          = wp_get_object_terms( $all_post_ids, $all_taxonomies );
-			$taxonomies     = array();
-			if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
-				foreach ( $terms as $term ) {
-					$taxonomies[ $term->taxonomy ][$term->name] = $term->term_id;
-				}
-			}
+			$taxonomies     = $needs_full_index ? self::get_taxonomy_index( $all_post_ids, $all_taxonomies ) : array();
 			?>
 
 			<div class="display-post-types">
@@ -224,12 +224,13 @@ class Display {
 			<?php
 			$current_page = $post_query->get('paged') ? $post_query->get('paged') : 1;
 			$posts_per_page = $post_query->get('posts_per_page');
-			$total = count( $all_post_ids );
+			$total = $needs_full_index ? count( $all_post_ids ) : (int) $post_query->post_count;
 			$offset = min( $total, $posts_per_page * ( $current_page - 1 ) );
 			
 			// Send query args and instance settings to the frontend as script data.
 			$inst_class->add_script_data( $instance, array(
-				'query_args' => $query_args,
+				'query_args'  => $script_query_args,
+				'query_token' => self::get_query_token( $script_query_args, $args ),
 				'args'       => $args,
 				'offset'     => $offset,
 				'lot_size'   => $posts_per_page,
@@ -311,12 +312,135 @@ class Display {
 			return array();
 		}
 
-		if ( isset( $query_args['post_ids'] ) && ! empty( $query_args['post_ids'] ) ) {
-			return $query_args['post_ids'];
-		}
-
 		$query_args['posts_per_page'] = -1;
 		$query_args['fields']         = 'ids';
-		return get_posts( $query_args );
+		$query_args['no_found_rows']  = true;
+		unset( $query_args['paged'] );
+
+		$cache_key = self::get_cache_key( 'ids', $query_args );
+		$cached    = wp_cache_get( $cache_key, 'display-post-types' );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$post_ids = get_posts( $query_args );
+		wp_cache_set( $cache_key, $post_ids, 'display-post-types' );
+		return $post_ids;
+	}
+
+	/**
+	 * Get a cached taxonomy map for the full result set.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param array $post_ids   Post IDs.
+	 * @param array $taxonomies Taxonomy names.
+	 * @return array
+	 */
+	public static function get_taxonomy_index( $post_ids, $taxonomies ) {
+		if ( empty( $post_ids ) || empty( $taxonomies ) ) {
+			return array();
+		}
+
+		$post_ids   = self::normalize_id_list( $post_ids );
+		$taxonomies = array_map( 'sanitize_key', (array) $taxonomies );
+		$cache_key  = self::get_cache_key(
+			'taxonomies',
+			array(
+				'post_ids'   => $post_ids,
+				'taxonomies' => $taxonomies,
+			)
+		);
+		$cached     = wp_cache_get( $cache_key, 'display-post-types' );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$tax_index = array();
+		$terms     = wp_get_object_terms( $post_ids, $taxonomies );
+		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$tax_index[ $term->taxonomy ][ $term->name ] = $term->term_id;
+			}
+		}
+
+		wp_cache_set( $cache_key, $tax_index, 'display-post-types' );
+		return $tax_index;
+	}
+
+	/**
+	 * Build a cache key that follows WordPress post and term invalidation.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param string $prefix Cache key prefix.
+	 * @param array  $data   Cache key data.
+	 * @return string
+	 */
+	public static function get_cache_key( $prefix, $data ) {
+		$last_changed = function_exists( 'wp_cache_get_last_changed' )
+			? wp_cache_get_last_changed( 'posts' ) . ':' . wp_cache_get_last_changed( 'terms' )
+			: '';
+
+		return 'dpt_' . sanitize_key( $prefix ) . '_' . md5( wp_json_encode( $data ) . '|' . $last_changed );
+	}
+
+	/**
+	 * Normalize an ID list received from block, widget or shortcode settings.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param string|array $ids Comma separated IDs or ID array.
+	 * @return array
+	 */
+	public static function normalize_id_list( $ids ) {
+		if ( empty( $ids ) ) {
+			return array();
+		}
+
+		if ( ! is_array( $ids ) ) {
+			$ids = explode( ',', $ids );
+		}
+
+		$ids = array_filter( array_map( 'absint', $ids ) );
+		return array_values( array_unique( $ids ) );
+	}
+
+	/**
+	 * Check whether the current instance needs a full result index.
+	 *
+	 * This is only needed for Pro header actions that search, filter or page
+	 * through the whole matching result set via AJAX.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param array $args Settings for current DPT instance.
+	 * @return bool
+	 */
+	public static function needs_full_index( $args ) {
+		if ( empty( $args['styles'] ) || ! self::is_style_support( $args['styles'], 'hactions' ) ) {
+			return false;
+		}
+
+		foreach ( array( 'hsearch', 'hfilter', 'hnext' ) as $setting ) {
+			if ( ! empty( $args[ $setting ] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Sign frontend query data so AJAX requests can verify the original query.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param array $query_args Query arguments.
+	 * @param array $args       Display settings.
+	 * @return string
+	 */
+	public static function get_query_token( $query_args, $args ) {
+		return wp_hash( wp_json_encode( $query_args ) . '|' . wp_json_encode( $args ) );
 	}
 }

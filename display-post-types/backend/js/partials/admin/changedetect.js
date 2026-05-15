@@ -104,12 +104,25 @@ class ChangeDetect {
 		});
 
 		widget.on('click', '#dpt-shortcode-generator-delete-btn', function () {
-			const modal = widget.find('#dpt-shortcode-action-modal');
-			const wrap = modal.find('.dpt-shortcode-action-wrapper');
-			modal.removeClass('dpt-hidden');
-			jQuery('html, body').animate({
-				scrollTop: wrap.offset().top - 200
-			}, 400);
+			const instance = widget.find('#dpt-shortcode-form').data('instance');
+			_this.openDeleteModal(instance);
+		});
+
+		widget.on('click', '.dpt-shortcode-row-edit', function () {
+			const instance = jQuery(this).data('instance');
+			widget.find('select.dpt-shortcode-dropdown').val(instance).trigger('change');
+		});
+
+		widget.on('click', '.dpt-shortcode-row-duplicate', function () {
+			_this.duplicateShortcode(jQuery(this));
+		});
+
+		widget.on('click', '.dpt-shortcode-row-copy', function () {
+			_this.copyRawShortcodeText(jQuery(this).data('shortcode'));
+		});
+
+		widget.on('click', '.dpt-shortcode-row-delete', function () {
+			_this.openDeleteModal(jQuery(this).data('instance'));
 		});
 
 		widget.on('click', '#dpt-shortcode-deletion-btn', function () {
@@ -126,6 +139,14 @@ class ChangeDetect {
 
 		widget.on('change', 'select.dpt-shortcode-dropdown', function () {
 			_this.loadShortcode(jQuery(this));
+		});
+
+		widget.on('input', '#dpt-shortcode-list-search', function () {
+			_this.filterShortcodeRows(jQuery(this).val());
+		});
+
+		widget.on('click', '.dpt-shortcode-search-toggle', function () {
+			_this.toggleShortcodeSearch(jQuery(this));
 		});
 
 		widget.on('click', '.dpt-collapse-sidebar', function (e) {
@@ -179,6 +200,77 @@ class ChangeDetect {
 		doc.on('custom-widget-added', function () {
 			_this.initRangeSliders();
 			_this.syncToggleAria();
+		});
+	}
+
+	openDeleteModal(instance) {
+		if ('undefined' === typeof instance || '' === instance) {
+			return;
+		}
+		const widget = jQuery('#dpt-options-module-shortcode');
+		const modal = widget.find('#dpt-shortcode-action-modal');
+		const wrap = modal.find('.dpt-shortcode-action-wrapper');
+		modal.find('#dpt-shortcode-deletion-btn').data('instance', instance);
+		modal.removeClass('dpt-hidden');
+		jQuery('html, body').animate({
+			scrollTop: wrap.offset().top - 200
+		}, 400);
+	}
+
+	refreshShortcodeTable(tableMarkup) {
+		if ('undefined' === typeof tableMarkup) {
+			return;
+		}
+		jQuery('.dpt-shortcode-list-container').html(tableMarkup);
+		this.filterShortcodeRows(jQuery('#dpt-shortcode-list-search').val());
+	}
+
+	ensureShortcodeDropdownOption(instance, label) {
+		const widget = jQuery('#dpt-options-module-shortcode');
+		const wrapper = widget.find('.dpt-shortcode-action');
+		let dropdown = widget.find('select.dpt-shortcode-dropdown');
+		if (0 === dropdown.length) {
+			wrapper.append(`
+				<span class="dpt-separator">or</span>
+				<select class="dpt-shortcode-dropdown">
+					<option value="" selected="selected">Select a Shortcode to Edit</option>
+				</select>
+				<button type="button" class="button button-secondary dpt-icon-button dpt-shortcode-search-toggle" aria-expanded="false" aria-controls="dpt-shortcode-list-search" aria-label="Search shortcodes" title="Search shortcodes">
+					<span class="dashicons dashicons-search" aria-hidden="true"></span>
+				</button>
+				<label class="screen-reader-text" for="dpt-shortcode-list-search">Search shortcodes</label>
+				<input type="search" id="dpt-shortcode-list-search" class="dpt-shortcode-list-search dpt-hidden" placeholder="Search shortcodes" />
+			`);
+			dropdown = widget.find('select.dpt-shortcode-dropdown');
+		}
+
+		let option = dropdown.find(`option[value="${instance}"]`);
+		if (0 === option.length) {
+			dropdown.append(`<option value="${instance}"></option>`);
+			option = dropdown.find(`option[value="${instance}"]`);
+		}
+		option.text(label || `DPT Shortcode ${Number(instance) + 1}`);
+		return dropdown;
+	}
+
+	toggleShortcodeSearch(button) {
+		const search = jQuery('#dpt-shortcode-list-search');
+		const isHidden = search.hasClass('dpt-hidden');
+		search.toggleClass('dpt-hidden', !isHidden);
+		button.attr('aria-expanded', isHidden ? 'true' : 'false');
+		if (isHidden) {
+			search.trigger('focus');
+		} else {
+			search.val('');
+			this.filterShortcodeRows('');
+		}
+	}
+
+	filterShortcodeRows(term) {
+		const query = String(term || '').trim().toLowerCase();
+		jQuery('.dpt-shortcode-list tbody tr').each(function () {
+			const row = jQuery(this);
+			row.toggle(!query || row.text().toLowerCase().includes(query));
 		});
 	}
 
@@ -323,8 +415,12 @@ class ChangeDetect {
 
 		if (vars.isStyleSupport(style, 'multicol')) {
 			wrapper.find('.col_narr').show();
+			wrapper.find('.col_narr_tab').show();
+			wrapper.find('.col_narr_mob').show();
 		} else {
 			wrapper.find('.col_narr').hide();
+			wrapper.find('.col_narr_tab').hide();
+			wrapper.find('.col_narr_mob').hide();
 		}
 
 		if (vars.isStyleSupport(style, 'ialign')) {
@@ -611,7 +707,6 @@ class ChangeDetect {
 
 	createNewShortcode() {
 		const { instance, values } = this.getShortcodeFormValues();
-		const title = values.title || 'DPT Shortcode' + ' ' + (instance + 1);
 		// Let's get next set of episodes.
 		jQuery.ajax({
 			url: vars.ajaxUrl,
@@ -629,22 +724,46 @@ class ChangeDetect {
 					if ('undefined' !== typeof details.error) {
 						this.newResponse(details.error, 'dpt-error');
 					} else {
-						const widget = jQuery('#dpt-options-module-shortcode');
-						const wrapper = widget.find('.dpt-shortcode-action');
-						let dropdown = widget.find('select.dpt-shortcode-dropdown');
-						if (0 === dropdown.length) {
-							wrapper.append(`
-								<span class="dpt-separator">or</span>
-								<select class="dpt-shortcode-dropdown">
-									<option value="" selected="selected">Select a Shortcode to Edit</option>
-								</select>
-							`);
-							dropdown = widget.find('select.dpt-shortcode-dropdown');
-						}
-						dropdown.append(`<option value="${instance}">${title}</option>`);
-						dropdown.val(instance);
+						const createdInstance = 'undefined' !== typeof details.instance ? details.instance : instance;
+						const dropdown = this.ensureShortcodeDropdownOption(createdInstance, details.label);
+						this.refreshShortcodeTable(details.table);
+						dropdown.val(createdInstance);
 						dropdown.trigger('change');
 						this.newResponse('New shortcode created successfully', 'dpt-success');
+					}
+				}
+			},
+			error: (jqXHR, textStatus, errorThrown) => {
+				this.newResponse(errorThrown, 'dpt-error');
+			}
+		});
+	}
+
+	duplicateShortcode(button) {
+		const instance = button.data('instance');
+		if ('undefined' === typeof instance || '' === instance) {
+			return;
+		}
+
+		jQuery.ajax({
+			url: vars.ajaxUrl,
+			data: {
+				action: 'dpt_duplicate_shortcode',
+				security: vars.security,
+				instance: instance,
+			},
+			type: 'POST',
+			timeout: 60000,
+			success: response => {
+				const details = this.normalizeAjaxResponse(response);
+				if (!jQuery.isEmptyObject(details)) {
+					if ('undefined' !== typeof details.error) {
+						this.newResponse(details.error, 'dpt-error');
+					} else {
+						const dropdown = this.ensureShortcodeDropdownOption(details.instance, details.label);
+						this.refreshShortcodeTable(details.table);
+						dropdown.val(details.instance).trigger('change');
+						this.newResponse('Shortcode duplicated successfully', 'dpt-success');
 					}
 				}
 			},
@@ -702,7 +821,7 @@ class ChangeDetect {
 						const resultsWrapper = jQuery('.dpt-shortcode-result');
 						const formWrapper = jQuery('#dpt-shortcode-form');
 						const previewWrapper = jQuery('#dpt-shortcode-preview');
-						formWrapper.html(form).attr('data-instance', details.instance);
+						formWrapper.html(form).data('instance', details.instance).attr('data-instance', details.instance);
 						previewWrapper.html(preview);
 						resultsWrapper.html(`
 							<div class="dpt-shortcode-sidebar-collapse flex justify-between align-center">
@@ -724,6 +843,7 @@ class ChangeDetect {
 						window.dptScriptData.instances = details.instances;
 						jQuery(document).trigger('custom-widget-added');
 						this.updateCollapseAllButton();
+						this.clearUnsavedState();
 					}
 				}
 			},
@@ -735,13 +855,18 @@ class ChangeDetect {
 
 	deleteShortcode(button) {
 		const widget = jQuery('#dpt-options-module-shortcode');
-		const instance = widget.find('#dpt-shortcode-form').data('instance');
+		const modalInstance = button.data('instance');
+		const instance = 'undefined' !== typeof modalInstance && '' !== modalInstance ? modalInstance : widget.find('#dpt-shortcode-form').data('instance');
+		const currentInstance = widget.find('#dpt-shortcode-form').data('instance');
+		const isCurrent = String(currentInstance) === String(instance);
 		const dropdown = widget.find('select.dpt-shortcode-dropdown');
 		widget.find('#dpt-shortcode-action-modal').addClass('dpt-hidden');
 		if ('undefined' === typeof instance) {
 			return;
 		}
-		widget.find('.dpt-shortcode-result').html('');
+		if (isCurrent) {
+			widget.find('.dpt-shortcode-result').html('');
+		}
 		jQuery.ajax({
 			url: vars.ajaxUrl,
 			data: {
@@ -757,15 +882,18 @@ class ChangeDetect {
 					if ('undefined' !== typeof details.error) {
 						this.newResponse(details.error, 'dpt-error');
 					} else {
-						dropdown.val('');
+						this.refreshShortcodeTable(details.table);
 						dropdown.find(`option[value="${instance}"]`).remove();
-						// check if dropdown does not have any option left.
-						if (0 === dropdown.find('option').length) {
+						// Check if dropdown only has the placeholder left.
+						if (1 >= dropdown.find('option').length) {
+							dropdown.siblings('.dpt-separator, .dpt-shortcode-search-toggle, label[for="dpt-shortcode-list-search"], #dpt-shortcode-list-search').remove();
 							dropdown.remove();
+						} else if (isCurrent) {
+							dropdown.val('').trigger('change');
 						} else {
-							dropdown.trigger('change');
+							dropdown.val(currentInstance);
 						}
-						this.newResponse('Shortcode deleted successfully', 'dpt-success', true);
+						this.newResponse('Shortcode deleted successfully', 'dpt-success');
 					}
 				}
 			},
@@ -798,6 +926,11 @@ class ChangeDetect {
 					if ('undefined' !== typeof details.error) {
 						this.newResponse(details.error, 'dpt-error');
 					} else {
+						if (details.label) {
+							const selectedShortcode = jQuery('.dpt-shortcode-dropdown option:selected');
+							selectedShortcode.text(details.label);
+						}
+						this.refreshShortcodeTable(details.table);
 						this.newResponse('Shortcode updated successfully', 'dpt-success');
 						this.clearUnsavedState();
 					}
@@ -871,6 +1004,13 @@ class ChangeDetect {
 	copyShortcodeText(link) {
 		const wrapper = link.closest('.dpt-shortcode-copy');
 		const text = wrapper.find('.dpt-shortcode-text code').text();
+		this.copyRawShortcodeText(text);
+	}
+
+	copyRawShortcodeText(text) {
+		if (!text) {
+			return;
+		}
 		// Create a temporary textarea to copy the text
 		var tempTextarea = jQuery("<textarea>");
 		jQuery("body").append(tempTextarea);

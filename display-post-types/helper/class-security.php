@@ -51,6 +51,8 @@ class Security {
 				'img_align'     => 'string',
 				'br_radius'     => 'int',
 				'col_narr'      => 'int',
+				'col_narr_tab'  => 'int',
+				'col_narr_mob'  => 'int',
 				'pl_holder'     => 'check',
 				'show_pgnation' => 'check',
 				'thumb_fetch'   => 'check',

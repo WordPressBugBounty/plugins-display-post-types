@@ -354,7 +354,7 @@ class ShortCodeGen {
 						),
 						'col_narr' => array(
 							'setting'       => 'col_narr',
-							'label'         => esc_html__( 'Number of grid columns', 'display-post-types' ),
+							'label'         => esc_html__( 'Desktop grid columns', 'display-post-types' ),
 							'type'          => 'number',
 							'input_attrs'   => array(
 								'step' => 1,
@@ -362,6 +362,36 @@ class ShortCodeGen {
 								'max'  => 8,
 								'size' => 1,
 							),
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
+							},
+						),
+						'col_narr_tab' => array(
+							'setting'       => 'col_narr_tab',
+							'label'         => esc_html__( 'Tablet grid columns', 'display-post-types' ),
+							'type'          => 'number',
+							'input_attrs'   => array(
+								'step' => 1,
+								'min'  => 0,
+								'max'  => 8,
+								'size' => 1,
+							),
+							'desc'          => esc_html__( 'Set to 0 to use the automatic tablet layout.', 'display-post-types' ),
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
+							},
+						),
+						'col_narr_mob' => array(
+							'setting'       => 'col_narr_mob',
+							'label'         => esc_html__( 'Mobile grid columns', 'display-post-types' ),
+							'type'          => 'number',
+							'input_attrs'   => array(
+								'step' => 1,
+								'min'  => 0,
+								'max'  => 4,
+								'size' => 1,
+							),
+							'desc'          => esc_html__( 'Set to 0 to use the automatic mobile layout.', 'display-post-types' ),
 							'hide_callback' => function() use ( $widget, $instance ) {
 								return ! $widget->is_style_support( $instance['styles'], 'multicol' );
 							},
@@ -1324,7 +1354,7 @@ class ShortCodeGen {
 		}
 		$select = array( '' => esc_html__( 'Select a Shortcode to Edit', 'display-post-types' ) );
 		foreach( $this->shortcode_settings as $id => $args ) {
-			$select[ $id ] = isset($args['title']) ? $args['title'] : 'Shortcode-' . $id;
+			$select[ $id ] = $this->get_shortcode_label( $id, $args );
 		}
 
 		$markup   = '';
@@ -1341,6 +1371,102 @@ class ShortCodeGen {
 		);
 
 		return $markup;
+	}
+
+	/**
+	 * Get a stable human-readable shortcode label.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @param int|string $id   Shortcode instance ID.
+	 * @param array      $args Shortcode settings.
+	 * @return string
+	 */
+	public function get_shortcode_label( $id, $args = array() ) {
+		if ( isset( $args['title'] ) && '' !== trim( (string) $args['title'] ) ) {
+			return $args['title'];
+		}
+
+		return sprintf(
+			/* translators: %s: shortcode instance ID */
+			esc_html__( 'DPT Shortcode %s', 'display-post-types' ),
+			absint( $id ) + 1
+		);
+	}
+
+	/**
+	 * Get the next available stored shortcode instance ID.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @return int
+	 */
+	public function next_instance_id() {
+		if ( empty( $this->shortcode_settings ) || ! is_array( $this->shortcode_settings ) ) {
+			return 0;
+		}
+
+		$ids = array_map( 'absint', array_keys( $this->shortcode_settings ) );
+		$next = max( $ids ) + 1;
+		while ( isset( $this->shortcode_settings[ $next ] ) ) {
+			++$next;
+		}
+
+		return $next;
+	}
+
+	/**
+	 * Get a table of saved shortcodes.
+	 *
+	 * @since 3.3.0
+	 *
+	 * @return string
+	 */
+	public function list_table() {
+		if ( empty( $this->shortcode_settings ) || ! is_array( $this->shortcode_settings ) ) {
+			return sprintf(
+				'<p class="dpt-shortcode-empty">%s</p>',
+				esc_html__( 'No saved shortcodes yet.', 'display-post-types' )
+			);
+		}
+
+		$post_types = Get_Fn::post_types();
+		$styles     = Get_Fn::styles();
+		$rows       = '';
+		foreach ( $this->shortcode_settings as $id => $args ) {
+			$id          = absint( $id );
+			$label       = $this->get_shortcode_label( $id, $args );
+			$post_type   = isset( $args['post_type'], $post_types[ $args['post_type'] ] ) ? $post_types[ $args['post_type'] ] : ( isset( $args['post_type'] ) ? $args['post_type'] : '' );
+			$style       = isset( $args['styles'], $styles[ $args['styles'] ]['label'] ) ? $styles[ $args['styles'] ]['label'] : ( isset( $args['styles'] ) ? $args['styles'] : '' );
+			$shortcode   = sprintf( '[showdpt instance="%s"]', $id );
+			$copy_label  = esc_attr__( 'Copy shortcode', 'display-post-types' );
+			$edit_label  = esc_attr__( 'Edit shortcode', 'display-post-types' );
+			$dupe_label  = esc_attr__( 'Duplicate shortcode', 'display-post-types' );
+			$del_label   = esc_attr__( 'Delete shortcode', 'display-post-types' );
+			$rows       .= sprintf(
+				'<tr data-instance="%1$s"><td><strong class="dpt-shortcode-row-title">%2$s</strong></td><td class="dpt-shortcode-row-shortcode"><code class="dpt-shortcode-row-code">%3$s</code> <button type="button" class="button button-small dpt-icon-button dpt-shortcode-row-copy" data-shortcode="%6$s" aria-label="%7$s" title="%7$s"><span class="dashicons dashicons-clipboard" aria-hidden="true"></span></button></td><td>%4$s</td><td>%5$s</td><td class="dpt-shortcode-row-actions"><button type="button" class="button button-small dpt-icon-button dpt-shortcode-row-edit" data-instance="%1$s" aria-label="%8$s" title="%8$s"><span class="dashicons dashicons-edit" aria-hidden="true"></span></button> <button type="button" class="button button-small dpt-icon-button dpt-shortcode-row-duplicate" data-instance="%1$s" aria-label="%9$s" title="%9$s"><span class="dashicons dashicons-admin-page" aria-hidden="true"></span></button> <button type="button" class="button button-small dpt-icon-button dpt-shortcode-row-delete" data-instance="%1$s" aria-label="%10$s" title="%10$s"><span class="dashicons dashicons-trash" aria-hidden="true"></span></button></td></tr>',
+				$id,
+				esc_html( $label ),
+				esc_html( $shortcode ),
+				esc_html( $post_type ),
+				esc_html( $style ),
+				esc_attr( $shortcode ),
+				$copy_label,
+				$edit_label,
+				$dupe_label,
+				$del_label
+			);
+		}
+
+		return sprintf(
+			'<div class="dpt-shortcode-list-wrap"><table class="widefat striped dpt-shortcode-list"><thead><tr><th>%1$s</th><th>%2$s</th><th>%3$s</th><th>%4$s</th><th>%5$s</th></tr></thead><tbody>%6$s</tbody></table></div>',
+			esc_html__( 'Name', 'display-post-types' ),
+			esc_html__( 'Shortcode', 'display-post-types' ),
+			esc_html__( 'Post Type', 'display-post-types' ),
+			esc_html__( 'Layout', 'display-post-types' ),
+			esc_html__( 'Actions', 'display-post-types' ),
+			$rows
+		);
 	}
 
 	/**

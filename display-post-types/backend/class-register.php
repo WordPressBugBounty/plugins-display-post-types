@@ -77,6 +77,7 @@ class Register {
 		add_action( 'wp_ajax_dpt_blank_shortcode_template', array( $inst, 'get_shortcode_form' ) );
 		add_action( 'wp_ajax_dpt_create_new_shortcode', array( $inst, 'create_new_shortcode' ) );
 		add_action( 'wp_ajax_dpt_load_shortcode', array( $inst, 'load_shortcode' ) );
+		add_action( 'wp_ajax_dpt_duplicate_shortcode', array( $inst, 'duplicate_shortcode' ) );
 		add_action( 'wp_ajax_dpt_delete_shortcode', array( $inst, 'delete_shortcode' ) );
 		add_action( 'wp_ajax_dpt_update_shortcode', array( $inst, 'update_shortcode' ) );
 
@@ -277,7 +278,7 @@ class Register {
 		$this->require_capabilities();
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
-		$instance       = empty( $shortcode_list ) || ! is_array( $shortcode_list ) ? 0 : max( array_keys( $shortcode_list ) ) + 1;
+		$instance       = $shcode_gen->next_instance_id();
 		ob_start();
 		$shcode_gen->form( $instance );
 		$form = ob_get_clean();
@@ -308,12 +309,19 @@ class Register {
 		}
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
+		if ( false === $inst || isset( $shortcode_list[ $inst ] ) ) {
+			$inst = $shcode_gen->next_instance_id();
+		}
 		$shortcode_list[ $inst ] = $args;
 		$shcode_gen->shortcode_settings = $shortcode_list;
 		$shcode_gen->save();
 		wp_send_json_success(
 			array(
-				'message' => __( 'Shortcode created successfully.', 'display-post-types' ),
+				'message'   => __( 'Shortcode created successfully.', 'display-post-types' ),
+				'instance'  => $inst,
+				'label'     => $shcode_gen->get_shortcode_label( $inst, $args ),
+				'shortcode' => sprintf( '[showdpt instance="%s"]', absint( $inst ) ),
+				'table'     => $shcode_gen->list_table(),
 			)
 		);
 	}
@@ -337,6 +345,13 @@ class Register {
 		$shcode_gen     = ShortCodeGen::get_instance();
 		$shortcode_list = $shcode_gen->shortcode_settings;
 		$args = isset( $shortcode_list[ $instance ] ) ? $shortcode_list[ $instance ] : array();
+		if ( empty( $args ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Shortcode not found.', 'display-post-types' ),
+				)
+			);
+		}
 		ob_start();
 		Display::init( $args );
 		$dpt = Instance_Counter::get_instance();
@@ -351,6 +366,56 @@ class Register {
 				'preview'   => $preview,
 				'instance'  => $instance,
 				'instances' => $dpt->get_script_data(),
+			)
+		);
+	}
+
+	/**
+	 * Duplicate an existing DPT shortcode from the admin page.
+	 *
+	 * @since 3.3.0
+	 */
+	public function duplicate_shortcode() {
+		check_ajax_referer( 'dpt-admin-ajax-nonce', 'security' );
+		$this->require_capabilities();
+		$source = isset( $_POST['instance'] ) ? absint( wp_unslash( $_POST['instance'] ) ) : false;
+		if ( false === $source ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Invalid shortcode provided.', 'display-post-types' ),
+				)
+			);
+		}
+
+		$shcode_gen     = ShortCodeGen::get_instance();
+		$shortcode_list = $shcode_gen->shortcode_settings;
+		if ( ! isset( $shortcode_list[ $source ] ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Shortcode not found.', 'display-post-types' ),
+				)
+			);
+		}
+
+		$instance = $shcode_gen->next_instance_id();
+		$args     = $shortcode_list[ $source ];
+		$title    = $shcode_gen->get_shortcode_label( $source, $args );
+		$args['title'] = sanitize_text_field( sprintf(
+			/* translators: %s: original shortcode title */
+			__( '%s Copy', 'display-post-types' ),
+			$title
+		) );
+		$shortcode_list[ $instance ] = $args;
+		$shcode_gen->shortcode_settings = $shortcode_list;
+		$shcode_gen->save();
+
+		wp_send_json_success(
+			array(
+				'message'   => __( 'Shortcode duplicated successfully.', 'display-post-types' ),
+				'instance'  => $instance,
+				'label'     => $shcode_gen->get_shortcode_label( $instance, $args ),
+				'shortcode' => sprintf( '[showdpt instance="%s"]', absint( $instance ) ),
+				'table'     => $shcode_gen->list_table(),
 			)
 		);
 	}
@@ -378,7 +443,11 @@ class Register {
 			$shcode_gen->shortcode_settings = $shortcode_list;
 			$shcode_gen->save();
 		}
-		wp_send_json_success();
+		wp_send_json_success(
+			array(
+				'table' => $shcode_gen->list_table(),
+			)
+		);
 	}
 
 	/**
@@ -406,6 +475,8 @@ class Register {
 		wp_send_json_success(
 			array(
 				'message' => __( 'Shortcode updated successfully.', 'display-post-types' ),
+				'label'   => $shcode_gen->get_shortcode_label( $inst, $args ),
+				'table'   => $shcode_gen->list_table(),
 			)
 		);
 	}

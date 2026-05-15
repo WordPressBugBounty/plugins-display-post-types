@@ -297,6 +297,8 @@ class DisplayPostTypes extends Component {
 			imgAlign,
 			brRadius,
 			colNarr,
+			colNarrTab,
+			colNarrMob,
 			plHolder,
 			titleShadow,
 			textAlign,
@@ -897,11 +899,33 @@ class DisplayPostTypes extends Component {
 						{
 							(styles && ifStyleSupport(styles, 'multicol')) &&
 							<RangeControl
-								label={ __( 'Maximum grid columns (Responsive)', 'display-post-types' ) }
+								label={ __( 'Desktop grid columns', 'display-post-types' ) }
 								value={ colNarr }
 								onChange={ ( colNarr ) => setAttributes( { colNarr } ) }
 								min={ 1 }
 								max={ 8 }
+							/>
+						}
+						{
+							(styles && ifStyleSupport(styles, 'multicol')) &&
+							<RangeControl
+								label={ __( 'Tablet grid columns', 'display-post-types' ) }
+								value={ colNarrTab }
+								onChange={ ( colNarrTab ) => setAttributes( { colNarrTab } ) }
+								min={ 0 }
+								max={ 8 }
+								help={ __( 'Set to 0 to use the automatic tablet layout.', 'display-post-types' ) }
+							/>
+						}
+						{
+							(styles && ifStyleSupport(styles, 'multicol')) &&
+							<RangeControl
+								label={ __( 'Mobile grid columns', 'display-post-types' ) }
+								value={ colNarrMob }
+								onChange={ ( colNarrMob ) => setAttributes( { colNarrMob } ) }
+								min={ 0 }
+								max={ 4 }
+								help={ __( 'Set to 0 to use the automatic mobile layout.', 'display-post-types' ) }
 							/>
 						}
 						<RangeControl

@@ -4,7 +4,7 @@ Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 6.9
 Requires PHP: 7.2
-Stable tag: 3.2.8
+Stable tag: 3.3.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,13 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+= 3.3.0 =
+* Add: Shortcode manager table with edit, duplicate, copy, and delete actions.
+* Add: Responsive tablet/mobile column and gutter controls.
+* Modify: Hardened Pro AJAX requests with signed query data.
+* Modify: Reduced frontend render query cost for normal displays.
+* Fix: Shortcode page and post ID parsing.
+
 = 3.2.7 =
 * Bug Fix: Elementor styling conflict fix for smaller devices.
 * Modify: Admin page design improvements.
