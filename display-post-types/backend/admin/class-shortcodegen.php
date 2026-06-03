@@ -278,7 +278,7 @@ class ShortCodeGen {
 							'setting'       => 'taxonomy',
 							'type'          => 'taxonomy',
 							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'];
+								return 'page' === $instance['post_type'] || ! empty( $instance['query_tax_clauses'] );
 							},
 							'wrapper'       => 'filter_taxonomy',
 						),
@@ -286,7 +286,7 @@ class ShortCodeGen {
 							'setting'       => 'terms',
 							'type'          => 'terms',
 							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
+								return 'page' === $instance['post_type'] || ! empty( $instance['query_tax_clauses'] ) || '' === $instance['taxonomy'];
 							},
 							'wrapper'       => 'filter_taxonomy',
 						),
@@ -299,7 +299,15 @@ class ShortCodeGen {
 								'AND' => esc_html__( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ),
 							),
 							'hide_callback' => function() use ( $widget, $instance ) {
-								return 'page' === $instance['post_type'] || '' === $instance['taxonomy'];
+								return 'page' === $instance['post_type'] || ! empty( $instance['query_tax_clauses'] ) || '' === $instance['taxonomy'];
+							},
+							'wrapper'       => 'filter_taxonomy',
+						),
+						'query_tax_clauses' => array(
+							'setting'       => 'query_tax_clauses',
+							'type'          => 'advanced_taxonomy',
+							'hide_callback' => function() use ( $widget, $instance ) {
+								return 'page' === $instance['post_type'];
 							},
 							'wrapper'       => 'filter_taxonomy',
 						),
@@ -680,11 +688,11 @@ class ShortCodeGen {
 				'header'    => array(
 					'id'       => 'header',
 					'type'     => 'toggle',
-					'label'    => esc_html__( 'Header', 'display-post-types' ),
+					'label'    => esc_html__( 'Title & Toolbar', 'display-post-types' ),
 					'class'    => 'dpt-header-section',
 					'children' => false,
 					'hide_callback' => function() use ( $widget, $instance ) {
-						return ! $instance['title'];
+						return ! $instance['title'] && ( ! defined( 'DPT_PRO_VERSION' ) || ! $widget->is_style_support( $instance['styles'], 'hactions' ) );
 					},
 				),
 				'container' => array(
@@ -902,6 +910,9 @@ class ShortCodeGen {
 					case 'terms':
 						$optmar = $this->terms_checklist( $instance['taxonomy'], $instance['terms'] );
 						break;
+					case 'advanced_taxonomy':
+						$optmar = $this->advanced_taxonomy_control( $instance );
+						break;
 					case 'pages':
 						$optmar = $this->pages_checklist( $instance['pages'] );
 						break;
@@ -1103,25 +1114,256 @@ class ShortCodeGen {
 	public function terms_checklist( $taxonomy, $selected_terms = array() ) {
 
 		// Get list of all registered terms.
-		$terms = get_terms();
+		$terms = get_terms(
+			array(
+				'hide_empty' => true,
+			)
+		);
 
-		// Get 'checkbox' options as value => label.
-		$options = wp_list_pluck( $terms, 'name', 'slug' );
-
-		// Get HTML classes for checkbox options.
-		$classes = wp_list_pluck( $terms, 'taxonomy', 'slug' );
-		if ( $taxonomy ) {
-			foreach ( $classes as $slug => $taxon ) {
-				if ( $taxonomy !== $taxon ) {
-					$classes[ $slug ] .= ' dpt-hidden';
-				}
-			}
+		if ( is_wp_error( $terms ) ) {
+			$terms = array();
 		}
 
 		// Terms Checkbox markup.
 		$markup  = $this->label( 'terms', esc_html__( 'Select Terms', 'display-post-types' ), false );
-		$markup .= $this->mu_checkbox( 'terms', $options, $selected_terms, $classes, false );
+		$markup .= $this->terms_mu_checkbox( $terms, $taxonomy, $selected_terms );
 		return $markup;
+	}
+
+	/**
+	 * Markup for term checkboxes.
+	 *
+	 * Terms are intentionally rendered from the term objects rather than an
+	 * associative slug-indexed array. Different taxonomies can contain terms
+	 * with the same slug, and using the slug as the array key drops duplicates.
+	 *
+	 * @param array  $terms          Term objects.
+	 * @param string $taxonomy       Selected taxonomy.
+	 * @param array  $selected_terms Selected term slugs.
+	 * @return string
+	 */
+	public function terms_mu_checkbox( $terms, $taxonomy, $selected_terms = array() ) {
+		$selected_terms = is_array( $selected_terms ) ? $selected_terms : explode( ',', $selected_terms );
+		$selected_terms = array_map( 'strval', $selected_terms );
+		$hidden_input   = sprintf(
+			'<input class="dpt-getval" name="%1$s" id="%2$s" type="hidden" value="%3$s" />',
+			esc_attr( $this->get_field_name( 'terms' ) ),
+			esc_attr( $this->get_field_id( 'terms' ) ),
+			implode( ',', array_map( 'esc_attr', $selected_terms ) )
+		);
+		$markup         = '<div class="terms-checklist dpt-mu-checklist">' . $hidden_input . '<ul id="' . esc_attr( $this->get_field_id( 'terms' ) ) . '">';
+
+		foreach ( $terms as $term ) {
+			$class      = $term->taxonomy;
+			$is_current = ! $taxonomy || $taxonomy === $term->taxonomy;
+			if ( ! $is_current ) {
+				$class .= ' dpt-hidden';
+			}
+			$is_checked = $is_current && in_array( strval( $term->slug ), $selected_terms, true );
+			$markup    .= sprintf(
+				"\n<li class=\"%1\$s\"><label class=\"selectit\"><input value=\"%2\$s\" type=\"checkbox\"%3\$s /> %4\$s</label></li>\n",
+				esc_attr( $class ),
+				esc_attr( $term->slug ),
+				checked( $is_checked, true, false ),
+				esc_html( $term->name )
+			);
+		}
+
+		$markup .= "</ul></div>\n";
+		return $markup;
+	}
+
+	/**
+	 * Render advanced taxonomy controls.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param array $instance Current settings.
+	 * @return string
+	 */
+	public function advanced_taxonomy_control( $instance ) {
+		$post_type = isset( $instance['post_type'] ) ? $instance['post_type'] : '';
+		$relation  = isset( $instance['query_tax_relation'] ) ? \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_relation( $instance['query_tax_relation'] ) : 'AND';
+		$clauses   = isset( $instance['query_tax_clauses'] ) ? \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_tax_clauses( $instance['query_tax_clauses'] ) : array();
+		$enabled   = ! empty( $clauses );
+		$rows      = $enabled ? $clauses : array( array( 'taxonomy' => '', 'terms' => array(), 'operator' => 'IN' ) );
+		$rules     = '';
+
+		foreach ( $rows as $index => $clause ) {
+			$rules .= $this->advanced_taxonomy_rule( $post_type, $clause, $index );
+		}
+
+		$markup  = sprintf(
+			'<input class="dpt-getval dpt-query-tax-clauses-value" name="%1$s" id="%2$s" type="hidden" value="%3$s" />',
+			esc_attr( $this->get_field_name( 'query_tax_clauses' ) ),
+			esc_attr( $this->get_field_id( 'query_tax_clauses' ) ),
+			esc_attr( $enabled ? wp_json_encode( $clauses ) : '' )
+		);
+		$markup .= sprintf(
+			'<label class="dpt-query-tax-toggle-label"><input type="checkbox" class="dpt-query-tax-toggle"%1$s /> %2$s</label>',
+			checked( $enabled, true, false ),
+			esc_html__( 'Use multiple taxonomy rules', 'display-post-types' )
+		);
+		$markup .= sprintf( '<div class="dpt-query-tax-builder"%s>', $enabled ? '' : ' style="display: none;"' );
+		$markup .= '<div class="dpt-query-tax-relation-row">';
+		$markup .= $this->label( 'query_tax_relation', esc_html__( 'Rules Relationship', 'display-post-types' ), false );
+		$markup .= $this->select(
+			'query_tax_relation',
+			array(
+				'AND' => esc_html__( 'Match all rules', 'display-post-types' ),
+				'OR'  => esc_html__( 'Match any rule', 'display-post-types' ),
+			),
+			$relation,
+			array(),
+			false
+		);
+		$markup .= '</div>';
+		$markup .= sprintf( '<div class="dpt-query-tax-rules">%s</div>', $rules );
+		$markup .= sprintf( '<button type="button" class="button dpt-query-tax-add">%s</button>', esc_html__( 'Add Taxonomy Rule', 'display-post-types' ) );
+		$markup .= '</div>';
+
+		return sprintf( '<div class="dpt-query-tax-control">%s</div>', $markup );
+	}
+
+	/**
+	 * Render one advanced taxonomy rule.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $post_type Selected post type.
+	 * @param array  $clause    Taxonomy clause.
+	 * @param int    $index     Rule index.
+	 * @return string
+	 */
+	public function advanced_taxonomy_rule( $post_type, $clause, $index = 0 ) {
+		$taxonomy = isset( $clause['taxonomy'] ) ? sanitize_key( $clause['taxonomy'] ) : '';
+		$operator = isset( $clause['operator'] ) ? sanitize_text_field( $clause['operator'] ) : 'IN';
+		$terms    = isset( $clause['terms'] ) && is_array( $clause['terms'] ) ? array_map( 'strval', $clause['terms'] ) : array();
+
+		$markup  = sprintf( '<div class="dpt-query-tax-rule" data-index="%s">', absint( $index ) );
+		$markup .= '<div class="dpt-query-tax-rule-head">';
+		$markup .= sprintf( '<strong>%s</strong>', esc_html__( 'Taxonomy Rule', 'display-post-types' ) );
+		$markup .= sprintf( '<button type="button" class="button-link dpt-query-tax-remove">%s</button>', esc_html__( 'Remove', 'display-post-types' ) );
+		$markup .= '</div>';
+		$markup .= sprintf( '<label>%s</label>', esc_html__( 'Taxonomy', 'display-post-types' ) );
+		$markup .= $this->advanced_taxonomy_select( $post_type, $taxonomy );
+		$markup .= sprintf( '<label>%s</label>', esc_html__( 'Rule Type', 'display-post-types' ) );
+		$markup .= $this->advanced_taxonomy_operator_select( $operator );
+		$markup .= sprintf( '<div class="dpt-query-tax-rule-terms-row"%s>', $taxonomy ? '' : ' style="display: none;"' );
+		$markup .= sprintf( '<label>%s</label>', esc_html__( 'Terms', 'display-post-types' ) );
+		$markup .= $this->advanced_taxonomy_terms( $taxonomy, $terms );
+		$markup .= '</div>';
+		$markup .= '</div>';
+
+		return $markup;
+	}
+
+	/**
+	 * Render taxonomy select for an advanced rule.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $post_type Selected post type.
+	 * @param string $selected  Selected taxonomy.
+	 * @return string
+	 */
+	private function advanced_taxonomy_select( $post_type, $selected ) {
+		$options    = Get_Fn::taxonomies();
+		$taxonomies = get_taxonomies( array(), 'objects' );
+		$classes    = wp_list_pluck( $taxonomies, 'object_type', 'name' );
+
+		if ( $post_type && 'page' !== $post_type ) {
+			foreach ( $classes as $name => $type ) {
+				$type = (array) $type;
+				if ( ! in_array( $post_type, $type, true ) ) {
+					$type[] = 'dpt-hidden';
+				}
+				$classes[ $name ] = $type;
+			}
+		}
+		$classes[''] = 'always-visible';
+
+		return $this->advanced_select_markup( 'dpt-query-tax-rule-taxonomy', $options, $selected, $classes );
+	}
+
+	/**
+	 * Render rule operator select.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $selected Selected operator.
+	 * @return string
+	 */
+	private function advanced_taxonomy_operator_select( $selected ) {
+		return $this->advanced_select_markup(
+			'dpt-query-tax-rule-operator',
+			array(
+				'IN'     => esc_html__( 'Match any selected term', 'display-post-types' ),
+				'AND'    => esc_html__( 'Match all selected terms', 'display-post-types' ),
+				'NOT IN' => esc_html__( 'Exclude selected terms', 'display-post-types' ),
+			),
+			$selected
+		);
+	}
+
+	/**
+	 * Render term checkboxes for an advanced rule.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $taxonomy Selected taxonomy.
+	 * @param array  $selected Selected term slugs.
+	 * @return string
+	 */
+	private function advanced_taxonomy_terms( $taxonomy, $selected ) {
+		$terms = get_terms( array( 'hide_empty' => true ) );
+		if ( is_wp_error( $terms ) ) {
+			$terms = array();
+		}
+
+		$markup = '<div class="terms-checklist dpt-mu-checklist dpt-query-tax-rule-terms"><ul>';
+		foreach ( $terms as $term ) {
+			$is_current = $taxonomy && $taxonomy === $term->taxonomy;
+			$classes    = array( $term->taxonomy );
+			if ( ! $is_current ) {
+				$classes[] = 'dpt-hidden';
+			}
+			$markup .= sprintf(
+				'<li class="%1$s"%2$s><label class="selectit"><input value="%3$s" type="checkbox"%4$s /> %5$s</label></li>',
+				esc_attr( join( ' ', $classes ) ),
+				$is_current ? '' : ' style="display: none;"',
+				esc_attr( $term->slug ),
+				checked( $is_current && in_array( strval( $term->slug ), $selected, true ), true, false ),
+				esc_html( $term->name )
+			);
+		}
+		$markup .= '</ul></div>';
+
+		return $markup;
+	}
+
+	/**
+	 * Render a UI-only select for advanced taxonomy rules.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string $class    Select class.
+	 * @param array  $options  Options.
+	 * @param string $selected Selected option.
+	 * @param array  $classes  Option classes.
+	 * @return string
+	 */
+	private function advanced_select_markup( $class, $options, $selected, $classes = array() ) {
+		$output = '';
+		foreach ( $options as $value => $label ) {
+			$option_class = '';
+			if ( isset( $classes[ $value ] ) ) {
+				$option_class = ' class="' . join( ' ', array_map( 'esc_attr', (array) $classes[ $value ] ) ) . '"';
+			}
+			$output .= sprintf( '<option value="%1$s"%2$s %3$s>%4$s</option>', esc_attr( $value ), $option_class, selected( $value, $selected, false ), esc_html( $label ) );
+		}
+
+		return sprintf( '<select class="%1$s widefat">%2$s</select>', esc_attr( $class ), $output );
 	}
 
 	/**

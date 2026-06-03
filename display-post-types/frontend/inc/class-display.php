@@ -57,69 +57,26 @@ class Display {
 			$inst_class->set_mason();
 		}
 
-		// If pagination is to be displayed.
-		if ( self::is_style_support( $args['styles'], 'pagination' ) && isset( $args['show_pgnation'] ) && $args['show_pgnation'] ) {
+		$pagination_enabled = self::is_style_support( $args['styles'], 'pagination' ) && isset( $args['show_pgnation'] ) && $args['show_pgnation'];
+		if ( $pagination_enabled ) {
 			$inst_id    = $inst_class->count();
 			$pagination = 'paged' . $inst_id;
 			$paged      = isset( $_GET[ $pagination ] ) ? absint( wp_unslash( $_GET[ $pagination ] ) ) : 1;
 		}
 
 		// Prepare the query.
-		$query_args = array();
-		if ( ! $args['post_type'] ) {
+		$query_context = array(
+			'no_found_rows' => ! $pagination_enabled,
+			'current_id'    => get_the_ID(),
+			'is_home'       => is_home(),
+		);
+		if ( $pagination_enabled ) {
+			$query_context['paged'] = $paged;
+		}
+
+		$query_args = Query_Builder::build( $args, $query_context );
+		if ( empty( $query_args ) ) {
 			return;
-		} elseif ( 'page' === $args['post_type'] ) {
-			$pages = self::normalize_id_list( isset( $args['pages'] ) ? $args['pages'] : array() );
-			$query_args = array(
-				'post_type'           => 'page',
-				'post__in'            => $pages,
-				'post_status'         => 'publish',
-				'ignore_sticky_posts' => true,
-				'posts_per_page'      => $args['number'],
-			);
-		} else {
-			$query_args = array(
-				'post_type'           => $args['post_type'],
-				'post_status'         => 'publish',
-				'ignore_sticky_posts' => true,
-				'posts_per_page'      => $args['number'],
-				'orderby'             => $args['orderby'],
-				'order'               => $args['order'],
-			);
-
-			if ( $args['taxonomy'] && ! empty( $args['terms'] ) ) {
-				$taxargs = array(
-					'taxonomy' => $args['taxonomy'],
-					'field'    => 'slug',
-					'terms'    => $args['terms'],
-				);
-				// Add relationship if there are more than one terms selected.
-				if ( $args['relation'] && 1 < count( $args['terms'] ) ) {
-					$taxargs['operator'] = $args['relation'];
-				}
-				$query_args['tax_query'] = array( $taxargs );
-			}
-
-			if ( $args['offset'] ) {
-				$query_args['offset'] = $args['offset'];
-			}
-
-			if ( $args['post_ids'] ) {
-				$query_args['post__in'] = self::normalize_id_list( $args['post_ids'] );
-			}
-		}
-
-		// If pagination is to be displayed.
-		if ( self::is_style_support( $args['styles'], 'pagination' ) && isset( $args['show_pgnation'] ) && $args['show_pgnation'] ) {
-			$query_args['paged'] = $paged;
-		} else {
-			$query_args['no_found_rows'] = true;
-		}
-
-		$current_id = get_the_ID();
-		if ( $current_id && ! is_home() ) {
-			$exclude                    = (array) $current_id;
-			$query_args['post__not_in'] = $exclude;
 		}
 
 		$query_args = apply_filters( 'dpt_display_posts_args', $query_args, $args );
@@ -135,9 +92,20 @@ class Display {
 
 		$post_query = new \WP_Query( $query_args );
 		if ( $post_query->have_posts() ) :
+			$current_page   = $post_query->get( 'paged' ) ? absint( $post_query->get( 'paged' ) ) : 1;
+			$posts_per_page = absint( $post_query->get( 'posts_per_page' ) );
+			$total          = $needs_full_index ? count( $all_post_ids ) : (int) $post_query->post_count;
+			$offset         = min( $total, $posts_per_page * ( $current_page - 1 ) );
+
 			$action_args = array(
-				'args'  => $args,
-				'query' => $post_query,
+				'args'       => $args,
+				'query'      => $post_query,
+				'query_meta' => array(
+					'current_page'   => $current_page,
+					'posts_per_page' => $posts_per_page,
+					'total'          => $total,
+					'has_more_posts' => 0 < $posts_per_page && $total > $posts_per_page,
+				),
 			);
 
 			$all_taxonomies = get_object_taxonomies( $args['post_type'] );
@@ -222,11 +190,7 @@ class Display {
 			?>
 			</div>
 			<?php
-			$current_page = $post_query->get('paged') ? $post_query->get('paged') : 1;
-			$posts_per_page = $post_query->get('posts_per_page');
-			$total = $needs_full_index ? count( $all_post_ids ) : (int) $post_query->post_count;
-			$offset = min( $total, $posts_per_page * ( $current_page - 1 ) );
-			
+
 			// Send query args and instance settings to the frontend as script data.
 			$inst_class->add_script_data( $instance, array(
 				'query_args'  => $script_query_args,

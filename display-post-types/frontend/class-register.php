@@ -116,99 +116,89 @@ class Register {
 	 * @param int   $id Instance ID.
 	 */
 	public function dpt_header( $instance, $id ) {
-		$args  = $instance['args'];
-		$query = $instance['query'];
-		$title = isset( $args[ 'title' ] ) ? esc_html( $args[ 'title' ] ) : false;
+		$args       = $instance['args'];
+		$query      = $instance['query'];
+		$query_meta = isset( $instance['query_meta'] ) && is_array( $instance['query_meta'] ) ? $instance['query_meta'] : array();
+		$title      = isset( $args[ 'title' ] ) ? esc_html( $args[ 'title' ] ) : false;
 
-		if ( ! $title ) {
+		$is_slider      = $this->is_style_support( $args['styles'], 'slider' );
+		$header_style   = $this->is_pro && isset( $args[ 'hstyle' ] ) ? $args[ 'hstyle' ] : '';
+		$current_page   = ! empty( $query_meta['current_page'] ) ? absint( $query_meta['current_page'] ) : ( $this->is_pro && $query->get( 'paged' ) ? absint( $query->get( 'paged' ) ) : 1 );
+		$has_more_posts = isset( $query_meta['has_more_posts'] ) ? (bool) $query_meta['has_more_posts'] : 1 < (int) $query->max_num_pages;
+		$is_search      = $this->is_pro && ! $is_slider && isset( $args[ 'hsearch' ] ) && ! empty( $args[ 'hsearch' ] ) ? $args[ 'hsearch' ] : false;
+		$is_filter      = $this->is_pro && ! $is_slider && isset( $args[ 'hfilter' ] ) && ! empty( $args[ 'hfilter' ] ) ? $args[ 'hfilter' ] : false;
+		$is_hnext       = $this->is_pro && ! $is_slider && $has_more_posts && isset( $args[ 'hnext' ] ) && ! empty( $args[ 'hnext' ] ) ? $args[ 'hnext' ] : false;
+		$has_toolbar    = $is_search || $is_filter || $is_hnext;
+
+		if ( ! $title && ! $has_toolbar ) {
 			return;
 		}
 
-		$is_slider    = $this->is_style_support( $args['styles'], 'slider' );
-		$header_style = $this->is_pro && isset( $args[ 'hstyle' ] ) ? $args[ 'hstyle' ] : '';
-		$current_page = $this->is_pro && $query->get('paged') ? $query->get('paged') : 1;
-		$is_search    = $this->is_pro && ! $is_slider && isset( $args[ 'hsearch' ] ) && ! empty( $args[ 'hsearch' ] ) ? $args[ 'hsearch' ] : false;
-		$is_filter    = $this->is_pro && ! $is_slider && isset( $args[ 'hfilter' ] ) && ! empty( $args[ 'hfilter' ] ) ? $args[ 'hfilter' ] : false;
-		$is_hnext     = $this->is_pro && ! $is_slider && isset( $args[ 'hnext' ] ) && ! empty( $args[ 'hnext' ] ) ? $args[ 'hnext' ] : false;
-
-		Markup::markup(
-			array( 'dpt-main-header', $header_style ),
-			array(
-				array(
-					function( $title, $header_style, $is_search, $is_filter, $is_hnext, $current_page ) {
-						$search_markup = '';
-						$filter_markup = '';
-						$hnext_markup  = '';
-						if ( $is_search ) {
-							$search_markup = '
-							<div class="dpt-header-search-btn">
-								<button type="submit" class="dpt-hsearch-btn dpt-header-btn">' . Markup::get_icon( 'dpt-search' ) . '</button>
-							</div>
-							';
-						}
-						if ( $is_hnext ) {
-							$disabled = 1 === $current_page ? 'disabled' : '';
-							$class    = 1 === $current_page ? 'is-disabled' : '';
-							$hnext_markup = '
-							<div class="dpt-header-posts-btn">
-								<button type="submit"'  . $disabled . ' class="dpt-hprev-btn dpt-header-btn ' . $class . '">' . Markup::get_icon( 'dpt-previous' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button><button type="submit" class="dpt-hnext-btn dpt-header-btn">' . Markup::get_icon( 'dpt-next' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button>
-							</div>
-							';
-						}
-						if ( $is_filter ) {
-							$filter_markup = '
-							<div class="dpt-header-filter-btn">
-								<button type="submit" class="dpt-hfilter-btn dpt-header-btn">' . Markup::get_icon( 'dpt-filter' ) . '</button>
-							</div>
-							';
-						}
-						$markup_string = '
-						<div class="dpt-main-title">
-							<span class="dpt-main-title-text">%1$s</span>
-						</div>
-						%2$s
-						%3$s
-						%4$s
-						';
-						$markup = sprintf( $markup_string, $title, $search_markup, $filter_markup, $hnext_markup );
-						echo $markup;
-					},
-					$title, $header_style, $is_search, $is_filter, $is_hnext, $current_page
-				),
-			)
-		);
-
-		if ( $is_search ) {
+		if ( $title ) {
 			Markup::markup(
-				array( 'dpt-header-search' ),
+				array( 'dpt-main-header', $header_style ),
 				array(
-					function() {
-						$markup_string = '%1$s<input type="text" class="dpt-hsearch-input" placeholder="%2$s"><button class="dpt-hsearch-close dpt-header-btn">%3$s</button>';
-						$markup = sprintf(
-							$markup_string,
-							Markup::get_icon( 'dpt-search' ),
-							esc_html__( 'Search', 'display-post-types' ),
-							Markup::get_icon( 'dpt-close' )
-						);
-						echo $markup;
-					}
+					array(
+						function( $title ) {
+							printf(
+								'<div class="dpt-main-title"><span class="dpt-main-title-text">%s</span></div>',
+								esc_html( $title )
+							);
+						},
+						$title
+					),
 				)
 			);
 		}
 
-		if ( $is_filter ) {
+		if ( $has_toolbar ) {
 			Markup::markup(
-				array( 'dpt-header-filter' ),
+				array( 'dpt-toolbar' ),
 				array(
-					function() {
-						$markup_string = '<div class="dpt-filter-title">%1$s</div><div class="dpt-filter-menu"></div><button class="dpt-hfilter-close dpt-header-btn">%2$s</button>';
-						$markup = sprintf(
-							$markup_string,
-							esc_html__( 'Filter By', 'display-post-types' ),
-							Markup::get_icon( 'dpt-close' )
-						);
-						echo $markup;
-					}
+					array(
+						function( $is_search, $is_filter, $is_hnext, $current_page ) {
+							if ( $is_search ) {
+								echo '<div class="dpt-header-search-btn"><button type="button" class="dpt-hsearch-btn dpt-header-btn" aria-label="' . esc_attr__( 'Search posts', 'display-post-types' ) . '">' . Markup::get_icon( 'dpt-search' ) . '</button></div>';
+							}
+
+							if ( $is_filter ) {
+								echo '<div class="dpt-header-filter-btn"><button type="button" class="dpt-hfilter-btn dpt-header-btn" aria-label="' . esc_attr__( 'Filter posts', 'display-post-types' ) . '">' . Markup::get_icon( 'dpt-filter' ) . '</button></div>';
+							}
+
+							if ( $is_search ) {
+								$search_markup = '%1$s<input type="text" class="dpt-hsearch-input" placeholder="%2$s" aria-label="%2$s"><button type="button" class="dpt-hsearch-close dpt-header-btn" aria-label="%3$s">%4$s</button>';
+								printf(
+									'<div class="dpt-header-search">%s</div>',
+									sprintf(
+										$search_markup,
+										Markup::get_icon( 'dpt-search' ),
+										esc_attr__( 'Search posts', 'display-post-types' ),
+										esc_attr__( 'Close search', 'display-post-types' ),
+										Markup::get_icon( 'dpt-close' )
+									)
+								);
+							}
+
+							if ( $is_filter ) {
+								$filter_markup = '<div class="dpt-filter-menu"></div><button type="button" class="dpt-hfilter-close dpt-header-btn" aria-label="%1$s">%2$s</button>';
+								printf(
+									'<div class="dpt-header-filter">%s</div>',
+									sprintf(
+										$filter_markup,
+										esc_attr__( 'Close filters', 'display-post-types' ),
+										Markup::get_icon( 'dpt-close' )
+									)
+								);
+							}
+
+							if ( $is_hnext ) {
+								$disabled = 1 === $current_page ? ' disabled' : '';
+								$class    = 1 === $current_page ? 'is-disabled' : '';
+								echo '<div class="dpt-header-posts-btn"><button type="button"' . $disabled . ' class="dpt-hprev-btn dpt-header-btn ' . esc_attr( $class ) . '" aria-label="' . esc_attr__( 'Previous posts', 'display-post-types' ) . '">' . Markup::get_icon( 'dpt-previous' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button><button type="button" class="dpt-hnext-btn dpt-header-btn" aria-label="' . esc_attr__( 'Next posts', 'display-post-types' ) . '">' . Markup::get_icon( 'dpt-next' ) . Markup::get_icon( 'dpt-spin', 'dpt-hidden' ) . '</button></div>';
+							}
+						},
+						$is_search, $is_filter, $is_hnext, $current_page
+					),
 				)
 			);
 		}

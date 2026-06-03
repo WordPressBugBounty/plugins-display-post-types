@@ -51,6 +51,26 @@ class ChangeDetect {
 			_this.toggleTerms(jQuery(this));
 		});
 
+		widget.on('change', '.dpt-query-tax-toggle', function () {
+			_this.toggleAdvancedTaxonomy(jQuery(this));
+		});
+
+		widget.on('click', '.dpt-query-tax-add', function () {
+			_this.addAdvancedTaxonomyRule(jQuery(this));
+		});
+
+		widget.on('click', '.dpt-query-tax-remove', function () {
+			_this.removeAdvancedTaxonomyRule(jQuery(this));
+		});
+
+		widget.on('change', '.dpt-query-tax-rule-taxonomy', function () {
+			_this.advancedTaxonomyChange(jQuery(this));
+		});
+
+		widget.on('change', '.dpt-query-tax-rule-operator, .dpt-query-tax-rule-terms input[type="checkbox"]', function () {
+			_this.updateAdvancedTaxonomyValue(jQuery(this).closest('.dpt-query-tax-control'));
+		});
+
 		widget.on('change', 'select.dpt-orderby', function () {
 			_this.toggleCustomSort(jQuery(this));
 		});
@@ -352,6 +372,7 @@ class ChangeDetect {
 		const postSupports = [
 			'.post_ids',
 			'.taxonomy',
+			'.query_tax_clauses',
 			'.offset',
 			'.orderby',
 			'.order',
@@ -367,6 +388,7 @@ class ChangeDetect {
 					.closest('.dpt-settings-content').hide()
 					.closest('.dpt-wrapper-container').hide()
 					.find('.dpt-settings-toggle').removeClass('toggle-active');
+				this.resetAdvancedTaxonomy(wrapper);
 
 			} else {
 				toggleContent.find(pageSupports.join(',')).hide()
@@ -377,6 +399,8 @@ class ChangeDetect {
 				taxonomy.find('option').hide();
 				taxonomy.find('.always-visible, .' + postType).show();
 				taxonomy.val('');
+				this.syncAdvancedTaxonomyOptions(wrapper, postType);
+				this.resetAdvancedTaxonomy(wrapper);
 			}
 			toggleContent.toggleClass('not-post', 'post' !== postType);
 			toggleContent.find('.terms, .relation').hide();
@@ -395,15 +419,150 @@ class ChangeDetect {
 		this.syncToggleAria(wrapper);
 	}
 
+	toggleAdvancedTaxonomy(toggle) {
+		const control = toggle.closest('.dpt-query-tax-control');
+		const wrapper = toggle.closest('.dpt-settings-content');
+		const enabled = toggle.prop('checked');
+
+		control.find('.dpt-query-tax-builder').css('display', enabled ? 'flex' : 'none');
+		if (enabled) {
+			wrapper.children('.taxonomy, .terms, .relation').hide();
+			this.updateAdvancedTaxonomyValue(control);
+			return;
+		}
+
+		control.find('.dpt-query-tax-clauses-value').val('').trigger('change');
+		wrapper.children('.taxonomy').show();
+		this.toggleTerms(wrapper.find('select.dpt-taxonomy'));
+	}
+
+	addAdvancedTaxonomyRule(button) {
+		const control = button.closest('.dpt-query-tax-control');
+		const rules = control.find('.dpt-query-tax-rules');
+		const source = rules.find('.dpt-query-tax-rule').first();
+		if (!source.length) {
+			return;
+		}
+
+		const rule = source.clone();
+		rule.find('.dpt-query-tax-rule-taxonomy').val('');
+		rule.find('.dpt-query-tax-rule-operator').val('IN');
+		rule.find('.dpt-query-tax-rule-terms-row').hide();
+		rule.find('.dpt-query-tax-rule-terms li').addClass('dpt-hidden').hide();
+		rule.find('.dpt-query-tax-rule-terms input[type="checkbox"]').prop('checked', false);
+		rules.append(rule);
+		this.updateAdvancedTaxonomyValue(control);
+	}
+
+	removeAdvancedTaxonomyRule(button) {
+		const control = button.closest('.dpt-query-tax-control');
+		const rules = control.find('.dpt-query-tax-rule');
+		const current = button.closest('.dpt-query-tax-rule');
+
+		if (1 < rules.length) {
+			current.remove();
+		} else {
+			current.find('.dpt-query-tax-rule-taxonomy').val('');
+			current.find('.dpt-query-tax-rule-operator').val('IN');
+			current.find('.dpt-query-tax-rule-terms-row').hide();
+			current.find('.dpt-query-tax-rule-terms li').addClass('dpt-hidden').hide();
+			current.find('.dpt-query-tax-rule-terms input[type="checkbox"]').prop('checked', false);
+		}
+
+		this.updateAdvancedTaxonomyValue(control);
+	}
+
+	advancedTaxonomyChange(select) {
+		const rule = select.closest('.dpt-query-tax-rule');
+		const taxVal = select.val();
+		const termsRow = rule.find('.dpt-query-tax-rule-terms-row');
+		const termItems = rule.find('.dpt-query-tax-rule-terms li');
+
+		termItems.addClass('dpt-hidden').hide();
+		termItems.find('input[type="checkbox"]').prop('checked', false);
+		if (taxVal) {
+			termsRow.show();
+			termItems.filter('.' + taxVal).removeClass('dpt-hidden').show();
+		} else {
+			termsRow.hide();
+		}
+
+		this.updateAdvancedTaxonomyValue(select.closest('.dpt-query-tax-control'));
+	}
+
+	updateAdvancedTaxonomyValue(control) {
+		if (!control.length || !control.find('.dpt-query-tax-toggle').prop('checked')) {
+			return;
+		}
+
+		const clauses = [];
+		control.find('.dpt-query-tax-rule').each(function () {
+			const rule = jQuery(this);
+			const taxonomy = rule.find('.dpt-query-tax-rule-taxonomy').val();
+			const operator = rule.find('.dpt-query-tax-rule-operator').val() || 'IN';
+			const terms = rule.find('.dpt-query-tax-rule-terms li:not(.dpt-hidden) input[type="checkbox"]:checked').map(function () {
+				return this.value;
+			}).get();
+
+			if (taxonomy && terms.length) {
+				clauses.push({
+					taxonomy,
+					field: 'slug',
+					terms,
+					operator,
+				});
+			}
+		});
+
+		control.find('.dpt-query-tax-clauses-value').val(clauses.length ? JSON.stringify(clauses) : '').trigger('change');
+	}
+
+	resetAdvancedTaxonomy(wrapper) {
+		wrapper.find('.dpt-query-tax-control').each((index, element) => {
+			const control = jQuery(element);
+			const rules = control.find('.dpt-query-tax-rule');
+			const first = rules.first();
+
+			control.find('.dpt-query-tax-toggle').prop('checked', false);
+			control.find('.dpt-query-tax-builder').css('display', 'none');
+			control.find('.dpt-query-tax-clauses-value').val('').trigger('change');
+			rules.not(first).remove();
+			first.find('.dpt-query-tax-rule-taxonomy').val('');
+			first.find('.dpt-query-tax-rule-operator').val('IN');
+			first.find('.dpt-query-tax-rule-terms-row').hide();
+			first.find('.dpt-query-tax-rule-terms li').addClass('dpt-hidden').hide();
+			first.find('.dpt-query-tax-rule-terms input[type="checkbox"]').prop('checked', false);
+		});
+	}
+
+	syncAdvancedTaxonomyOptions(wrapper, postType) {
+		wrapper.find('.dpt-query-tax-rule-taxonomy').each(function () {
+			const select = jQuery(this);
+			select.find('option').hide();
+			select.find('.always-visible, .' + postType).show();
+		});
+	}
+
 	toggleTerms(taxonomy) {
 		const wrapper = taxonomy.closest('.dpt-settings-content');
 		const taxVal = taxonomy.val();
+		const termsWrapper = wrapper.find('.terms');
+		const termItems = termsWrapper.find('.terms-checklist li');
 		if (taxVal) {
 			wrapper.find('.terms, .relation').show();
-			wrapper.find('.terms').find('.terms-checklist li').hide();
-			wrapper.find('.terms').find('.terms-checklist .' + taxVal).show();
+			termItems.hide();
+			termItems.filter('.' + taxVal).show();
+			termItems.not('.' + taxVal).find('input[type="checkbox"]').prop('checked', false);
+			const values = termItems.filter('.' + taxVal).find('input[type="checkbox"]:checked').map(
+				function () {
+					return this.value;
+				}
+			).get().join(',');
+			termsWrapper.find('.dpt-getval').val(values).trigger('change');
 		} else {
 			wrapper.find('.terms, .relation').hide();
+			termItems.find('input[type="checkbox"]').prop('checked', false);
+			termsWrapper.find('.dpt-getval').val('').trigger('change');
 		}
 	}
 

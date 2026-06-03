@@ -31,42 +31,48 @@ class Security {
 		return apply_filters(
 			'dpt_setting_type',
 			array(
-				'title'         => 'string',
-				'post_type'     => 'string',
-				'taxonomy'      => 'taxonomy',
-				'terms'         => 'terms',
-				'relation'      => 'string',
-				'post_ids'      => 'string',
-				'pages'         => 'string',
-				'number'        => 'int',
-				'orderby'       => 'string',
-				'order'         => 'string',
-				'styles'        => 'string',
-				'style_sup'     => 'arrstring',
-				'image_crop'    => 'string',
-				'img_aspect'    => 'string',
-				'text_pos_hor'  => 'string',
-				'text_pos_ver'  => 'string',
-				'custom_aspect' => 'int',
-				'img_align'     => 'string',
-				'br_radius'     => 'int',
-				'col_narr'      => 'int',
-				'col_narr_tab'  => 'int',
-				'col_narr_mob'  => 'int',
-				'pl_holder'     => 'check',
-				'show_pgnation' => 'check',
-				'thumb_fetch'   => 'check',
-				'title_shadow'  => 'check',
-				'text_align'    => 'string',
-				'v_gutter'      => 'int',
-				'h_gutter'      => 'int',
-				'e_length'      => 'int',
-				'e_teaser'      => 'string',
-				'classes'       => 'string',
-				'offset'        => 'int',
-				'autotime'      => 'int',
-				'meta1'         => 'string',
-				'meta2'         => 'string',
+				'title'               => 'string',
+				'post_type'           => 'string',
+				'taxonomy'            => 'taxonomy',
+				'terms'               => 'terms',
+				'relation'            => 'string',
+				'query_tax_relation'  => 'string',
+				'query_tax_clauses'   => 'taxclauses',
+				'query_meta_relation' => 'string',
+				'query_meta_clauses'   => 'metaclauses',
+				'query_date_after'     => 'date',
+				'query_date_before'    => 'date',
+				'post_ids'            => 'string',
+				'pages'               => 'string',
+				'number'              => 'int',
+				'orderby'             => 'string',
+				'order'               => 'string',
+				'styles'              => 'string',
+				'style_sup'           => 'arrstring',
+				'image_crop'          => 'string',
+				'img_aspect'          => 'string',
+				'text_pos_hor'        => 'string',
+				'text_pos_ver'        => 'string',
+				'custom_aspect'       => 'int',
+				'img_align'           => 'string',
+				'br_radius'           => 'int',
+				'col_narr'            => 'int',
+				'col_narr_tab'        => 'int',
+				'col_narr_mob'        => 'int',
+				'pl_holder'           => 'check',
+				'show_pgnation'       => 'check',
+				'thumb_fetch'         => 'check',
+				'title_shadow'        => 'check',
+				'text_align'          => 'string',
+				'v_gutter'            => 'int',
+				'h_gutter'            => 'int',
+				'e_length'            => 'int',
+				'e_teaser'            => 'string',
+				'classes'             => 'string',
+				'offset'              => 'int',
+				'autotime'            => 'int',
+				'meta1'               => 'string',
+				'meta2'               => 'string',
 			)
 		);
 	}
@@ -168,6 +174,15 @@ class Security {
             case 'check':
                 $data = 'yes' === $data ? 'yes' : '';
 				break;
+			case 'taxclauses':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_tax_clauses( $data );
+				break;
+			case 'metaclauses':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_meta_clauses( $data );
+				break;
+			case 'date':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_date( $data );
+				break;
             default:
                 $data = sanitize_text_field( $data );
                 break;
@@ -214,6 +229,16 @@ class Security {
                 break;
             case 'check':
                 $data = 'yes' === $data ? 'yes' : '';
+				break;
+			case 'taxclauses':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_tax_clauses( $data );
+				break;
+			case 'metaclauses':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_meta_clauses( $data );
+				break;
+			case 'date':
+				$data = \Display_Post_Types\Frontend\Inc\Query_Schema::normalize_date( $data );
+				break;
             default:
                 $data = esc_html( $data );
                 break;

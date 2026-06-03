@@ -70,6 +70,17 @@ class Block {
 				'type'    => 'string',
 				'default' => 'IN',
 			),
+			'queryTaxRelation' => array(
+				'type'    => 'string',
+				'default' => 'AND',
+			),
+			'queryTaxClauses'  => array(
+				'type'    => 'array',
+				'items'   => array(
+					'type' => 'object',
+				),
+				'default' => array(),
+			),
 			'postIds'      => array(
 				'type'    => 'string',
 				'default' => '',
@@ -342,13 +353,16 @@ class Block {
 	 */
 	public function render_dpt( $atts ) {
 		$classes = isset( $atts['className'] ) ? $atts['className'] : '';
+		$has_query_tax_clauses = ! empty( $atts['queryTaxClauses'] );
 		ob_start();
 		$attributes = array(
 			'title'         => $atts['title'],
 			'post_type'     => $atts['postType'],
-			'taxonomy'      => $atts['taxonomy'],
-			'terms'         => $atts['terms'],
+			'taxonomy'      => $has_query_tax_clauses ? '' : $atts['taxonomy'],
+			'terms'         => $has_query_tax_clauses ? array() : $atts['terms'],
 			'relation'      => $atts['relation'],
+			'query_tax_relation' => $atts['queryTaxRelation'],
+			'query_tax_clauses'  => $atts['queryTaxClauses'],
 			'post_ids'      => $atts['postIds'],
 			'pages'         => $atts['pages'],
 			'number'        => $atts['number'],

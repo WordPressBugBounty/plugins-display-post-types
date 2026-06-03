@@ -4,7 +4,7 @@ const { InspectorControls } = wp.blockEditor;
 const { apiFetch } = wp;
 const { PanelColorSettings } = wp.editor;
 const ServerSideRender = wp.serverSideRender;
-const { TextControl, SelectControl, RangeControl, ToggleControl, Disabled } = wp.components;
+const { TextControl, SelectControl, RangeControl, ToggleControl, Disabled, Button } = wp.components;
 
 import MultipleCheckboxControl from './mcc';
 import DptAccordion from './components/dpt-accordion';
@@ -22,8 +22,10 @@ class DisplayPostTypes extends Component {
 			termsList: [],
 			styleList: [],
 			customFields: [],
+			advancedTerms: {},
 		};
 		this.fetching = false;
+		this.advancedTermsFetching = {};
 		this.styleSupport = {};
 		this.elemRef = createRef();
 		this.isPro = this.props.isPro || false;
@@ -69,6 +71,7 @@ class DisplayPostTypes extends Component {
 			} else {
 				this.updateTaxonomy();
 				this.updateTerms();
+				this.syncAdvancedTaxonomyTerms(attributes.queryTaxClauses);
 			}
 
 			if ( this.isPro ) {
@@ -94,6 +97,9 @@ class DisplayPostTypes extends Component {
 		}
 
 		if (oldTaxonomy !== taxonomy) { this.updateTerms() }
+		if (prevProps.attributes.queryTaxClauses !== this.props.attributes.queryTaxClauses) {
+			this.syncAdvancedTaxonomyTerms(this.props.attributes.queryTaxClauses);
+		}
 	}
 
 	updateTaxonomy() {
@@ -114,6 +120,55 @@ class DisplayPostTypes extends Component {
 		} else {
 			this.apiDataFetch('termsList', 'terms/' + taxonomy);
 		}
+	}
+
+	fetchAdvancedTerms(taxonomy) {
+		const { advancedTerms } = this.state;
+		if (!taxonomy || advancedTerms[taxonomy] || this.advancedTermsFetching[taxonomy]) {
+			return;
+		}
+
+		this.advancedTermsFetching[taxonomy] = true;
+		apiFetch( {
+			path: '/dpt/v1/terms/' + taxonomy,
+		} )
+		.then( ( items ) => {
+			let terms = Object.keys(items);
+			terms = terms.map(item => {
+				return {
+					label: items[item],
+					value: item,
+				};
+			});
+			this.setState({
+				advancedTerms: {
+					...this.state.advancedTerms,
+					[taxonomy]: terms,
+				},
+			});
+			delete this.advancedTermsFetching[taxonomy];
+		} )
+		.catch( () => {
+			this.setState({
+				advancedTerms: {
+					...this.state.advancedTerms,
+					[taxonomy]: [],
+				},
+			});
+			delete this.advancedTermsFetching[taxonomy];
+		} );
+	}
+
+	syncAdvancedTaxonomyTerms(clauses) {
+		if (!Array.isArray(clauses)) {
+			return;
+		}
+
+		clauses.forEach((clause) => {
+			if (clause && clause.taxonomy) {
+				this.fetchAdvancedTerms(clause.taxonomy);
+			}
+		});
 	}
 
 	getPagesList() {
@@ -275,7 +330,7 @@ class DisplayPostTypes extends Component {
 	}
 
 	render() {
-		const { postTypes, taxonomies, pageList, termsList, styleList, customFields } = this.state;
+		const { postTypes, taxonomies, pageList, termsList, styleList, customFields, advancedTerms } = this.state;
 		const { attributes, setAttributes } = this.props;
 		const {
 			title,
@@ -283,6 +338,8 @@ class DisplayPostTypes extends Component {
 			taxonomy,
 			terms,
 			relation,
+			queryTaxRelation,
+			queryTaxClauses,
 			postIds,
 			pages,
 			number,
@@ -315,6 +372,7 @@ class DisplayPostTypes extends Component {
 		const onChangePostType = value => {
 			setAttributes({ terms: [] });
 			setAttributes({ taxonomy: '' });
+			setAttributes({ queryTaxClauses: [], queryTaxRelation: 'AND' });
 			setAttributes({ postType: value });
 		};
 		const onChangeTaxonomy = value => {
@@ -355,6 +413,56 @@ class DisplayPostTypes extends Component {
 			} else {
 				setAttributes({ terms: terms.filter(term => term !== value) });
 			}
+		};
+		const taxRules = Array.isArray(queryTaxClauses) ? queryTaxClauses : [];
+		const isAdvancedTaxonomy = 0 < taxRules.length;
+		const emptyTaxRule = () => ({
+			taxonomy: '',
+			field: 'slug',
+			terms: [],
+			operator: 'IN',
+		});
+		const setTaxRules = (rules) => {
+			setAttributes({ queryTaxClauses: rules });
+		};
+		const toggleAdvancedTaxonomy = (enabled) => {
+			if (enabled) {
+				setTaxRules(taxRules.length ? taxRules : [emptyTaxRule()]);
+			} else {
+				setAttributes({ queryTaxClauses: [], queryTaxRelation: 'AND' });
+			}
+		};
+		const updateTaxRule = (index, updates) => {
+			const rules = taxRules.map((rule, ruleIndex) => {
+				return ruleIndex === index ? { ...rule, ...updates } : rule;
+			});
+			setTaxRules(rules);
+		};
+		const addTaxRule = () => {
+			setTaxRules([...taxRules, emptyTaxRule()]);
+		};
+		const removeTaxRule = (index) => {
+			if (1 < taxRules.length) {
+				setTaxRules(taxRules.filter((rule, ruleIndex) => ruleIndex !== index));
+			} else {
+				setTaxRules([emptyTaxRule()]);
+			}
+		};
+		const onChangeTaxRuleTaxonomy = (index, value) => {
+			this.fetchAdvancedTerms(value);
+			updateTaxRule(index, {
+				taxonomy: value,
+				field: 'slug',
+				terms: [],
+			});
+		};
+		const onTaxRuleTermChange = (index, value) => {
+			const rule = taxRules[index] || emptyTaxRule();
+			const ruleTerms = Array.isArray(rule.terms) ? rule.terms : [];
+			const termIndex = ruleTerms.indexOf(value);
+			updateTaxRule(index, {
+				terms: -1 === termIndex ? [...ruleTerms, value] : ruleTerms.filter(term => term !== value),
+			});
 		};
 		const onStyleChange = (value) => {
 			const styleSupDefaults = {
@@ -821,8 +929,13 @@ class DisplayPostTypes extends Component {
 						{
 							'page' !== postType &&
 							<DptAccordion initialOpen={ false } title={ __( 'Filter By Taxonomy', 'display-post-types' ) }>
+								<ToggleControl
+									label={ __( 'Use multiple taxonomy rules', 'display-post-types' ) }
+									checked={ isAdvancedTaxonomy }
+									onChange={ toggleAdvancedTaxonomy }
+								/>
 								{
-									!! taxonomies.length &&
+									!! taxonomies.length && ! isAdvancedTaxonomy &&
 									<SelectControl
 										label={ __( 'Get items by Taxonomy', 'display-post-types' ) }
 										value={ taxonomy }
@@ -831,7 +944,7 @@ class DisplayPostTypes extends Component {
 									/>
 								}
 								{
-									!! termsList.length &&
+									!! termsList.length && ! isAdvancedTaxonomy &&
 									<MultipleCheckboxControl
 										listItems={ termsList }
 										selected={ terms }
@@ -840,7 +953,7 @@ class DisplayPostTypes extends Component {
 									/>
 								}
 								{
-									!! termsList.length &&
+									!! termsList.length && ! isAdvancedTaxonomy &&
 									<SelectControl
 										label={ __( 'Terms Relationship', 'display-post-types' ) }
 										value={ relation }
@@ -850,6 +963,72 @@ class DisplayPostTypes extends Component {
 											{ value: 'AND', label: __( 'AND - Show posts only if they belong to all of the selected terms.', 'display-post-types' ) },
 										] }
 									/>
+								}
+								{
+									isAdvancedTaxonomy &&
+									<div className="dpt-block-query-tax-builder">
+										<SelectControl
+											label={ __( 'Rules Relationship', 'display-post-types' ) }
+											value={ queryTaxRelation || 'AND' }
+											onChange={ ( queryTaxRelation ) => setAttributes( { queryTaxRelation } ) }
+											options={ [
+												{ value: 'AND', label: __( 'Match all rules', 'display-post-types' ) },
+												{ value: 'OR', label: __( 'Match any rule', 'display-post-types' ) },
+											] }
+										/>
+										{
+											taxRules.map((rule, index) => {
+												const ruleTaxonomy = rule.taxonomy || '';
+												const ruleTerms = Array.isArray(rule.terms) ? rule.terms : [];
+												const ruleTermOptions = ruleTaxonomy && advancedTerms[ruleTaxonomy] ? advancedTerms[ruleTaxonomy] : [];
+												return (
+													<div className="dpt-block-query-tax-rule" key={ index }>
+														<div className="dpt-block-query-tax-rule-head">
+															<strong>{ __( 'Taxonomy Rule', 'display-post-types' ) }</strong>
+															<Button
+																isLink
+																isDestructive
+																onClick={ () => removeTaxRule(index) }
+															>
+																{ __( 'Remove', 'display-post-types' ) }
+															</Button>
+														</div>
+														<SelectControl
+															label={ __( 'Taxonomy', 'display-post-types' ) }
+															value={ ruleTaxonomy }
+															options={ taxonomies }
+															onChange={ ( value ) => onChangeTaxRuleTaxonomy(index, value) }
+														/>
+														<SelectControl
+															label={ __( 'Rule Type', 'display-post-types' ) }
+															value={ rule.operator || 'IN' }
+															options={ [
+																{ value: 'IN', label: __( 'Match any selected term', 'display-post-types' ) },
+																{ value: 'AND', label: __( 'Match all selected terms', 'display-post-types' ) },
+																{ value: 'NOT IN', label: __( 'Exclude selected terms', 'display-post-types' ) },
+															] }
+															onChange={ ( operator ) => updateTaxRule(index, { operator }) }
+														/>
+														{
+															!! ruleTermOptions.length &&
+															<MultipleCheckboxControl
+																listItems={ ruleTermOptions }
+																selected={ ruleTerms }
+																onItemChange={ ( value ) => onTaxRuleTermChange(index, value) }
+																label={ __( 'Terms', 'display-post-types' ) }
+															/>
+														}
+													</div>
+												);
+											})
+										}
+										<Button
+											isSecondary
+											onClick={ addTaxRule }
+										>
+											{ __( 'Add Taxonomy Rule', 'display-post-types' ) }
+										</Button>
+									</div>
 								}
 							</DptAccordion>
 						}
@@ -948,8 +1127,8 @@ class DisplayPostTypes extends Component {
 					</DptAccordion>
 					<DptAccordion initialOpen={ false } title={ __( 'Manage Item Components', 'display-post-types' ) }>
 						{
-							!! this.isPro && !! title &&
-							<DptAccordion initialOpen={ false } title={ __( 'Header', 'display-post-types' ) }>
+							!! this.isPro && ( !! title || ifStyleSupport(styles, 'hactions') ) &&
+							<DptAccordion initialOpen={ false } title={ __( 'Title & Toolbar', 'display-post-types' ) }>
 								{this.displayElems('itemHeaderOptions', {ifStyleSupport})}
 							</DptAccordion>
 						}

@@ -72,6 +72,118 @@
   margin-right: 5px;
 }
 
+.dpt-query-tax-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dpt-query-tax-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.dpt-query-tax-toggle-label input[type=checkbox] {
+  margin: 0;
+}
+
+.dpt-query-tax-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dpt-query-tax-relation-row {
+  padding: 10px;
+  border: 1px solid #d3dbe3;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.dpt-query-tax-relation-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.dpt-query-tax-relation-row select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  margin: 0;
+}
+
+.dpt-query-tax-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dpt-query-tax-rule {
+  padding: 10px;
+  border: 1px solid #d3dbe3;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.dpt-query-tax-rule > label {
+  display: block;
+  margin: 10px 0 6px;
+  font-weight: 600;
+}
+
+.dpt-query-tax-rule > label:first-of-type {
+  margin-top: 0;
+}
+
+.dpt-query-tax-rule select {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 10px;
+  margin: 0;
+}
+
+.dpt-query-tax-rule-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eef2f5;
+}
+
+.dpt-query-tax-rule-head strong {
+  font-size: 13px;
+}
+
+.dpt-query-tax-rule-head .dpt-query-tax-remove {
+  margin: 0;
+  color: #b32d2e;
+  text-decoration: none;
+}
+
+.dpt-query-tax-rule-terms {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.dpt-query-tax-rule-terms-row > label {
+  margin-top: 13px;
+}
+
+.dpt-query-tax-add {
+  align-self: flex-start;
+}
+
+.wp-block-legacy-widget__edit-form .widget-inside.widget-inside .dpt-widget-option .dpt-query-tax-control select {
+  min-height: 36px;
+  padding: 7px 10px;
+}
+
 .not-post .post-only {
   display: none !important;
 }

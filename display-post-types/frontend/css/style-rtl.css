@@ -74,6 +74,16 @@ select.dpt-taxonomy-hfilter {
   top: calc(0.25rem + 1px);
 }
 
+.dpt-toolbar {
+  --dpt-toolbar-control-height: 40px;
+  --dpt-toolbar-control-radius: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+
 .dpt-main-title {
   font-size: 1.15em;
   line-height: 1.618;
@@ -159,17 +169,84 @@ a.dpt-main-title-link {
 
 [dir="ltr"] .dpt-header-search-btn,
 [dir="ltr"] .dpt-header-filter-btn {
-  margin-right: 5px;
+  margin-right: 0;
 }
 
 [dir="rtl"] .dpt-header-search-btn,
 [dir="rtl"] .dpt-header-filter-btn {
-  margin-left: 5px;
+  margin-left: 0;
+}
+
+.dpt-toolbar .dpt-header-search-btn,
+.dpt-toolbar .dpt-header-filter-btn,
+.dpt-toolbar .dpt-header-posts-btn {
+  height: var(--dpt-toolbar-control-height);
+  min-height: var(--dpt-toolbar-control-height);
+  border-radius: var(--dpt-toolbar-control-radius);
+  box-sizing: border-box;
+}
+
+.dpt-toolbar .dpt-header-btn {
+  width: calc(var(--dpt-toolbar-control-height) - 2px);
+  height: calc(var(--dpt-toolbar-control-height) - 2px);
+}
+
+.dpt-toolbar .dpt-hsearch-close,
+.dpt-toolbar .dpt-hfilter-close {
+  width: var(--dpt-toolbar-control-height);
+  height: var(--dpt-toolbar-control-height);
+}
+
+.dpt-toolbar .dpt-hsearch-input,
+.dpt-toolbar .dpt-taxonomy-hfilter {
+  height: var(--dpt-toolbar-control-height);
+  min-height: var(--dpt-toolbar-control-height);
+  line-height: 1.2;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border: 1px solid #e6e6e6;
+  border-radius: var(--dpt-toolbar-control-radius);
+  box-sizing: border-box;
+}
+
+.dpt-toolbar .dpt-hsearch-input {
+  padding-left: 40px !important;
+  padding-right: 40px !important;
+}
+
+.dpt-toolbar .dpt-taxonomy-hfilter {
+  -webkit-appearance: none !important;
+          appearance: none !important;
+  background-color: #fff !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4.5 6 7.5 9 4.5' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px 12px !important;
+  border-radius: var(--dpt-toolbar-control-radius) !important;
+  width: 100%;
+}
+
+[dir="ltr"] .dpt-toolbar .dpt-taxonomy-hfilter {
+  background-position: right 14px center !important;
+  padding-left: 14px !important;
+  padding-right: 38px !important;
+}
+
+[dir="rtl"] .dpt-toolbar .dpt-taxonomy-hfilter {
+  background-position: left 14px center !important;
+  padding-right: 14px !important;
+  padding-left: 38px !important;
+}
+
+.dpt-toolbar .dpt-header-search input {
+  width: 100%;
 }
 
 .dpt-header-search {
   position: relative;
   display: none;
+  flex-basis: 100%;
+  margin-top: 2px;
 }
 
 .dpt-hsearch-open .dpt-header-search {
@@ -222,6 +299,8 @@ a.dpt-main-title-link {
   border-bottom: 1px solid #e6e6e6;
   padding-bottom: 10px;
   align-items: center;
+  flex-basis: 100%;
+  margin-top: 2px;
 }
 
 .dpt-hfilter-open .dpt-header-filter {
@@ -249,13 +328,6 @@ a.dpt-main-title-link {
 .dpt-separator {
   display: block;
   margin: 10px 0;
-}
-
-.dpt-filter-title {
-  display: block;
-  margin-bottom: 0;
-  font-size: 15px;
-  font-weight: bold;
 }
 
 [dir="ltr"] .dpt-hfilter-text {
@@ -1102,6 +1174,59 @@ https://flickity.metafizzy.co
     flex-basis: var(--dpt-small-grid-column, 33.33%);
     max-width: var(--dpt-small-grid-column, 33.33%);
     width: var(--dpt-small-grid-column, 33.33%);
+  }
+
+  .dpt-toolbar {
+    flex-wrap: nowrap;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .dpt-toolbar .dpt-header-search-btn,
+  .dpt-toolbar .dpt-header-filter-btn,
+  .dpt-toolbar .dpt-hsearch-close,
+  .dpt-toolbar .dpt-hfilter-close {
+    display: none;
+  }
+
+  .dpt-toolbar .dpt-header-search {
+    display: block;
+    flex: 1 1 320px;
+    margin-top: 0;
+  }
+
+  .dpt-toolbar .dpt-header-search input {
+    width: 100%;
+  }
+
+  .dpt-toolbar .dpt-header-filter {
+    display: flex;
+    flex: 0 1 240px;
+    margin-top: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    min-width: 200px;
+  }
+
+  .dpt-toolbar .dpt-filter-menu {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dpt-toolbar .dpt-filter-menu select {
+    width: 100%;
+  }
+
+  .dpt-toolbar .dpt-header-posts-btn {
+    flex: 0 0 auto;
+  }
+
+  [dir="ltr"] .dpt-toolbar .dpt-header-posts-btn {
+    margin-left: 0;
+  }
+
+  [dir="rtl"] .dpt-toolbar .dpt-header-posts-btn {
+    margin-right: 0;
   }
 
   .display-post-types .flickity-button {
