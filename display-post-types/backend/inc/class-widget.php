@@ -1122,7 +1122,10 @@ class Widget extends \WP_Widget {
 			$terms       = wp_list_pluck( $terms, 'name', 'slug' );
 			$valid_terms = array_keys( $terms );
 
-			$instance['terms'] = array_intersect( $new_instance['terms'], $valid_terms );
+			// The form submits terms as a comma-separated string via a hidden input.
+			// array_intersect() requires an array (enforced as TypeError in PHP 8).
+			$terms_input       = is_array( $new_instance['terms'] ) ? $new_instance['terms'] : array_filter( array_map( 'trim', explode( ',', $new_instance['terms'] ) ) );
+			$instance['terms'] = array_values( array_intersect( $terms_input, $valid_terms ) );
 		} else {
 			$instance['terms'] = array();
 		}

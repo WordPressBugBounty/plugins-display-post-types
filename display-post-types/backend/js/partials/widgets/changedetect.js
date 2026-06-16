@@ -47,6 +47,10 @@ class ChangeDetect {
             _this.updateAdvancedTaxonomyValue( jQuery(this).closest('.dpt-query-tax-control') );
         });
 
+        widget.on('change', '.terms .terms-checklist input[type="checkbox"]', function() {
+            _this.updateTermsValue( jQuery(this).closest('.terms') );
+        });
+
 		widget.on('change', 'select.dpt-orderby', function() {
 			_this.toggleCustomSort( jQuery(this) );
 		});
@@ -244,6 +248,13 @@ class ChangeDetect {
 		});
 
 		control.find('.dpt-query-tax-clauses-value').val(clauses.length ? JSON.stringify(clauses) : '').trigger('change');
+	}
+
+	updateTermsValue( termsWrapper ) {
+		const values = termsWrapper.find('.terms-checklist li:not(.dpt-hidden) input[type="checkbox"]:checked').map(function() {
+			return this.value;
+		}).get().join(',');
+		termsWrapper.find('.dpt-getval').val(values).trigger('change');
 	}
 
 	resetAdvancedTaxonomy( wrapper ) {
