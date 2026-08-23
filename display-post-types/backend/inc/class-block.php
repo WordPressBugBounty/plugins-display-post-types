@@ -43,6 +43,7 @@ class Block {
 		add_action( 'init', array( $inst, 'register_block' ) );
 		add_action( 'rest_api_init', array( $inst, 'register_routes' ) );
 		add_action( 'enqueue_block_editor_assets', array( $inst, 'block_assets' ) );
+		add_action( 'enqueue_block_assets', array( $inst, 'block_content_assets' ) );
 	}
 
 	private function get_block_attributes() {
@@ -549,6 +550,39 @@ class Block {
 	 * @since    1.0.0
 	 */
 	public function block_assets() {
+		$this->enqueue_block_preview_assets();
+
+		$dpt_block_data = apply_filters( 'dpt_block_script_data', array() );
+		wp_enqueue_script(
+			'dpt-blocks-js',
+			plugins_url( '/js/blocks.build.js', dirname( __FILE__ ) ),
+			array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor', 'wp-api-fetch', 'wp-block-editor', 'wp-server-side-render', 'jquery' ),
+			DISPLAY_POST_TYPES_VERSION,
+			true
+		);
+		wp_localize_script( 'dpt-blocks-js', 'dptBlockData', $dpt_block_data );
+	}
+
+	/**
+	 * Enqueue rendered block assets inside the block editor content iframe.
+	 *
+	 * @since 3.4.3
+	 */
+	public function block_content_assets() {
+		// The frontend has its own conditional asset-loading path.
+		if ( ! is_admin() ) {
+			return;
+		}
+
+		$this->enqueue_block_preview_assets();
+	}
+
+	/**
+	 * Enqueue scripts and styles used by the server-rendered block preview.
+	 *
+	 * @since 3.4.3
+	 */
+	private function enqueue_block_preview_assets() {
 		wp_enqueue_script(
 			'dpt-flickity',
 			plugins_url( '/frontend/js/flickity.pkgd.min.js', dirname( dirname( __FILE__ ) ) ),
@@ -581,15 +615,11 @@ class Block {
 			'all'
 		);
 
-		$dpt_block_data = apply_filters( 'dpt_block_script_data', array() );
-		wp_enqueue_script(
-			'dpt-blocks-js',
-			plugins_url( '/js/blocks.build.js', dirname( __FILE__ ) ),
-			array( 'wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor', 'wp-api-fetch', 'wp-block-editor', 'wp-server-side-render', 'jquery' ),
-			DISPLAY_POST_TYPES_VERSION,
-			true
+		wp_localize_script(
+			'dpt-scripts',
+			'dptIconData',
+			array( 'markup' => \Display_Post_Types\Helper\Icon_Loader::get_instance()->get_admin_icons_markup() )
 		);
-		wp_localize_script( 'dpt-blocks-js', 'dptBlockData', $dpt_block_data );
 	}
 
 	/**
