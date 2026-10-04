@@ -37,7 +37,7 @@ class Query_Schema {
 			'orderby'       => self::normalize_orderby( isset( $settings['orderby'] ) ? $settings['orderby'] : 'date' ),
 			'order'         => self::normalize_order( isset( $settings['order'] ) ? $settings['order'] : 'DESC' ),
 			'taxonomy'      => self::normalize_slug( isset( $settings['taxonomy'] ) ? $settings['taxonomy'] : '' ),
-			'terms'         => self::normalize_string_list( isset( $settings['terms'] ) ? $settings['terms'] : array() ),
+			'terms'         => self::normalize_taxonomy_terms( isset( $settings['terms'] ) ? $settings['terms'] : array(), 'slug' ),
 			'relation'      => self::normalize_operator( isset( $settings['relation'] ) ? $settings['relation'] : 'IN', array( 'IN', 'AND' ), 'IN' ),
 			'offset'        => self::normalize_int( isset( $settings['offset'] ) ? $settings['offset'] : 0 ),
 			'post_ids'      => self::normalize_id_list( isset( $settings['post_ids'] ) ? $settings['post_ids'] : array() ),
@@ -107,13 +107,12 @@ class Query_Schema {
 			}
 
 			$operator = self::normalize_operator( isset( $clause['operator'] ) ? $clause['operator'] : 'IN', array( 'IN', 'NOT IN', 'AND', 'EXISTS', 'NOT EXISTS' ), 'IN' );
-			$terms    = self::normalize_string_list( isset( $clause['terms'] ) ? $clause['terms'] : array() );
+			$field    = isset( $clause['field'] ) ? sanitize_key( $clause['field'] ) : 'slug';
+			$field    = in_array( $field, array( 'term_id', 'name', 'slug', 'term_taxonomy_id' ), true ) ? $field : 'slug';
+			$terms    = self::normalize_taxonomy_terms( isset( $clause['terms'] ) ? $clause['terms'] : array(), $field );
 			if ( empty( $terms ) && ! in_array( $operator, array( 'EXISTS', 'NOT EXISTS' ), true ) ) {
 				continue;
 			}
-
-			$field = isset( $clause['field'] ) ? sanitize_key( $clause['field'] ) : 'slug';
-			$field = in_array( $field, array( 'term_id', 'name', 'slug', 'term_taxonomy_id' ), true ) ? $field : 'slug';
 
 			$normalized[] = array(
 				'taxonomy' => $taxonomy,
@@ -246,14 +245,20 @@ class Query_Schema {
 	}
 
 	/**
-	 * Normalize a text list.
+	 * Normalize taxonomy terms according to the WP_Tax_Query field.
+	 *
+	 * Term slugs must not pass through sanitize_text_field(), because WordPress
+	 * stores non-ASCII slugs as percent-encoded octets and that sanitizer strips
+	 * every %xx sequence. sanitize_title_for_query() preserves existing encoded
+	 * octets and canonicalizes raw non-ASCII values for a slug lookup.
 	 *
 	 * @since 3.4.0
 	 *
 	 * @param string|array $values Raw list.
+	 * @param string       $field  Taxonomy query field.
 	 * @return array
 	 */
-	private static function normalize_string_list( $values ) {
+	private static function normalize_taxonomy_terms( $values, $field ) {
 		if ( empty( $values ) ) {
 			return array();
 		}
@@ -262,8 +267,16 @@ class Query_Schema {
 			$values = explode( ',', $values );
 		}
 
+		if ( in_array( $field, array( 'term_id', 'term_taxonomy_id' ), true ) ) {
+			$values = array_filter( array_map( 'absint', $values ) );
+			return array_values( array_unique( $values ) );
+		}
+
 		$values = array_map( 'trim', $values );
-		$values = array_filter( array_map( 'sanitize_text_field', $values ), 'strlen' );
+		$values = 'slug' === $field
+			? array_map( 'sanitize_title_for_query', $values )
+			: array_map( 'sanitize_text_field', $values );
+		$values = array_filter( $values, 'strlen' );
 		return array_values( array_unique( $values ) );
 	}
 
