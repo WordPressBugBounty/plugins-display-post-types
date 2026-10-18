@@ -4,7 +4,7 @@ Tags: post types, post grid, post slider, display posts
 Requires at least: 5.4
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 3.4.4
+Stable tag: 3.4.5
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -100,6 +100,9 @@ Installing “Display Post Types” can be done either by searching for “Displ
 3. Display post types block use.
 
 == Changelog ==
+= 3.4.5 =
+* Security: Prevent disclosure of internal post type entries by restricting block, shortcode, widget, and Pro AJAX queries to publicly viewable post types. Credit: Thanks to Alan Karl (AHK Solutions LLC) for responsibly reporting this security issue.
+
 = 3.4.4 =
 * Fix: Corrected frontend taxonomy filtering for non-ASCII and percent-encoded term slugs.
 * Fix: Properly normalized term IDs and term taxonomy IDs in advanced taxonomy queries.

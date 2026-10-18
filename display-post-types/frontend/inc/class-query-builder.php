@@ -29,7 +29,9 @@ class Query_Builder {
 		$context  = is_array( $context ) ? $context : array();
 		$schema   = Query_Schema::normalize( $settings );
 
-		if ( empty( $schema['post_type'] ) ) {
+		// A published status does not make an internal post type public. This
+		// shared boundary protects blocks, shortcodes and widgets alike.
+		if ( empty( $schema['post_type'] ) || ! is_post_type_viewable( $schema['post_type'] ) ) {
 			return array();
 		}
 
