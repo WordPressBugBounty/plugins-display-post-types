@@ -58,6 +58,7 @@ class Options {
 		// add_action( 'admin_init', array( $inst, 'add_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $inst, 'page_scripts' ) );
 		add_action( 'dpt_options_page_content', array( $inst, 'display_content' ) );
+		add_action( 'admin_post_dpt_dismiss_pro_offer', array( Pro_Offer::class, 'dismiss' ) );
 	}
 
     /**

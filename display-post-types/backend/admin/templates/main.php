@@ -7,10 +7,34 @@
  */
 
 use Display_Post_Types\Helper\Markup as Markup_Fn;
+use Display_Post_Types\Backend\Admin\Pro_Offer;
+
+$show_pro_offer = Pro_Offer::should_show();
 
 ?>
 
-<div id="dpt-options-page" class="dpt-options-page">
+<div id="dpt-options-page" class="<?php echo esc_attr( $show_pro_offer ? 'dpt-options-page dpt-has-pro-offer' : 'dpt-options-page' ); ?>">
+	<?php if ( $show_pro_offer ) : ?>
+		<div class="dpt-pro-offer" role="region" aria-label="<?php esc_attr_e( 'Display Post Types Pro offer', 'display-post-types' ); ?>">
+			<div class="dpt-pro-offer-content">
+				<strong><?php esc_html_e( '20% off Display Post Types Pro', 'display-post-types' ); ?></strong>
+				<span>
+					<?php
+					/* translators: %s: the final date of the discount offer. */
+					echo esc_html( sprintf( __( 'Limited-time offer · Ends %s', 'display-post-types' ), date_i18n( 'F j, Y', strtotime( Pro_Offer::END_DATE ) ) ) );
+					?>
+				</span>
+			</div>
+			<a class="dpt-pro-offer-link" href="<?php echo esc_url( Pro_Offer::checkout_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Get 20% off', 'display-post-types' ); ?></a>
+			<form class="dpt-pro-offer-close-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="dpt_dismiss_pro_offer">
+				<?php wp_nonce_field( 'dpt_dismiss_pro_offer' ); ?>
+				<button type="submit" class="dpt-pro-offer-close" aria-label="<?php esc_attr_e( 'Dismiss this offer', 'display-post-types' ); ?>" title="<?php esc_attr_e( 'Dismiss this offer', 'display-post-types' ); ?>">
+					<span class="dashicons dashicons-no-alt" aria-hidden="true"></span>
+				</button>
+			</form>
+		</div>
+	<?php endif; ?>
 	<div class="min-h-[calc(100vh-32px)] bg-slate-50">
 		<header class="border-b border-slate-200 bg-white">
 			<div class="mx-auto w-full max-w-[1400px] px-3 py-5">
